@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DREAMLENS AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <section class="hero">
+    <div class="overlay"></div>
+    <div class="content">
+      <h1>DREAMLENS AI</h1>
+      <p>Decode your dreams. Discover hidden meanings.</p>
+      <button id="startBtn">Get Started</button>
+    </div>
+  </section>
+
+  <script>
+    document.getElementById("startBtn").addEventListener("click", function () {
+      window.location.href = "/chat";
+    });
+  </script>
+</body>
+</html>
