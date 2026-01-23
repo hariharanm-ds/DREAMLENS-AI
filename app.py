@@ -266,8 +266,12 @@ def history_recent():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    print(f"Starting DREAMLENS AI on http://127.0.0.1:{port} (static_folder={app.static_folder}). _static_check available at /_static_check")
+    # Use 127.0.0.1 and disable the reloader to avoid Windows 'fromfd' socket errors when debugging locally
+    app.run(host="127.0.0.1", port=port, debug=True, use_reloader=False)
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# Explicit route to serve the stylesheet (useful for diagnostics)
+@app.route('/static/style.css')
+def style_css():
+    return app.send_static_file('style.css')
