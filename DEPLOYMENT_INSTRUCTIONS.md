@@ -7,6 +7,9 @@ Follow these steps to deploy the app to Vercel:
 1. Create a Vercel account (https://vercel.com/) and import this GitHub repository (use the "Import Project" UI).
 2. Add environment variables to your Vercel Project Settings:
    - `HUGGINGFACE_API_TOKEN` — (your Hugging Face API token) — required for full inference with HF models. If omitted, the API falls back to a simple heuristic.
+
+> Note: If your Vercel build previously failed with a dependency resolution error mentioning `Werkzeug`, it was due to a pinned, incompatible `Werkzeug==3.0.1` in a duplicate `requirements.txt`. This has been removed. The repository now uses a single, consolidated `requirements.txt` without a `Werkzeug` pin.
+
 3. In Vercel, create a Deploy Token:
    - Go to Account Settings → Tokens → Create Token. Copy the token.
 4. In **this GitHub repository**, add the token as a GitHub secret:
