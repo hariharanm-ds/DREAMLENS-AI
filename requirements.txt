@@ -1,6 +1,6 @@
 Flask==3.1.2
 requests==2.31.0
-Werkzeug==3.0.1
+# Werkzeug pin removed to avoid conflicts with Flask
 gunicorn==21.2.0
 # ML & NLP
 transformers>=4.35.0

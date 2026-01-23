@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
 * {
   margin: 0;
@@ -10,10 +11,10 @@ html, body {
   height: 100%;
   width: 100%;
   font-family: 'Poppins', sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
-/* Night Dream Background with Starfield */
+/* ==================== BACKGROUND EFFECTS ==================== */
 body {
   background: linear-gradient(135deg, #0a0014 0%, #1a0033 25%, #0d0017 50%, #1a0028 75%, #0a0014 100%);
   color: #d0e8ff;
@@ -21,7 +22,81 @@ body {
   min-height: 100vh;
 }
 
-/* Animated Starfield Background */
+/* Animated Particles Background */
+.animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: float 20s infinite ease-in-out;
+}
+
+.particle-1 {
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(100, 200, 255, 0.3) 0%, transparent 70%);
+  top: 10%;
+  left: 10%;
+  animation-duration: 25s;
+}
+
+.particle-2 {
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.2) 0%, transparent 70%);
+  top: 60%;
+  right: 5%;
+  animation-duration: 30s;
+  animation-delay: 2s;
+}
+
+.particle-3 {
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(255, 106, 193, 0.2) 0%, transparent 70%);
+  bottom: 20%;
+  left: 50%;
+  animation-duration: 28s;
+  animation-delay: 1s;
+}
+
+.particle-4 {
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(100, 200, 255, 0.2) 0%, transparent 70%);
+  top: 30%;
+  right: 20%;
+  animation-duration: 32s;
+  animation-delay: 3s;
+}
+
+.particle-5 {
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.25) 0%, transparent 70%);
+  bottom: 30%;
+  right: 30%;
+  animation-duration: 26s;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(50px, -50px) scale(1.1); }
+  50% { transform: translate(-30px, 100px) scale(0.9); }
+  75% { transform: translate(80px, 30px) scale(1.05); }
+}
+
+/* Starfield Background */
 body::before {
   content: '';
   position: fixed;
@@ -48,7 +123,6 @@ body::before {
   0%, 100% { opacity: 0.3; }
   50% { opacity: 1; }
 }
-
 /* Hero Section */
 .hero {
   position: relative;
