@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact — DREAMLENS AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2" />
+  <style>body{font-family:Poppins, sans-serif;background:linear-gradient(135deg,#0a0014,#1a0033);color:#d0e8ff;margin:0;padding:0;} form{max-width:700px}</style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-container">
+      <div class="logo"><span class="logo-icon">✨</span><div class="logo-text">DREAMLENS AI</div></div>
+      <ul class="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/chat">Analyze</a></li>
+        <li><a href="/annotate">Annotate</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <main style="padding:120px 20px 60px;max-width:700px;margin:0 auto;">
+    <h1>Contact</h1>
+    <p style="color:#b5a3ff;">Have feedback, a dataset to share, or a feature request? Send us a short message.</p>
+
+    <form id="contactForm" style="margin-top:18px;display:flex;flex-direction:column;gap:12px;">
+      <input id="name" placeholder="Your name" style="padding:12px;border-radius:8px;background:rgba(15,5,30,0.6);color:#d0e8ff;border:1px solid rgba(100,200,255,0.06);" />
+      <input id="email" placeholder="Your email (optional)" style="padding:12px;border-radius:8px;background:rgba(15,5,30,0.6);color:#d0e8ff;border:1px solid rgba(100,200,255,0.06);" />
+      <textarea id="message" placeholder="Message" rows="6" style="padding:12px;border-radius:8px;background:rgba(15,5,30,0.6);color:#d0e8ff;border:1px solid rgba(100,200,255,0.06);"></textarea>
+      <button type="button" id="sendBtn" style="padding:12px;border-radius:14px;background:linear-gradient(135deg, rgba(100,200,255,0.5), rgba(147,51,234,0.6));border:none;cursor:pointer;color:white;font-weight:700;">Send</button>
+      <div id="status" style="color:#b5a3ff"></div>
+    </form>
+
+    <script>
+      document.getElementById('sendBtn').addEventListener('click', async () => {
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const message = document.getElementById('message').value.trim();
+        if (!message) { document.getElementById('status').textContent = 'Please enter a message.'; return; }
+        document.getElementById('status').textContent = 'Sending...';
+        const r = await fetch('/contact/submit', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({name,email,message}) });
+        const data = await r.json();
+        if (data.success) {
+          document.getElementById('status').textContent = 'Sent — thank you!';
+          document.getElementById('contactForm').reset();
+        } else {
+          document.getElementById('status').textContent = 'Failed to send — try again later.';
+        }
+      });
+    </script>
+
+  </main>
+</body>
+</html>

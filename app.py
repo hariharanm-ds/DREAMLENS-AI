@@ -9,8 +9,12 @@ from functools import lru_cache
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 
+@app.route('/_static_check')
+def static_check():
+    exists = os.path.exists(os.path.join(app.static_folder, 'style.css'))
+    return jsonify({'static_folder': app.static_folder, 'style_exists': exists})
 # ---------- Fallback responses (simple, fast) ----------
 fallback_responses = [
     "Dreams about {topic} can reflect a desire for transformation or escape from daily stress. It might be your mind signaling the need for change.",
@@ -124,6 +128,35 @@ def chat():
 @app.route("/annotate")
 def annotate_ui():
     return render_template("annotate.html")
+
+
+@app.route('/about')
+def about_page():
+    return render_template('about.html')
+
+
+@app.route('/contact')
+def contact_page():
+    return render_template('contact.html')
+
+
+@app.route('/contact/submit', methods=['POST'])
+def contact_submit():
+    payload = request.get_json() or {}
+    name = (payload.get('name') or '').strip()
+    email = (payload.get('email') or '').strip()
+    message = (payload.get('message') or '').strip()
+    if not message:
+        return jsonify({'success': False, 'message': 'Message is empty'}), 400
+    os.makedirs('data', exist_ok=True)
+    try:
+        with open('data/contacts.csv', 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow([datetime.utcnow().isoformat(), name, email, message])
+        return jsonify({'success': True})
+    except Exception as e:
+        print('Failed to save contact message:', e)
+        return jsonify({'success': False, 'message': 'Internal error'}), 500
 
 # Simple annotation storage (append CSV)
 import csv

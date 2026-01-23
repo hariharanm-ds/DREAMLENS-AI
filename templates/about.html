@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — DREAMLENS AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2" />
+  <style>body{font-family:Poppins, sans-serif;background:linear-gradient(135deg,#0a0014,#1a0033);color:#d0e8ff;margin:0;padding:0;} .nav-container{padding:0 20px}</style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-container">
+      <div class="logo"><span class="logo-icon">✨</span><div class="logo-text">DREAMLENS AI</div></div>
+      <ul class="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/chat">Analyze</a></li>
+        <li><a href="/annotate">Annotate</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <main style="padding:120px 20px 60px;max-width:1100px;margin:0 auto;">
+    <h1>About DREAMLENS AI</h1>
+    <p style="color:#b5a3ff;">DREAMLENS AI helps you explore the hidden meanings of dreams using interpretable methods and free, open models. We combine dataset-based matches, zero-shot thematic detection, and small generative models to provide fast, insightful interpretations without relying on paid APIs by default.</p>
+
+    <section style="margin-top:32px;">
+      <h2>Our approach</h2>
+      <ul style="margin-top:12px;color:#d0e8ff;">
+        <li><strong>Dataset matching:</strong> We use TF-IDF similarity against a crowdsourced dream-interpretations dataset for grounded, human-like matches.</li>
+        <li><strong>Theme detection:</strong> Zero-shot classification finds emotional and situational themes in a dream (fear, loss, travel, relationships).</li>
+        <li><strong>Generative suggestions:</strong> Flan-T5 produces short reflection prompts when a dataset match isn't confident.</li>
+      </ul>
+    </section>
+
+    <section style="margin-top:24px;">
+      <h2>Ideas & Next steps</h2>
+      <ul style="margin-top:12px;color:#d0e8ff;">
+        <li><strong>Personal Journals:</strong> Let users keep private dream journals and track recurring themes over time.</li>
+        <li><strong>Community Collections:</strong> Allow anonymized community-contributed dreams to improve dataset coverage and discover archetypes.</li>
+        <li><strong>Guided Reflection:</strong> Offer short, therapist-inspired reflection exercises rather than definitive judgments.</li>
+        <li><strong>Privacy First:</strong> Provide optional local-only mode so data never leaves the user's device or explicitly ask for consent to save annotations.</li>
+      </ul>
+    </section>
+
+    <p style="margin-top:30px;color:#b5a3ff;">If you'd like any of these features implemented next, say which one and I’ll add it.</p>
+  </main>
+</body>
+</html>
