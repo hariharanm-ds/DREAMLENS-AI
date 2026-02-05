@@ -1,14 +1,13 @@
 {
   "version": 2,
-  "buildCommand": "pip install --no-cache-dir -q -r vercel_requirements.txt",
+  "buildCommand": "pip install --no-cache-dir --no-deps -q -r vercel_requirements.txt",
   "builds": [
-    { "src": "api/*.py", "use": "@vercel/python", "config": { "maxLambdaSize": "50mb" } }
-  ],
-  "routes": [
-    { "src": "/api/interpret", "dest": "/api/interpret.py" }
+    { "src": "app.py", "use": "@vercel/python" }
   ],
   "env": {
     "PIP_NO_CACHE_DIR": "1",
-    "PYTHONOPTIMIZE": "2"
+    "PIP_NO_DEPS": "1",
+    "PYTHONOPTIMIZE": "2",
+    "PYTHONHASHSEED": "0"
   }
 }
