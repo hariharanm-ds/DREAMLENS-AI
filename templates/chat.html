@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DREAMLENS AI - Night Dream Interpretation</title>
+  <title>DREAMLENS AI - Advanced Dream Interpretation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * {
@@ -293,6 +293,7 @@
   </style>
 </head>
 <body>
+
   <div class="container">
     <div class="header">
       <h1>✨ DREAMLENS AI ✨</h1>
@@ -302,6 +303,9 @@
     <div class="chat-container" id="chatBox"></div>
 
     <div class="input-section">
+      <label style="display:flex;align-items:center;gap:8px;color:#b5a3ff;margin-right:12px">
+        <input type="checkbox" id="forceModel" /> <small>Prefer model</small>
+      </label>
       <input 
         type="text" 
         id="userInput" 
@@ -348,7 +352,7 @@
         const response = await fetch("/interpret", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dream: dreamText }),
+          body: JSON.stringify({ dream: dreamText, force_model: (document.getElementById('forceModel') && document.getElementById('forceModel').checked) || false }),
           timeout: 65000
         });
 
@@ -368,6 +372,16 @@
           interpretation = "I had trouble analyzing that dream. Please check that Ollama is running and try again.";
         }
 
+        // Append method info if available
+        if (data.meta && data.meta.method) {
+          const metaDiv = document.createElement('div');
+          metaDiv.style.fontSize = '0.8em';
+          metaDiv.style.opacity = '0.85';
+          metaDiv.style.marginTop = '8px';
+          metaDiv.textContent = `Method: ${data.meta.method}${data.meta.forced ? ' (forced)' : ''}`;
+          contentDiv.appendChild(metaDiv);
+        }
+
         // Replace thinking message with actual interpretation
         contentDiv.className = "message-content ai-message";
         contentDiv.textContent = interpretation;
@@ -375,7 +389,7 @@
       } catch (error) {
         console.error("Error:", error);
         contentDiv.className = "message-content ai-message ai-message-error";
-        contentDiv.textContent = "❌ Connection Error: Ollama may not be running. Please start Ollama and try again.";
+        contentDiv.textContent = "❌ Connection Error: service may be unavailable. Check server logs or try again later.";
       }
     }
 
@@ -400,6 +414,26 @@
     window.addEventListener("load", () => {
       userInput.focus();
     });
+
+    // Mobile nav toggle (shared behaviour)
+    (function () {
+      const navToggle = document.getElementById('navToggle');
+      if (!navToggle) return;
+      navToggle.addEventListener('click', () => {
+        const isOpen = document.body.classList.toggle('nav-open');
+        navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      document.addEventListener('click', (e) => {
+        const navMenu = document.querySelector('.nav-menu');
+        const toggle = document.getElementById('navToggle');
+        if (!navMenu || !toggle) return;
+        if (window.innerWidth > 720) return;
+        if (!navMenu.contains(e.target) && !toggle.contains(e.target)) {
+          document.body.classList.remove('nav-open');
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
   </script>
 </body>
 </html>

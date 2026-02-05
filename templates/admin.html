@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin — DREAMLENS AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2" />
+  <style>main{padding:120px 20px 40px;max-width:1000px;margin:0 auto;color:#d0e8ff}.card{background:rgba(15,5,30,0.6);padding:18px;border-radius:12px;border:1px solid rgba(100,200,255,0.04);margin-bottom:16px}</style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo"><span class="logo-icon">✨</span><span class="logo-text">DREAMLENS AI</span></div>
+      <ul class="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/chat">Analyze</a></li>
+        <li><a href="/annotate">Annotate</a></li>
+        <li><a href="/history">History</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <h1>Admin</h1>
+    <div class="card">
+      <h3>Runtime</h3>
+      <p>Force use of Hugging Face Inference API (no local torch required):</p>
+      <label style="display:flex;gap:12px;align-items:center"><input type="checkbox" id="hfOnly" {{ 'checked' if cfg.get('use_hf_only') else '' }}> <span>Use HF Inference only</span></label>
+      <div style="margin-top:10px;color:#b5a3ff">Note: enabling this will call HF Inference API for generation. Make sure <code>HUGGINGFACE_API_TOKEN</code> is set.</div>
+      <div style="margin-top:12px"><button id="saveBtn" class="btn btn-primary">Save</button> <span id="status" style="color:#b5a3ff;margin-left:8px"></span></div>
+    </div>
+
+    <div class="card">
+      <h3>Model Status</h3>
+      <pre style="white-space:pre-wrap;color:#b5a3ff">Zero-shot: {{ 'loaded' if (request.host and True) else 'unknown' }}</pre>
+      <p><a href="/_model_status">View JSON status</a> • <a href="/_env_check">Environment check</a></p>
+      <div style="margin-top:10px"><button id="reloadModels" class="btn">Reload models now</button> <button id="startWorker" class="btn" style="margin-left:8px">Start model worker</button> <span id="reloadStatus" style="color:#b5a3ff;margin-left:8px"></span></div>
+      <div style="margin-top:8px;color:#b5a3ff">If Flan-T5 fails to load with a Windows DLL error (c10.dll / WinError 1114), run <code>scripts/install_cpu_torch.ps1</code> (Windows) to install a CPU-only PyTorch wheel, or enable "Use HF Inference only".</div>
+    </div>
+
+    <div class="card">
+      <h3>Recent model logs</h3>
+      <pre style="white-space:pre-wrap;color:#b5a3ff">{% for l in logs %}{{ l }}
+{% endfor %}</pre>
+    </div>
+
+    <div class="card">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="/">Front page</a></li>
+        <li><a href="/chat">Chat</a></li>
+        <li><a href="/annotate">Annotate</a></li>
+      </ul>
+    </div>
+  </main>
+
+<script>
+  document.getElementById('saveBtn').addEventListener('click', async () => {
+    const val = document.getElementById('hfOnly').checked;
+    document.getElementById('status').textContent = 'Saving...';
+    const r = await fetch('/admin/set_hf_only', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({use_hf_only: val})});
+    const data = await r.json();
+    if (data.success) {
+      document.getElementById('status').textContent = 'Saved ✓';
+    } else {
+      document.getElementById('status').textContent = 'Save failed';
+    }
+  });
+
+  document.getElementById('reloadModels').addEventListener('click', async () => {
+    document.getElementById('reloadStatus').textContent = 'Reloading... this may take some seconds';
+    const r = await fetch('/admin/reload_models', {method:'POST', headers:{'Content-Type':'application/json'}});
+    const data = await r.json();
+    if (data.success) {
+      document.getElementById('reloadStatus').textContent = 'Reloaded — ' + JSON.stringify(data.status);
+    } else {
+      document.getElementById('reloadStatus').textContent = 'Reload failed';
+    }
+  });
+
+  document.getElementById('startWorker').addEventListener('click', async () => {
+    document.getElementById('reloadStatus').textContent = 'Starting worker...';
+    const r = await fetch('/admin/start_worker', {method:'POST'});
+    const data = await r.json();
+    if (data.success) {
+      document.getElementById('reloadStatus').textContent = data.message;
+    } else {
+      document.getElementById('reloadStatus').textContent = 'Start failed';
+    }
+  });
+</script>
+</body>
+</html>

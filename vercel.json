@@ -1,9 +1,14 @@
 {
   "version": 2,
+  "buildCommand": "pip install --no-cache-dir -q -r vercel_requirements.txt",
   "builds": [
-    { "src": "api/*.py", "use": "@vercel/python" }
+    { "src": "api/*.py", "use": "@vercel/python", "config": { "maxLambdaSize": "50mb" } }
   ],
   "routes": [
     { "src": "/api/interpret", "dest": "/api/interpret.py" }
-  ]
+  ],
+  "env": {
+    "PIP_NO_CACHE_DIR": "1",
+    "PYTHONOPTIMIZE": "2"
+  }
 }

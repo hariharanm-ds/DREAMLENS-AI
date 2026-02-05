@@ -4,10 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DREAMLENS AI - Annotate Dreams</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2" />
-  <style>body{font-family:Poppins, sans-serif;background:linear-gradient(135deg,#0a0014,#1a0033);color:#d0e8ff;margin:0;padding:0;} .container{padding-top:100px}</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
+  <!-- Shared Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo"><span class="logo-icon">✨</span><span class="logo-text">DREAMLENS AI</span></div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <ul class="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/chat">Analyze</a></li>
+        <li><a href="/annotate">Annotate</a></li>
+        <li><a href="/history">History</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
   <div class="container" style="max-width:900px;margin:40px auto;padding:30px;">
     <div class="header" style="border-radius:12px;padding:20px;text-align:left;">
       <h1>Annotate Dreams</h1>
@@ -71,6 +86,26 @@
     });
 
     fetchRecent();
+
+    // Mobile nav toggle (shared)
+    (function () {
+      const navToggle = document.getElementById('navToggle');
+      if (!navToggle) return;
+      navToggle.addEventListener('click', () => {
+        const isOpen = document.body.classList.toggle('nav-open');
+        navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      document.addEventListener('click', (e) => {
+        const navMenu = document.querySelector('.nav-menu');
+        const toggle = document.getElementById('navToggle');
+        if (!navMenu || !toggle) return;
+        if (window.innerWidth > 720) return;
+        if (!navMenu.contains(e.target) && !toggle.contains(e.target)) {
+          document.body.classList.remove('nav-open');
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
   </script>
 </body>
 </html>
