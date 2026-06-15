@@ -1,16 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "pip install --no-cache-dir --no-deps -q -r vercel_requirements.txt",
   "builds": [
     { "src": "app.py", "use": "@vercel/python" }
   ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/app.py" }
-  ],
-  "env": {
-    "PIP_NO_CACHE_DIR": "1",
-    "PIP_NO_DEPS": "1",
-    "PYTHONOPTIMIZE": "2",
-    "PYTHONHASHSEED": "0"
-  }
+  ]
 }
