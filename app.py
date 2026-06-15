@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+import pandas as pd
 import os
 import random
 from functools import lru_cache
@@ -7,20 +8,11 @@ from datetime import datetime
 
 # Ollama Llama 3 integration
 from ollama_client import interpret_dream as ollama_interpret, check_ollama_health
-from gemini_client import interpret_dream as gemini_interpret
 
 # Runtime configuration
-def get_writable_dir(base_dir):
-    try:
-        os.makedirs(base_dir, exist_ok=True)
-        return base_dir
-    except OSError:
-        tmp_dir = f"/tmp/{base_dir}"
-        os.makedirs(tmp_dir, exist_ok=True)
-        return tmp_dir
+LOG_DIR = "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
 
-LOG_DIR = get_writable_dir("logs")
-DATA_DIR = get_writable_dir("data")
 
 def log_model(msg: str):
     ts = datetime.utcnow().isoformat()
@@ -28,24 +20,12 @@ def log_model(msg: str):
         with open(os.path.join(LOG_DIR, "model.log"), "a", encoding="utf-8") as f:
             f.write(f"{ts} {msg}\n")
     except Exception:
+        # best-effort logging, don't crash the app
         print(f"LOG FAIL: {msg}")
 
 # NLP libraries for dataset matching (lightweight, no torch needed)
-is_vercel = os.environ.get("VERCEL") == "1"
-
-if not is_vercel:
-    try:
-        import pandas as pd
-        from sklearn.feature_extraction.text import TfidfVectorizer
-        from sklearn.metrics.pairwise import cosine_similarity
-    except ImportError:
-        pd = None
-        TfidfVectorizer = None
-        cosine_similarity = None
-else:
-    pd = None
-    TfidfVectorizer = None
-    cosine_similarity = None
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
 
@@ -61,8 +41,6 @@ fallback_responses = [
 # ---------- Load structured dataset (optional) ----------
 
 def load_data():
-    if pd is None:
-        return None
     try:
         df = pd.read_csv("project/cleaned_dream_interpretations.csv")
         if "Word" not in df.columns or "Interpretation" not in df.columns:
@@ -73,7 +51,7 @@ def load_data():
         return pd.DataFrame(columns=["Word", "Interpretation"])
 
 dreams_df = load_data()
-if dreams_df is not None and not dreams_df.empty and TfidfVectorizer is not None:
+if not dreams_df.empty:
     vectorizer = TfidfVectorizer()
     tfidf_matrix = vectorizer.fit_transform(dreams_df["Word"].astype(str))
 else:
@@ -85,7 +63,7 @@ else:
 @lru_cache(maxsize=512)
 def find_best_match_simple(text: str):
     """Find best match from the dataset using TF-IDF similarity (if available)."""
-    if vectorizer is None or tfidf_matrix is None or dreams_df is None or dreams_df.empty:
+    if vectorizer is None or tfidf_matrix is None or dreams_df.empty:
         return None
     user_vector = vectorizer.transform([text])
     sims = cosine_similarity(user_vector, tfidf_matrix).flatten()
@@ -101,7 +79,7 @@ def find_best_match_simple(text: str):
 
 def search_database_context(dream_text: str) -> str:
     """Search the dream database for related symbols to provide context to Llama 3."""
-    if dreams_df is None or dreams_df.empty:
+    if dreams_df.empty:
         return ""
     dream_words = dream_text.lower().split()
     results = []
@@ -150,7 +128,7 @@ def annotate_ui():
 # Simple annotation storage (append CSV)
 import csv
 
-ANNOTATION_FILE = os.path.join(DATA_DIR, "annotations.csv")
+ANNOTATION_FILE = 'data/annotations.csv'
 
 @app.route('/annotations', methods=['POST'])
 def save_annotation():
@@ -160,12 +138,11 @@ def save_annotation():
     note = payload.get('note') or ''
     if not dream:
         return jsonify({'success': False, 'message': 'No dream provided'}), 400
-    try:
-        with open(ANNOTATION_FILE, 'a', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow([datetime.utcnow().isoformat(), dream, '|'.join(labels), note])
-    except Exception as e:
-        print(f"Annotation save failed: {e}")
+    # ensure folder
+    os.makedirs(os.path.dirname(ANNOTATION_FILE), exist_ok=True)
+    with open(ANNOTATION_FILE, 'a', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow([datetime.utcnow().isoformat(), dream, '|'.join(labels), note])
     return jsonify({'success': True})
 
 @app.route('/annotations/recent')
@@ -204,38 +181,22 @@ def interpret():
         interpretation_text = structured['interpretation']
         meta = {"method": "dataset", "score": structured['score']}
     else:
+        # 2) Call Ollama Llama 3 for AI interpretation
         db_context = search_database_context(dream)
-        
-        # 2a) Call Gemini API if Key is present
-        if os.environ.get("GEMINI_API_KEY"):
-            gemini_result = gemini_interpret(dream, db_context=db_context)
-            if gemini_result["success"]:
-                interpretation_text = gemini_result["interpretation"]
-                meta = {"method": "gemini", "model": gemini_result["model"]}
-            else:
-                log_model(f"Gemini failed: {gemini_result['error']}")
-                interpretation_text = synthesize_fallback(dream)
-                meta = {
-                    "method": "fallback",
-                    "gemini_error": gemini_result["error"],
-                    "note": "Gemini API failed to generate a response."
-                }
+        ollama_result = ollama_interpret(dream, db_context=db_context)
+
+        if ollama_result["success"]:
+            interpretation_text = ollama_result["interpretation"]
+            meta = {"method": "llama3", "model": ollama_result["model"]}
         else:
-            # 2b) Call Ollama Llama 3 for local AI interpretation
-            ollama_result = ollama_interpret(dream, db_context=db_context)
-    
-            if ollama_result["success"]:
-                interpretation_text = ollama_result["interpretation"]
-                meta = {"method": "llama3", "model": ollama_result["model"]}
-            else:
-                # 3) Fallback if Ollama is unavailable
-                log_model(f"Ollama failed: {ollama_result['error']}")
-                interpretation_text = synthesize_fallback(dream)
-                meta = {
-                    "method": "fallback",
-                    "ollama_error": ollama_result["error"],
-                    "note": "Ollama is not available. Please ensure Ollama is running with Llama 3."
-                }
+            # 3) Fallback if Ollama is unavailable
+            log_model(f"Ollama failed: {ollama_result['error']}")
+            interpretation_text = synthesize_fallback(dream)
+            meta = {
+                "method": "fallback",
+                "ollama_error": ollama_result["error"],
+                "note": "Ollama is not available. Please ensure Ollama is running with Llama 3."
+            }
 
     # mark whether the client forced model usage
     meta['forced'] = force_model
@@ -250,8 +211,8 @@ def interpret():
     # Store to history (sqlite) for user reference
     try:
         import sqlite3
-        db_path = os.path.join(DATA_DIR, 'history.db')
-        conn = sqlite3.connect(db_path)
+        os.makedirs('data', exist_ok=True)
+        conn = sqlite3.connect('data/history.db')
         cur = conn.cursor()
         cur.execute('''CREATE TABLE IF NOT EXISTS history (ts TEXT, dream TEXT, response TEXT)''')
         cur.execute('INSERT INTO history (ts,dream,response) VALUES (?,?,?)', (datetime.utcnow().isoformat(), dream, interpretation_text))
@@ -267,8 +228,7 @@ def history_recent():
     items = []
     try:
         import sqlite3
-        db_path = os.path.join(DATA_DIR, 'history.db')
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect('data/history.db')
         cur = conn.cursor()
         cur.execute('SELECT ts,dream,response FROM history ORDER BY rowid DESC LIMIT 25')
         rows = cur.fetchall()
@@ -331,9 +291,9 @@ def contact_submit():
     message = (payload.get('message') or '').strip()
     if not message:
         return jsonify({'success': False, 'message': 'No message provided'}), 400
-    contact_file = os.path.join(DATA_DIR, 'contacts.csv')
+    os.makedirs('data', exist_ok=True)
     try:
-        with open(contact_file, 'a', newline='', encoding='utf-8') as f:
+        with open('data/contacts.csv', 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow([datetime.utcnow().isoformat(), name, email, message])
     except Exception as e:
