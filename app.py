@@ -10,7 +10,7 @@ from datetime import datetime
 from ollama_client import interpret_dream as ollama_interpret, check_ollama_health
 
 # Runtime configuration
-LOG_DIR = "logs"
+LOG_DIR = "/tmp/logs" if os.environ.get("VERCEL") else "logs"
 os.makedirs(LOG_DIR, exist_ok=True)
 
 
@@ -128,7 +128,7 @@ def annotate_ui():
 # Simple annotation storage (append CSV)
 import csv
 
-ANNOTATION_FILE = 'data/annotations.csv'
+ANNOTATION_FILE = '/tmp/annotations.csv' if os.environ.get("VERCEL") else 'data/annotations.csv'
 
 @app.route('/annotations', methods=['POST'])
 def save_annotation():
@@ -211,8 +211,10 @@ def interpret():
     # Store to history (sqlite) for user reference
     try:
         import sqlite3
-        os.makedirs('data', exist_ok=True)
-        conn = sqlite3.connect('data/history.db')
+        db_dir = '/tmp/data' if os.environ.get("VERCEL") else 'data'
+        db_path = f'{db_dir}/history.db'
+        os.makedirs(db_dir, exist_ok=True)
+        conn = sqlite3.connect(db_path)
         cur = conn.cursor()
         cur.execute('''CREATE TABLE IF NOT EXISTS history (ts TEXT, dream TEXT, response TEXT)''')
         cur.execute('INSERT INTO history (ts,dream,response) VALUES (?,?,?)', (datetime.utcnow().isoformat(), dream, interpretation_text))
@@ -228,7 +230,9 @@ def history_recent():
     items = []
     try:
         import sqlite3
-        conn = sqlite3.connect('data/history.db')
+        db_dir = '/tmp/data' if os.environ.get("VERCEL") else 'data'
+        db_path = f'{db_dir}/history.db'
+        conn = sqlite3.connect(db_path)
         cur = conn.cursor()
         cur.execute('SELECT ts,dream,response FROM history ORDER BY rowid DESC LIMIT 25')
         rows = cur.fetchall()
@@ -291,9 +295,11 @@ def contact_submit():
     message = (payload.get('message') or '').strip()
     if not message:
         return jsonify({'success': False, 'message': 'No message provided'}), 400
-    os.makedirs('data', exist_ok=True)
+    data_dir = '/tmp/data' if os.environ.get("VERCEL") else 'data'
+    contact_file = f'{data_dir}/contacts.csv'
+    os.makedirs(data_dir, exist_ok=True)
     try:
-        with open('data/contacts.csv', 'a', newline='', encoding='utf-8') as f:
+        with open(contact_file, 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow([datetime.utcnow().isoformat(), name, email, message])
     except Exception as e:
