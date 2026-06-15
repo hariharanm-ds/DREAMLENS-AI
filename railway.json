@@ -3,6 +3,6 @@
     "builder": "nixpacks"
   },
   "deploy": {
-    "startCommand": "python app_llm.py"
+    "startCommand": "python app.py"
   }
 }

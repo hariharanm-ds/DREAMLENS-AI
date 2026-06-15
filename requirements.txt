@@ -2,10 +2,9 @@ Flask==3.1.2
 requests==2.31.0
 # Werkzeug pin removed to avoid conflicts with Flask
 gunicorn==21.2.0
-# ML & NLP
-transformers>=4.35.0
-torch>=2.2.0
+# Dataset matching (lightweight, no torch needed)
 scikit-learn>=1.2.0
 pandas>=2.0.0
 nltk>=3.8.1
-sentencepiece>=0.1.99
+# Note: Ollama runs as a separate local process — no Python ML libs required
+# Install Ollama from https://ollama.ai and run: ollama pull llama3
