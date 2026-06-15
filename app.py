@@ -10,9 +10,17 @@ from ollama_client import interpret_dream as ollama_interpret, check_ollama_heal
 from gemini_client import interpret_dream as gemini_interpret
 
 # Runtime configuration
-LOG_DIR = "/tmp/logs" if os.environ.get("VERCEL") else "logs"
-os.makedirs(LOG_DIR, exist_ok=True)
+def get_writable_dir(base_dir):
+    try:
+        os.makedirs(base_dir, exist_ok=True)
+        return base_dir
+    except OSError:
+        tmp_dir = f"/tmp/{base_dir}"
+        os.makedirs(tmp_dir, exist_ok=True)
+        return tmp_dir
 
+LOG_DIR = get_writable_dir("logs")
+DATA_DIR = get_writable_dir("data")
 
 def log_model(msg: str):
     ts = datetime.utcnow().isoformat()
@@ -20,7 +28,6 @@ def log_model(msg: str):
         with open(os.path.join(LOG_DIR, "model.log"), "a", encoding="utf-8") as f:
             f.write(f"{ts} {msg}\n")
     except Exception:
-        # best-effort logging, don't crash the app
         print(f"LOG FAIL: {msg}")
 
 # NLP libraries for dataset matching (lightweight, no torch needed)
@@ -143,7 +150,7 @@ def annotate_ui():
 # Simple annotation storage (append CSV)
 import csv
 
-ANNOTATION_FILE = '/tmp/annotations.csv' if os.environ.get("VERCEL") else 'data/annotations.csv'
+ANNOTATION_FILE = os.path.join(DATA_DIR, "annotations.csv")
 
 @app.route('/annotations', methods=['POST'])
 def save_annotation():
@@ -153,11 +160,12 @@ def save_annotation():
     note = payload.get('note') or ''
     if not dream:
         return jsonify({'success': False, 'message': 'No dream provided'}), 400
-    # ensure folder
-    os.makedirs(os.path.dirname(ANNOTATION_FILE), exist_ok=True)
-    with open(ANNOTATION_FILE, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow([datetime.utcnow().isoformat(), dream, '|'.join(labels), note])
+    try:
+        with open(ANNOTATION_FILE, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow([datetime.utcnow().isoformat(), dream, '|'.join(labels), note])
+    except Exception as e:
+        print(f"Annotation save failed: {e}")
     return jsonify({'success': True})
 
 @app.route('/annotations/recent')
@@ -242,9 +250,7 @@ def interpret():
     # Store to history (sqlite) for user reference
     try:
         import sqlite3
-        db_dir = '/tmp/data' if os.environ.get("VERCEL") else 'data'
-        db_path = f'{db_dir}/history.db'
-        os.makedirs(db_dir, exist_ok=True)
+        db_path = os.path.join(DATA_DIR, 'history.db')
         conn = sqlite3.connect(db_path)
         cur = conn.cursor()
         cur.execute('''CREATE TABLE IF NOT EXISTS history (ts TEXT, dream TEXT, response TEXT)''')
@@ -261,8 +267,7 @@ def history_recent():
     items = []
     try:
         import sqlite3
-        db_dir = '/tmp/data' if os.environ.get("VERCEL") else 'data'
-        db_path = f'{db_dir}/history.db'
+        db_path = os.path.join(DATA_DIR, 'history.db')
         conn = sqlite3.connect(db_path)
         cur = conn.cursor()
         cur.execute('SELECT ts,dream,response FROM history ORDER BY rowid DESC LIMIT 25')
@@ -326,9 +331,7 @@ def contact_submit():
     message = (payload.get('message') or '').strip()
     if not message:
         return jsonify({'success': False, 'message': 'No message provided'}), 400
-    data_dir = '/tmp/data' if os.environ.get("VERCEL") else 'data'
-    contact_file = f'{data_dir}/contacts.csv'
-    os.makedirs(data_dir, exist_ok=True)
+    contact_file = os.path.join(DATA_DIR, 'contacts.csv')
     try:
         with open(contact_file, 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
