@@ -7,4 +7,6 @@ scikit-learn>=1.2.0
 pandas>=2.0.0
 nltk>=3.8.1
 # Note: Ollama runs as a separate local process — no Python ML libs required
-# Install Ollama from https://ollama.ai and run: ollama pull llama3
+# for inference unless using the HuggingFace fallback route.
+sentencepiece>=0.1.99
+typing_extensions

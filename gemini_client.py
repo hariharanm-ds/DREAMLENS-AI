@@ -5,8 +5,7 @@ Provides cloud-based LLM dream interpretation via the Gemini API.
 
 import os
 from datetime import datetime
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 
 LOG_DIR = "/tmp/logs" if os.environ.get("VERCEL") else "logs"
 
@@ -66,7 +65,7 @@ def interpret_dream(dream_text: str, db_context: str = "") -> dict:
         return {"success": False, "interpretation": "", "model": "gemini", "error": "GEMINI_API_KEY not found"}
 
     try:
-        client = genai.Client(api_key=api_key)
+        genai.configure(api_key=api_key)
         
         user_prompt = f'Dream: "{dream_text}"'
         if db_context:
@@ -75,14 +74,17 @@ def interpret_dream(dream_text: str, db_context: str = "") -> dict:
 
         _log(f"Sending dream to Gemini: {dream_text[:80]}...")
 
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=user_prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=DREAM_SYSTEM_PROMPT,
+        model = genai.GenerativeModel(
+            'gemini-2.5-flash',
+            system_instruction=DREAM_SYSTEM_PROMPT
+        )
+        
+        response = model.generate_content(
+            user_prompt,
+            generation_config=genai.types.GenerationConfig(
                 temperature=0.7,
                 top_p=0.9,
-            ),
+            )
         )
 
         interpretation = response.text.strip()
