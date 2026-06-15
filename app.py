@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify
-import pandas as pd
 import os
 import random
 from functools import lru_cache
@@ -25,8 +24,21 @@ def log_model(msg: str):
         print(f"LOG FAIL: {msg}")
 
 # NLP libraries for dataset matching (lightweight, no torch needed)
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+is_vercel = os.environ.get("VERCEL") == "1"
+
+if not is_vercel:
+    try:
+        import pandas as pd
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
+    except ImportError:
+        pd = None
+        TfidfVectorizer = None
+        cosine_similarity = None
+else:
+    pd = None
+    TfidfVectorizer = None
+    cosine_similarity = None
 
 app = Flask(__name__)
 
@@ -42,6 +54,8 @@ fallback_responses = [
 # ---------- Load structured dataset (optional) ----------
 
 def load_data():
+    if pd is None:
+        return None
     try:
         df = pd.read_csv("project/cleaned_dream_interpretations.csv")
         if "Word" not in df.columns or "Interpretation" not in df.columns:
@@ -52,7 +66,7 @@ def load_data():
         return pd.DataFrame(columns=["Word", "Interpretation"])
 
 dreams_df = load_data()
-if not dreams_df.empty:
+if dreams_df is not None and not dreams_df.empty and TfidfVectorizer is not None:
     vectorizer = TfidfVectorizer()
     tfidf_matrix = vectorizer.fit_transform(dreams_df["Word"].astype(str))
 else:
@@ -64,7 +78,7 @@ else:
 @lru_cache(maxsize=512)
 def find_best_match_simple(text: str):
     """Find best match from the dataset using TF-IDF similarity (if available)."""
-    if vectorizer is None or tfidf_matrix is None or dreams_df.empty:
+    if vectorizer is None or tfidf_matrix is None or dreams_df is None or dreams_df.empty:
         return None
     user_vector = vectorizer.transform([text])
     sims = cosine_similarity(user_vector, tfidf_matrix).flatten()
@@ -80,7 +94,7 @@ def find_best_match_simple(text: str):
 
 def search_database_context(dream_text: str) -> str:
     """Search the dream database for related symbols to provide context to Llama 3."""
-    if dreams_df.empty:
+    if dreams_df is None or dreams_df.empty:
         return ""
     dream_words = dream_text.lower().split()
     results = []
