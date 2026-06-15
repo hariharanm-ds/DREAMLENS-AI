@@ -4,6 +4,9 @@
   "builds": [
     { "src": "app.py", "use": "@vercel/python" }
   ],
+  "routes": [
+    { "src": "/(.*)", "dest": "app.py" }
+  ],
   "env": {
     "PIP_NO_CACHE_DIR": "1",
     "PIP_NO_DEPS": "1",
