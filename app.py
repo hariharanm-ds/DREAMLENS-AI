@@ -8,6 +8,7 @@ from datetime import datetime
 
 # Ollama Llama 3 integration
 from ollama_client import interpret_dream as ollama_interpret, check_ollama_health
+from gemini_client import interpret_dream as gemini_interpret
 
 # Runtime configuration
 LOG_DIR = "/tmp/logs" if os.environ.get("VERCEL") else "logs"
@@ -181,22 +182,38 @@ def interpret():
         interpretation_text = structured['interpretation']
         meta = {"method": "dataset", "score": structured['score']}
     else:
-        # 2) Call Ollama Llama 3 for AI interpretation
         db_context = search_database_context(dream)
-        ollama_result = ollama_interpret(dream, db_context=db_context)
-
-        if ollama_result["success"]:
-            interpretation_text = ollama_result["interpretation"]
-            meta = {"method": "llama3", "model": ollama_result["model"]}
+        
+        # 2a) Call Gemini API if Key is present
+        if os.environ.get("GEMINI_API_KEY"):
+            gemini_result = gemini_interpret(dream, db_context=db_context)
+            if gemini_result["success"]:
+                interpretation_text = gemini_result["interpretation"]
+                meta = {"method": "gemini", "model": gemini_result["model"]}
+            else:
+                log_model(f"Gemini failed: {gemini_result['error']}")
+                interpretation_text = synthesize_fallback(dream)
+                meta = {
+                    "method": "fallback",
+                    "gemini_error": gemini_result["error"],
+                    "note": "Gemini API failed to generate a response."
+                }
         else:
-            # 3) Fallback if Ollama is unavailable
-            log_model(f"Ollama failed: {ollama_result['error']}")
-            interpretation_text = synthesize_fallback(dream)
-            meta = {
-                "method": "fallback",
-                "ollama_error": ollama_result["error"],
-                "note": "Ollama is not available. Please ensure Ollama is running with Llama 3."
-            }
+            # 2b) Call Ollama Llama 3 for local AI interpretation
+            ollama_result = ollama_interpret(dream, db_context=db_context)
+    
+            if ollama_result["success"]:
+                interpretation_text = ollama_result["interpretation"]
+                meta = {"method": "llama3", "model": ollama_result["model"]}
+            else:
+                # 3) Fallback if Ollama is unavailable
+                log_model(f"Ollama failed: {ollama_result['error']}")
+                interpretation_text = synthesize_fallback(dream)
+                meta = {
+                    "method": "fallback",
+                    "ollama_error": ollama_result["error"],
+                    "note": "Ollama is not available. Please ensure Ollama is running with Llama 3."
+                }
 
     # mark whether the client forced model usage
     meta['forced'] = force_model
