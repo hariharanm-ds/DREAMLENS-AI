@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin — DREAMLENS AI</title>
+  <title>Admin - DREAMLENS AI</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2" />
   <style>
     main{padding:120px 20px 40px;max-width:1000px;margin:0 auto;color:#d0e8ff}
@@ -33,61 +33,61 @@
     <h1>Admin Dashboard</h1>
 
     <div class="card">
-      <h3>🦙 Ollama / Llama 3 Status</h3>
+      <h3>Groq Status</h3>
       <div style="margin:12px 0">
         <span>Connection: </span>
-        {% if ollama.connected %}
-          <span class="status-badge status-connected">✅ Connected</span>
+        {% if groq.connected %}
+          <span class="status-badge status-connected">Connected</span>
         {% else %}
-          <span class="status-badge status-disconnected">❌ Disconnected</span>
+          <span class="status-badge status-disconnected">Disconnected</span>
         {% endif %}
       </div>
 
-      {% if ollama.connected %}
+      {% if groq.connected %}
         <div style="margin:8px 0">
-          <span>Active Model: </span><span class="model-tag">{{ ollama.active_model }}</span>
-          {% if ollama.llama3_available %}
-            <span style="color:#66bb6a;margin-left:8px">✅ Ready</span>
+          <span>Active Model: </span><span class="model-tag">{{ groq.active_model }}</span>
+          {% if groq.model_available %}
+            <span style="color:#66bb6a;margin-left:8px">Ready</span>
           {% else %}
-            <span style="color:#ffc107;margin-left:8px">⚠️ Not found — run <code>ollama pull llama3</code></span>
+            <span style="color:#ffc107;margin-left:8px">{{ groq.error }}</span>
           {% endif %}
         </div>
         <div style="margin:8px 0">
           <span>Available Models: </span>
-          {% for m in ollama.models %}
+          {% for m in groq.models %}
             <span class="model-tag">{{ m }}</span>
           {% endfor %}
-          {% if not ollama.models %}
-            <span style="color:#b5a3ff">No models downloaded yet</span>
+          {% if not groq.models %}
+            <span style="color:#b5a3ff">Model list unavailable</span>
           {% endif %}
         </div>
       {% else %}
         <div style="margin:8px 0;color:#ff6b6b">
-          {{ ollama.error }}
+          {{ groq.error }}
         </div>
         <div style="margin:8px 0;color:#b5a3ff">
           <strong>To fix:</strong>
           <ol style="margin-top:6px;padding-left:20px">
-            <li>Install Ollama from <a href="https://ollama.ai" style="color:#64c8ff">ollama.ai</a></li>
-            <li>Start Ollama: <code>ollama serve</code></li>
-            <li>Pull Llama 3: <code>ollama pull llama3</code></li>
+            <li>Set <code>GROQ_API_KEY</code> in your environment.</li>
+            <li>Optional: set <code>GROQ_MODEL</code> to choose a model.</li>
+            <li>Restart the web service after changing environment variables.</li>
           </ol>
         </div>
       {% endif %}
 
       <div style="margin-top:12px">
-        <button id="checkOllama" class="btn btn-primary">Check Ollama Status</button>
-        <span id="ollamaStatus" style="color:#b5a3ff;margin-left:8px"></span>
+        <button id="checkGroq" class="btn btn-primary">Check Groq Status</button>
+        <span id="groqStatus" style="color:#b5a3ff;margin-left:8px"></span>
       </div>
     </div>
 
     <div class="card">
-      <h3>📊 Quick Diagnostics</h3>
-      <p><a href="/_model_status">View Ollama JSON status</a> • <a href="/_env_check">Environment check</a> • <a href="/_health">Health check</a></p>
+      <h3>Quick Diagnostics</h3>
+      <p><a href="/_model_status">View Groq JSON status</a> • <a href="/_env_check">Environment check</a> • <a href="/_health">Health check</a></p>
     </div>
 
     <div class="card">
-      <h3>📋 Recent Model Logs</h3>
+      <h3>Recent Model Logs</h3>
       <pre style="white-space:pre-wrap;color:#b5a3ff;max-height:400px;overflow-y:auto">{% for l in logs %}{{ l }}
 {% endfor %}</pre>
     </div>
@@ -103,8 +103,8 @@
   </main>
 
 <script>
-  document.getElementById('checkOllama').addEventListener('click', async () => {
-    const statusEl = document.getElementById('ollamaStatus');
+  document.getElementById('checkGroq').addEventListener('click', async () => {
+    const statusEl = document.getElementById('groqStatus');
     statusEl.textContent = 'Checking...';
     try {
       const r = await fetch('/admin/reload_models', {method:'POST', headers:{'Content-Type':'application/json'}});
@@ -112,12 +112,12 @@
       if (data.success && data.status) {
         const s = data.status;
         if (s.connected) {
-          statusEl.innerHTML = '✅ Connected — Models: ' + (s.models || []).join(', ');
-          if (!s.llama3_available) {
-            statusEl.innerHTML += ' <span style="color:#ffc107">⚠️ llama3 not found, run: ollama pull llama3</span>';
+          statusEl.innerHTML = 'Connected - Active model: ' + (s.active_model || 'unknown');
+          if (!s.model_available) {
+            statusEl.innerHTML += ' <span style="color:#ffc107">' + (s.error || 'Configured model was not found') + '</span>';
           }
         } else {
-          statusEl.innerHTML = '❌ Disconnected — ' + (s.error || 'Unknown error');
+          statusEl.innerHTML = 'Disconnected - ' + (s.error || 'Unknown error');
         }
       } else {
         statusEl.textContent = 'Check failed';

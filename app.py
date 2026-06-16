@@ -4,14 +4,30 @@ import os
 import random
 from functools import lru_cache
 import sys
+import tempfile
 from datetime import datetime
 
-# Ollama Llama 3 integration
-from ollama_client import interpret_dream as ollama_interpret, check_ollama_health
+# Groq Llama integration
+from groq_client import interpret_dream as groq_interpret, check_groq_health
 
 # Runtime configuration
-LOG_DIR = "logs"
-os.makedirs(LOG_DIR, exist_ok=True)
+IS_VERCEL = bool(os.environ.get("VERCEL"))
+TMP_DIR = tempfile.gettempdir()
+LOG_DIR = os.environ.get("LOG_DIR", os.path.join(TMP_DIR, "dreamlens-logs") if IS_VERCEL else "logs")
+DATA_DIR = os.environ.get("DATA_DIR", os.path.join(TMP_DIR, "dreamlens-data") if IS_VERCEL else "data")
+
+
+def ensure_dir(path: str):
+    try:
+        os.makedirs(path, exist_ok=True)
+    except Exception:
+        # Vercel's project filesystem can be read-only. Route handlers still use
+        # best-effort logging/storage and should not fail app import.
+        pass
+
+
+ensure_dir(LOG_DIR)
+ensure_dir(DATA_DIR)
 
 
 def log_model(msg: str):
@@ -29,7 +45,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
 
-# ---------- Fallback responses (used when Ollama is unavailable) ----------
+# ---------- Fallback responses (used when Groq is unavailable) ----------
 fallback_responses = [
     "Dreams about {topic} can reflect a desire for transformation or escape from daily stress. It might be your mind signaling the need for change.",
     "When you dream of {topic}, it often symbolizes emotional shifts or inner awakening. Consider what's been changing in your life recently.",
@@ -78,7 +94,7 @@ def find_best_match_simple(text: str):
 
 
 def search_database_context(dream_text: str) -> str:
-    """Search the dream database for related symbols to provide context to Llama 3."""
+    """Search the dream database for related symbols to provide context to the model."""
     if dreams_df.empty:
         return ""
     dream_words = dream_text.lower().split()
@@ -102,7 +118,7 @@ def search_database_context(dream_text: str) -> str:
 
 
 def synthesize_fallback(dream: str) -> str:
-    """Produce a friendly template fallback when Ollama is unavailable."""
+    """Produce a friendly template fallback when Groq is unavailable."""
     # Extract a simple topic from the dream
     words = [w for w in dream.split() if len(w) > 3]
     topic = ", ".join(words[:3]) if words else "your dream"
@@ -128,7 +144,7 @@ def annotate_ui():
 # Simple annotation storage (append CSV)
 import csv
 
-ANNOTATION_FILE = 'data/annotations.csv'
+ANNOTATION_FILE = os.path.join(DATA_DIR, 'annotations.csv')
 
 @app.route('/annotations', methods=['POST'])
 def save_annotation():
@@ -139,7 +155,7 @@ def save_annotation():
     if not dream:
         return jsonify({'success': False, 'message': 'No dream provided'}), 400
     # ensure folder
-    os.makedirs(os.path.dirname(ANNOTATION_FILE), exist_ok=True)
+    ensure_dir(os.path.dirname(ANNOTATION_FILE))
     with open(ANNOTATION_FILE, 'a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow([datetime.utcnow().isoformat(), dream, '|'.join(labels), note])
@@ -181,21 +197,21 @@ def interpret():
         interpretation_text = structured['interpretation']
         meta = {"method": "dataset", "score": structured['score']}
     else:
-        # 2) Call Ollama Llama 3 for AI interpretation
+        # 2) Call Groq for AI interpretation
         db_context = search_database_context(dream)
-        ollama_result = ollama_interpret(dream, db_context=db_context)
+        groq_result = groq_interpret(dream, db_context=db_context)
 
-        if ollama_result["success"]:
-            interpretation_text = ollama_result["interpretation"]
-            meta = {"method": "llama3", "model": ollama_result["model"]}
+        if groq_result["success"]:
+            interpretation_text = groq_result["interpretation"]
+            meta = {"method": "groq", "model": groq_result["model"]}
         else:
-            # 3) Fallback if Ollama is unavailable
-            log_model(f"Ollama failed: {ollama_result['error']}")
+            # 3) Fallback if Groq is unavailable
+            log_model(f"Groq failed: {groq_result['error']}")
             interpretation_text = synthesize_fallback(dream)
             meta = {
                 "method": "fallback",
-                "ollama_error": ollama_result["error"],
-                "note": "Ollama is not available. Please ensure Ollama is running with Llama 3."
+                "groq_error": groq_result["error"],
+                "note": "Groq is not available. Please ensure GROQ_API_KEY is configured."
             }
 
     # mark whether the client forced model usage
@@ -211,8 +227,8 @@ def interpret():
     # Store to history (sqlite) for user reference
     try:
         import sqlite3
-        os.makedirs('data', exist_ok=True)
-        conn = sqlite3.connect('data/history.db')
+        ensure_dir(DATA_DIR)
+        conn = sqlite3.connect(os.path.join(DATA_DIR, 'history.db'))
         cur = conn.cursor()
         cur.execute('''CREATE TABLE IF NOT EXISTS history (ts TEXT, dream TEXT, response TEXT)''')
         cur.execute('INSERT INTO history (ts,dream,response) VALUES (?,?,?)', (datetime.utcnow().isoformat(), dream, interpretation_text))
@@ -228,7 +244,7 @@ def history_recent():
     items = []
     try:
         import sqlite3
-        conn = sqlite3.connect('data/history.db')
+        conn = sqlite3.connect(os.path.join(DATA_DIR, 'history.db'))
         cur = conn.cursor()
         cur.execute('SELECT ts,dream,response FROM history ORDER BY rowid DESC LIMIT 25')
         rows = cur.fetchall()
@@ -256,7 +272,7 @@ def history_page():
 # --- Admin UI ---
 @app.route('/admin')
 def admin_page():
-    ollama_status = check_ollama_health()
+    groq_status = check_groq_health()
     # read last 200 lines of model.log for quick debugging
     log_lines = []
     try:
@@ -265,13 +281,13 @@ def admin_page():
             log_lines = lines[-200:]
     except Exception:
         log_lines = ['No logs yet.']
-    return render_template('admin.html', ollama=ollama_status, logs=log_lines)
+    return render_template('admin.html', groq=groq_status, logs=log_lines)
 
 @app.route('/admin/reload_models', methods=['POST'])
 def admin_reload_models():
-    """Check Ollama status and report."""
+    """Check Groq status and report."""
     try:
-        status = check_ollama_health()
+        status = check_groq_health()
         return jsonify({'success': True, 'status': status})
     except Exception as e:
         log_model(f"admin_reload_models error: {e}")
@@ -279,8 +295,8 @@ def admin_reload_models():
 
 @app.route('/admin/start_worker', methods=['POST'])
 def admin_start_worker():
-    """Ollama runs as an external process; this just checks its status."""
-    status = check_ollama_health()
+    """Groq is hosted externally; this checks API connectivity."""
+    status = check_groq_health()
     return jsonify({'success': True, 'status': status})
 
 @app.route('/contact/submit', methods=['POST'])
@@ -291,9 +307,9 @@ def contact_submit():
     message = (payload.get('message') or '').strip()
     if not message:
         return jsonify({'success': False, 'message': 'No message provided'}), 400
-    os.makedirs('data', exist_ok=True)
+    ensure_dir(DATA_DIR)
     try:
-        with open('data/contacts.csv', 'a', newline='', encoding='utf-8') as f:
+        with open(os.path.join(DATA_DIR, 'contacts.csv'), 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow([datetime.utcnow().isoformat(), name, email, message])
     except Exception as e:
@@ -303,16 +319,16 @@ def contact_submit():
 
 @app.route('/_health')
 def health_check():
-    ollama = check_ollama_health()
+    groq = check_groq_health()
     return jsonify({
         'status': 'ok',
-        'ollama': ollama
+        'groq': groq
     })
 
 @app.route('/_model_status')
 def model_status():
     try:
-        status = check_ollama_health()
+        status = check_groq_health()
         return jsonify(status)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -321,7 +337,7 @@ def model_status():
 def env_check():
     try:
         # Check for key runtime dependencies without crashing the app
-        modules = ['sklearn', 'pandas', 'requests']
+        modules = ['sklearn', 'pandas', 'groq']
         info = {}
         for m in modules:
             try:
@@ -331,7 +347,7 @@ def env_check():
             except Exception as e:
                 info[m] = {'installed': False, 'error': str(e)}
         info['python_version'] = sys.version
-        info['ollama'] = check_ollama_health()
+        info['groq'] = check_groq_health()
         return jsonify(info)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -342,21 +358,20 @@ if __name__ == "__main__":
 
     # Print startup info (ASCII-safe for Windows cp1252 consoles)
     print("=" * 60)
-    print("  DREAMLENS AI -- Powered by Ollama Llama 3")
+    print("  DREAMLENS AI -- Powered by Groq")
     print("=" * 60)
 
-    ollama = check_ollama_health()
-    if ollama["connected"]:
-        print(f"  [OK] Ollama connected at {os.environ.get('OLLAMA_BASE_URL', 'http://localhost:11434')}")
-        print(f"  [MODELS] Available: {', '.join(ollama['models']) or 'none'}")
-        if ollama["llama3_available"]:
-            print("  [READY] Llama 3 is ready!")
+    groq = check_groq_health()
+    if groq["connected"]:
+        print("  [OK] Groq API connected")
+        print(f"  [MODEL] Active: {groq['active_model']}")
+        if groq.get("model_available", True):
+            print("  [READY] Groq model is ready!")
         else:
-            print("  [WARN] Llama 3 not found. Run: ollama pull llama3")
+            print(f"  [WARN] {groq.get('error')}")
     else:
-        print(f"  [ERROR] Ollama is not running: {ollama['error']}")
-        print("  [TIP] Start Ollama with: ollama serve")
-        print("  [TIP] Then pull Llama 3: ollama pull llama3")
+        print(f"  [ERROR] Groq is unavailable: {groq['error']}")
+        print("  [TIP] Set GROQ_API_KEY in your environment")
 
     print(f"  [DATA] Dream database: {len(dreams_df)} entries loaded")
     print("=" * 60)

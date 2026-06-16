@@ -14,7 +14,7 @@ SYSTEM STATUS SUMMARY
 ✓ Configuration               All configs validated
 ✓ Routes                      19 routes registered
 ✓ Memory Optimization         PyTorch/Transformers removed
-✓ Fallback Systems            HuggingFace API enabled
+✓ Hosted AI                  Groq API enabled
 ✓ Integration Tests           15/15 PASSED
 
 PAGES VERIFIED
@@ -60,7 +60,7 @@ NEXT STEPS - DEPLOY NOW
 
 1. Push code to GitHub (main branch)
 2. Visit vercel.com → New Project → Import repo
-3. (Optional) Add HUGGINGFACE_API_TOKEN env var
+3. Add GROQ_API_KEY env var
 4. Click Deploy
 5. Access: https://your-project.vercel.app
 

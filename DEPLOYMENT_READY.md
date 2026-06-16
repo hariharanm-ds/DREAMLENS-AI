@@ -10,7 +10,7 @@
 
 The DREAMLENS AI application has been fully verified and optimized for production deployment. All pages are correctly connected, all endpoints are functional, and the system has been optimized to resolve the previous out-of-memory errors on Vercel.
 
-**Key Achievement:** Reduced memory footprint by removing heavy PyTorch/Transformers dependencies and implementing HuggingFace Inference API fallback.
+**Key Achievement:** Reduced memory footprint by removing heavy PyTorch/Transformers dependencies and using Groq hosted inference.
 
 ---
 
@@ -96,7 +96,7 @@ All 11 API endpoints functional:
 
 ### 3. Fallback Systems ✅
 ```
-✓ HuggingFace Inference API fallback enabled
+✓ Groq hosted inference enabled
 ✓ Template-based fallback responses implemented
 ✓ Error handling for all critical paths
 ✓ Graceful degradation when models unavailable
@@ -196,10 +196,10 @@ Solution: Lightweight deps + HF API fallback
    - Import the GitHub repository
    - Vercel automatically detects vercel.json
 
-3. **Configure Environment (Optional)**
+3. **Configure Environment**
    - Settings → Environment Variables
-   - Add: `HUGGINGFACE_API_TOKEN` (for better accuracy)
-   - Leave blank to use free tier
+   - Add: `GROQ_API_KEY`
+   - Optional: add `GROQ_MODEL`
 
 4. **Deploy**
    - Click "Deploy"
@@ -212,8 +212,8 @@ Solution: Lightweight deps + HF API fallback
    - railway.app → New Project
    - Deploy from GitHub
 
-2. **Set Variables (Optional)**
-   - Environment → Add HUGGINGFACE_API_TOKEN
+2. **Set Variables**
+   - Environment → Add GROQ_API_KEY
    - PORT auto-detected
 
 3. **Deploy**
@@ -313,9 +313,9 @@ After deployment, verify these endpoints work:
 ### If Dream Interpretation Returns Error
 
 **Issue:** Model error in API response
-**Solution:** Set HUGGINGFACE_API_TOKEN
+**Solution:** Set GROQ_API_KEY
 - Go to vercel.com settings
-- Add HUGGINGFACE_API_TOKEN environment variable
+- Add GROQ_API_KEY environment variable
 - Redeploy
 
 ### Check Model Status

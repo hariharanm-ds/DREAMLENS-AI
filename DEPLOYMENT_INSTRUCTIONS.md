@@ -1,29 +1,51 @@
 # Deployment to Vercel
 
-This repository includes a Vercel serverless handler at `api/interpret.py` and a workflow to deploy on pushes to `main`.
+DreamLens AI is configured for Vercel with `app.py` as the Python entrypoint and Groq as the hosted interpretation provider.
 
-Follow these steps to deploy the app to Vercel:
+## Required Vercel Environment Variables
 
-1. Create a Vercel account (https://vercel.com/) and import this GitHub repository (use the "Import Project" UI).
-2. Add environment variables to your Vercel Project Settings:
-   - `HUGGINGFACE_API_TOKEN` — (your Hugging Face API token) — required for full inference with HF models. If omitted, the API falls back to a simple heuristic.
+Set these in Vercel Project Settings -> Environment Variables:
 
-> Note: If your Vercel build previously failed with a dependency resolution error mentioning `Werkzeug`, it was due to a pinned, incompatible `Werkzeug==3.0.1` in a duplicate `requirements.txt`. This has been removed. The repository now uses a single, consolidated `requirements.txt` without a `Werkzeug` pin.
+```txt
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=llama-3.3-70b-versatile
+```
 
-3. In Vercel, create a Deploy Token:
-   - Go to Account Settings → Tokens → Create Token. Copy the token.
-4. In **this GitHub repository**, add the token as a GitHub secret:
-   - `VERCEL_TOKEN` → the token copied from step 3
-   - (Optional) `HUGGINGFACE_API_TOKEN` → you can also add the HF token as a GitHub secret if you want it available in Actions, but it's preferable to set it in Vercel environment variables for runtime usage.
-5. Push to `main` (or open a PR that merges to `main`) — the workflow `.github/workflows/deploy-vercel.yml` will deploy automatically when `VERCEL_TOKEN` is present.
+`GROQ_MODEL` is optional. If omitted, the app uses `llama-3.3-70b-versatile`.
 
-Notes & troubleshooting:
-- The `api/interpret.py` uses `HUGGINGFACE_API_TOKEN` at runtime to call HF Inference API. If not set, it returns a fallback response.
-- Large model usage can be slow or costly. Use the HF token only if you intend to use HF hosted inference. For local testing, consider using the lazy-loaded local models in `DREAMLENS AI/app.py`.
-- If you prefer manual deploys or need to link to a specific Vercel Project, run the `vercel` CLI locally and follow the interactive linking steps (`vercel` then choose link options).
+## Deploy
 
-If you want, I can also:
-- Add a GitHub Action step that posts the deployment URL back to the PR or issue ✅
-- Add a health check step that pings the deployed `/` after the deploy and fails the job if unreachable ⚠️
+1. Import this repository in Vercel.
+2. Add `GROQ_API_KEY` and optionally `GROQ_MODEL`.
+3. Deploy.
 
-Tell me which of those you'd like next.
+Vercel uses:
+
+- `vercel.json` for routing and build settings.
+- `vercel_requirements.txt` for production dependencies.
+- `app.py` for the Flask app.
+- `groq_client.py` for Groq API calls.
+
+## Verify
+
+After deployment, check:
+
+```txt
+https://your-project.vercel.app/_health
+https://your-project.vercel.app/_model_status
+https://your-project.vercel.app/_env_check
+```
+
+Then test the main endpoint:
+
+```bash
+curl -X POST https://your-project.vercel.app/interpret \
+  -H "Content-Type: application/json" \
+  -d "{\"dream\":\"I was flying over a city and felt free\",\"force_model\":true}"
+```
+
+The response metadata should include:
+
+```json
+{"method": "groq"}
+```

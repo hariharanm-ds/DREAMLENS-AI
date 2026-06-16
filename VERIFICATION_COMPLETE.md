@@ -55,7 +55,7 @@ All systems have been verified and tested. The application is fully functional w
 ✅ Custom build command in vercel.json  
 ✅ Lightweight vercel_requirements.txt (7 packages)  
 ✅ Environment variables for optimization  
-✅ HuggingFace Inference API fallback enabled  
+✅ Groq hosted inference enabled  
 
 ### Result
 **Before:** 8GB+ memory usage (Build Failed ❌)  
@@ -102,13 +102,13 @@ All pages have proper navigation:
 2. Go to vercel.com
 3. Click "New Project"
 4. Import this GitHub repository
-5. (Optional) Add HUGGINGFACE_API_TOKEN env var
+5. Add GROQ_API_KEY env var
 6. Click Deploy
 
 ### For Railway
 1. Go to railway.app
 2. New Project → Deploy from GitHub
-3. (Optional) Add HUGGINGFACE_API_TOKEN
+3. Add GROQ_API_KEY
 4. Deploy
 
 ### Verification
@@ -198,7 +198,7 @@ curl https://your-domain.vercel.app/_env_check
 → Clear cache (Ctrl+Shift+Delete) and reload
 
 ### If API Returns Error
-→ Add HUGGINGFACE_API_TOKEN environment variable
+→ Add GROQ_API_KEY environment variable
 
 ### Check Logs
 → Visit `/admin` page to see model logs
