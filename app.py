@@ -9,6 +9,7 @@ from datetime import datetime
 
 # Groq Llama integration
 from groq_client import interpret_dream as groq_interpret, check_groq_health
+from services.pipeline import run_dream_pipeline, run_refinement_pipeline, run_comparison_pipeline
 
 # Runtime configuration
 IS_VERCEL = bool(os.environ.get("VERCEL"))
@@ -177,45 +178,152 @@ def recent_annotations():
 
 # ---------- Main Interpret Endpoint ----------
 
+def format_report_as_markdown(report_dict, hypotheses=None) -> str:
+    parts = []
+    if report_dict.get("atmosphere"):
+        parts.append(f"🌙 **DREAM ATMOSPHERE**\n\n{report_dict['atmosphere']}\n")
+    if report_dict.get("story_map"):
+        parts.append(f"📖 **DREAM STORY MAP**\n\n{report_dict['story_map']}\n")
+    if report_dict.get("emotional_arc_text"):
+        parts.append(f"📊 **EMOTIONAL ARC**\n\n{report_dict['emotional_arc_text']}\n")
+    if report_dict.get("symbol_relationships_text"):
+        parts.append(f"🔍 **KEY SYMBOL RELATIONSHIPS**\n\n{report_dict['symbol_relationships_text']}\n")
+    if report_dict.get("central_tension"):
+        parts.append(f"⚡ **THE CENTRAL TENSION**\n\n{report_dict['central_tension']}\n")
+    
+    lenses = report_dict.get("psychological_lenses", {})
+    if lenses:
+        parts.append("🧠 **PSYCHOLOGICAL LENSES**\n")
+        if lenses.get("emotional_psychology"):
+            parts.append(f"- *Emotional Psychology:* {lenses['emotional_psychology']}")
+        if lenses.get("jungian_lens"):
+            parts.append(f"- *Jungian Perspective:* {lenses['jungian_lens']}")
+        if lenses.get("narrative_psychology"):
+            parts.append(f"- *Narrative Analysis:* {lenses['narrative_psychology']}")
+        if lenses.get("personal_growth"):
+            parts.append(f"- *Personal Growth:* {lenses['personal_growth']}")
+        parts.append("")
+        
+    if hypotheses:
+        parts.append("🔮 **POSSIBLE INTERPRETATIONS (HYPOTHESES)**\n")
+        for idx, h in enumerate(hypotheses):
+            parts.append(f"**Interpretation {idx+1}: {h.get('title')}**")
+            parts.append(f"- *Explanation:* {h.get('explanation')}")
+            parts.append(f"- *Evidence:* {h.get('evidence')}")
+            parts.append(f"- *Confidence:* {h.get('confidence')}")
+            parts.append(f"- *Validation Condition:* {h.get('validation_condition')}\n")
+            
+    if report_dict.get("mythological_reflection"):
+        parts.append(f"🕉️ **MYTHOLOGICAL REFLECTION**\n\n{report_dict['mythological_reflection']}\n")
+    if report_dict.get("what_mind_exploring"):
+        parts.append(f"✨ **WHAT YOUR MIND MAY BE EXPLORING**\n\n{report_dict['what_mind_exploring']}\n")
+        
+    qs = report_dict.get("reflection_questions", [])
+    if qs:
+        parts.append("📖 **REFLECTION QUESTIONS**\n")
+        for q in qs:
+            parts.append(f"- {q}")
+        parts.append("")
+        
+    if report_dict.get("uncertainty_note"):
+        parts.append(f"*Note: {report_dict['uncertainty_note']}*")
+        
+    return "\n".join(parts)
+
+
+@app.route("/api/dream/analyze", methods=["POST"])
+def api_analyze_dream():
+    data = request.get_json() or {}
+    dream_text = (data.get("dream_text") or "").strip()
+    if not dream_text:
+        return jsonify({"success": False, "message": "Please provide dream text."}), 400
+
+    # Run the pipeline
+    result = run_dream_pipeline(dream_text)
+    
+    # Save the classification result to model.log
+    log_model(f"Analyze Input: classification={result.get('classification')} text='{dream_text[:60]}...'")
+
+    # If it is a DREAM and analysis succeeded, store to SQLite history
+    if result.get("classification") == "DREAM" and result.get("success"):
+        try:
+            import sqlite3
+            ensure_dir(DATA_DIR)
+            conn = sqlite3.connect(os.path.join(DATA_DIR, 'history.db'))
+            cur = conn.cursor()
+            cur.execute('''CREATE TABLE IF NOT EXISTS history (ts TEXT, dream TEXT, response TEXT)''')
+            # For legacy compatibility, save formatted markdown string in response column
+            md_report = format_report_as_markdown(result["report"], result["analysis"]["hypotheses"])
+            cur.execute('INSERT INTO history (ts,dream,response) VALUES (?,?,?)', (datetime.utcnow().isoformat(), dream_text, md_report))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print('Failed to save history in api_analyze_dream:', e)
+
+    return jsonify(result)
+
+
+@app.route("/api/dream/refine", methods=["POST"])
+def api_refine_dream():
+    data = request.get_json() or {}
+    dream_text = (data.get("dream_text") or "").strip()
+    original_analysis = data.get("original_analysis") or {}
+    feedback_category = (data.get("feedback_category") or "overall").strip()
+    feedback_resonance = (data.get("feedback_resonance") or "I am unsure").strip()
+    feedback_text = (data.get("feedback_text") or "").strip()
+
+    if not dream_text or not original_analysis:
+        return jsonify({"success": False, "message": "Missing dream text or original analysis."}), 400
+
+    result = run_refinement_pipeline(
+        dream_text=dream_text,
+        original_analysis=original_analysis,
+        feedback_category=feedback_category,
+        feedback_resonance=feedback_resonance,
+        feedback_text=feedback_text
+    )
+    return jsonify(result)
+
+
+@app.route("/api/dream/compare", methods=["POST"])
+def api_compare_dreams():
+    data = request.get_json() or {}
+    dreams = data.get("dreams") or []
+    if not dreams or len(dreams) < 2:
+        return jsonify({"success": False, "message": "Please provide at least 2 dreams to compare."}), 400
+
+    result = run_comparison_pipeline(dreams)
+    return jsonify({"success": True, "comparison": result})
+
+
 @app.route("/interpret", methods=["POST"])
 def interpret():
+    # Maintain full backwards compatibility for the existing Annotate and Admin pages.
     data = request.get_json() or {}
     dream = (data.get("dream") or "").strip()
     if not dream:
         return jsonify({"success": False, "message": "Please provide a dream text."}), 400
 
-    # Allow caller to force LLM generation (skip dataset match)
-    force_model = bool(data.get('force_model', False))
-
-    # 1) Try dataset match first (fast, no LLM call)
-    if not force_model:
-        structured = find_best_match_simple(dream.lower())
+    # Run the new pipeline
+    pipeline_res = run_dream_pipeline(dream)
+    
+    if not pipeline_res.get("success"):
+        # Fallback synthesis if pipeline failed
+        interpretation_text = synthesize_fallback(dream)
+        meta = {"method": "fallback", "error": "Pipeline failed"}
+    elif pipeline_res.get("classification") == "NON_DREAM":
+        interpretation_text = pipeline_res["message"]
+        meta = {"method": "validation", "classification": "NON_DREAM"}
+    elif pipeline_res.get("classification") == "AMBIGUOUS":
+        interpretation_text = pipeline_res["message"]
+        meta = {"method": "validation", "classification": "AMBIGUOUS"}
     else:
-        structured = None
-
-    if structured:
-        interpretation_text = structured['interpretation']
-        meta = {"method": "dataset", "score": structured['score']}
-    else:
-        # 2) Call Groq for AI interpretation
-        db_context = search_database_context(dream)
-        groq_result = groq_interpret(dream, db_context=db_context)
-
-        if groq_result["success"]:
-            interpretation_text = groq_result["interpretation"]
-            meta = {"method": "groq", "model": groq_result["model"]}
-        else:
-            # 3) Fallback if Groq is unavailable
-            log_model(f"Groq failed: {groq_result['error']}")
-            interpretation_text = synthesize_fallback(dream)
-            meta = {
-                "method": "fallback",
-                "groq_error": groq_result["error"],
-                "note": "Groq is not available. Please ensure GROQ_API_KEY is configured."
-            }
-
-    # mark whether the client forced model usage
-    meta['forced'] = force_model
+        # Structured report formatted as markdown
+        interpretation_text = format_report_as_markdown(
+            pipeline_res["report"], 
+            pipeline_res["analysis"]["hypotheses"]
+        )
+        meta = {"method": "pipeline", "stages": pipeline_res["processing_stages"]}
 
     result = {
         "success": True,
@@ -224,7 +332,7 @@ def interpret():
         "meta": meta
     }
 
-    # Store to history (sqlite) for user reference
+    # Store to history (sqlite)
     try:
         import sqlite3
         ensure_dir(DATA_DIR)
@@ -235,7 +343,7 @@ def interpret():
         conn.commit()
         conn.close()
     except Exception as e:
-        print('Failed to save history:', e)
+        print('Failed to save history in legacy interpret endpoint:', e)
 
     return jsonify(result)
 

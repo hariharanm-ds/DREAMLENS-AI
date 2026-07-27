@@ -1,4 +1,4 @@
-from groq_client import check_groq_health
+"""from groq_client import check_groq_health
 
 
 if __name__ == "__main__":
@@ -7,4 +7,6 @@ if __name__ == "__main__":
     print("Active model:", status.get("active_model"))
     print("Model available:", status.get("model_available"))
     if status.get("error"):
-        print("Error:", status["error"])
+        print("Error:", status["error"])"""
+import os
+print(os.environ.get("GROQ_API_KEY"))
