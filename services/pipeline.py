@@ -208,7 +208,15 @@ def unified_dream_analysis(dream_text: str) -> dict:
                 temperature=0.3,
                 max_tokens=2048
             )
-            return json.loads(content)
+            parsed = json.loads(content)
+            if isinstance(parsed, dict):
+                return parsed
+            if isinstance(parsed, list):
+                object_items = [item for item in parsed if isinstance(item, dict)]
+                if len(object_items) == 1:
+                    logging.warning("Unified analysis returned a list; using its single object item.")
+                    return object_items[0]
+            raise ValueError(f"Unified analysis returned {type(parsed).__name__}; expected a JSON object")
         except Exception as e:
             last_err = e
             if attempt < 2:
@@ -529,7 +537,10 @@ def simulate_scenario_pipeline(dream_text: str, scenario_type: str, choice_text:
             max_tokens=600
         )
         data = json.loads(content)
-        data["image_prompt"] = f"{choice_text} {data.get('alternative_timeline', '')}"[:180]
+        data["image_prompt"] = (
+            f"Original dream: {dream_text}. Chosen action: {choice_text}. "
+            f"Alternative outcome: {data.get('alternative_timeline', '')}"
+        )[:500]
         return {"success": True, **data}
     except Exception as e:
         logging.error(f"Error in simulate_scenario_pipeline: {e}")
