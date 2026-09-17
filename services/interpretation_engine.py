@@ -1,6 +1,6 @@
 import json
 import logging
-from groq_client import _client, GROQ_MODEL, GROQ_API_KEY
+from groq_client import safe_groq_completion, GROQ_MODEL, GROQ_API_KEY
 
 def generate_interpretations(dream_text: str, extracted_data: dict) -> dict:
     """
@@ -59,18 +59,16 @@ def generate_interpretations(dream_text: str, extracted_data: dict) -> dict:
     user_prompt = f"Dream: \"{dream_text}\"\nExtracted Feature Metrics: {json.dumps(extracted_data)}"
 
     try:
-        client = _client()
-        response = client.chat.completions.create(
-            model=GROQ_MODEL,
+        content = safe_groq_completion(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
+            model=GROQ_MODEL,
             response_format={"type": "json_object"},
             temperature=0.3,
             max_tokens=650
         )
-        content = (response.choices[0].message.content or "").strip()
         data = json.loads(content)
 
         # Enforce list structure for hypotheses
@@ -137,18 +135,16 @@ def refine_interpretation(dream_text: str, original_analysis: dict, feedback_cat
     )
 
     try:
-        client = _client()
-        response = client.chat.completions.create(
-            model=GROQ_MODEL,
+        content = safe_groq_completion(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
+            model=GROQ_MODEL,
             response_format={"type": "json_object"},
             temperature=0.3,
             max_tokens=600
         )
-        content = (response.choices[0].message.content or "").strip()
         data = json.loads(content)
         return data
     except Exception as e:

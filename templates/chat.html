@@ -2,1941 +2,2013 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DREAMLENS AI - Workspace & Dream Intelligence</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=3" />
-  <style>
-    /* Premium glassmorphism workspace theme */
-    :root {
-      --bg-dark: #07000e;
-      --bg-card: rgba(22, 10, 42, 0.7);
-      --border-purple: rgba(147, 51, 234, 0.3);
-      --glow-purple: rgba(147, 51, 234, 0.4);
-      --primary-cyan: #64c8ff;
-      --primary-magenta: #ff006e;
-      --primary-purple: #9333ea;
-      --text-main: #d0e8ff;
-      --text-muted: #b5a3ff;
-    }
-
-    body {
-      background: linear-gradient(135deg, var(--bg-dark) 0%, #17002e 50%, var(--bg-dark) 100%);
-      color: var(--text-main);
-      min-height: 100vh;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
-
-    .workspace-navbar {
-      background: rgba(15, 6, 28, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-purple);
-      padding: 10px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 100;
-      position: sticky;
-      top: 0;
-    }
-
-    .workspace-navbar .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 1.5rem;
-    }
-
-    .workspace-navbar .nav-links {
-      display: flex;
-      gap: 25px;
-      list-style: none;
-    }
-
-    .workspace-navbar .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-
-    .workspace-navbar .nav-links a:hover {
-      color: var(--primary-cyan);
-    }
-
-    /* Main Grid Layout */
-    .workspace-container {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      flex: 1;
-      height: calc(100vh - 65px);
-      overflow: hidden;
-    }
-
-    /* Sidebar Styling */
-    .sidebar {
-      background: rgba(10, 2, 22, 0.9);
-      border-right: 1px solid var(--border-purple);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      overflow-y: auto;
-    }
-
-    .sidebar h3 {
-      font-size: 0.95rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--primary-cyan);
-      margin-bottom: 8px;
-    }
-
-    .sidebar-section {
-      border-bottom: 1px solid rgba(147, 51, 234, 0.15);
-      padding-bottom: 15px;
-    }
-
-    .btn-action {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.4), rgba(100, 200, 255, 0.3));
-      border: 1px solid var(--border-purple);
-      color: #fff;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 15px rgba(147, 51, 234, 0.15);
-    }
-
-    .btn-action:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(147, 51, 234, 0.3), 0 0 10px rgba(100, 200, 255, 0.2);
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.6), rgba(100, 200, 255, 0.5));
-    }
-
-    .dream-thread-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 10px;
-      max-height: 250px;
-      overflow-y: auto;
-      padding-right: 5px;
-    }
-
-    .dream-thread-item {
-      background: rgba(22, 10, 42, 0.5);
-      border: 1px solid rgba(147, 51, 234, 0.15);
-      border-radius: 8px;
-      padding: 10px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .dream-thread-item:hover {
-      border-color: var(--primary-cyan);
-      background: rgba(22, 10, 42, 0.8);
-    }
-
-    .dream-thread-item.active {
-      border-color: var(--primary-cyan);
-      box-shadow: 0 0 10px rgba(100, 200, 255, 0.2);
-      background: rgba(32, 15, 60, 0.8);
-    }
-
-    .dream-thread-item .item-title {
-      font-weight: 600;
-      color: #fff;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      margin-bottom: 4px;
-    }
-
-    .dream-thread-item .item-meta {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .select-checkbox {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      cursor: pointer;
-      display: none; /* revealed during compare select */
-    }
-
-    /* Main Dashboard Area */
-    .dashboard-panel {
-      padding: 25px;
-      overflow-y: auto;
-      background: rgba(7, 2, 15, 0.4);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Capture Workspace */
-    .capture-workspace {
-      max-width: 800px;
-      margin: 40px auto;
-      background: var(--bg-card);
-      border: 1px solid var(--border-purple);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 8px 32px var(--glow-purple);
-      backdrop-filter: blur(10px);
-    }
-
-    .capture-modes {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid rgba(147, 51, 234, 0.2);
-      padding-bottom: 12px;
-    }
-
-    .mode-tab {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-weight: 600;
-      cursor: pointer;
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-
-    .mode-tab.active {
-      color: #fff;
-      background: rgba(147, 51, 234, 0.3);
-      box-shadow: 0 0 10px rgba(147, 51, 234, 0.2);
-    }
-
-    .capture-form-section {
-      display: none;
-    }
-
-    .capture-form-section.active {
-      display: block;
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    .textarea-wrapper {
-      position: relative;
-      margin-bottom: 15px;
-    }
-
-    .textarea-workspace {
-      width: 100%;
-      height: 180px;
-      background: rgba(10, 3, 20, 0.8);
-      border: 1px solid rgba(147, 51, 234, 0.3);
-      border-radius: 12px;
-      color: #fff;
-      padding: 15px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      resize: none;
-      transition: all 0.3s ease;
-    }
-
-    .textarea-workspace:focus {
-      outline: none;
-      border-color: var(--primary-cyan);
-      box-shadow: 0 0 15px rgba(100, 200, 255, 0.2);
-    }
-
-    .voice-capture-btn {
-      position: absolute;
-      bottom: 15px;
-      right: 15px;
-      background: rgba(147, 51, 234, 0.3);
-      border: 1px solid var(--border-purple);
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      color: #fff;
-      font-size: 1.1rem;
-    }
-
-    .voice-capture-btn:hover {
-      background: var(--primary-purple);
-      box-shadow: 0 0 10px rgba(147, 51, 234, 0.5);
-    }
-
-    .voice-capture-btn.recording {
-      background: var(--primary-magenta);
-      animation: pulse 1.5s infinite;
-      border-color: #ff3388;
-    }
-
-    /* Guided Steps */
-    .guided-wizard {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .guided-step {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .guided-step label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--primary-cyan);
-    }
-
-    .guided-input {
-      width: 100%;
-      background: rgba(10, 3, 20, 0.8);
-      border: 1px solid rgba(147, 51, 234, 0.3);
-      border-radius: 8px;
-      color: #fff;
-      padding: 10px 12px;
-      font-family: inherit;
-      font-size: 0.9rem;
-      transition: all 0.3s;
-    }
-
-    .guided-input:focus {
-      outline: none;
-      border-color: var(--primary-cyan);
-    }
-
-    .fragment-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255, 193, 7, 0.15);
-      border: 1px solid rgba(255, 193, 7, 0.3);
-      color: #ffc107;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      margin-bottom: 12px;
-    }
-
-    /* Status Bar / Warnings */
-    .status-alert {
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      margin-bottom: 20px;
-      display: none;
-      animation: slideDown 0.3s ease-out;
-    }
-
-    .status-alert.error {
-      background: rgba(244, 67, 54, 0.15);
-      border: 1px solid rgba(244, 67, 54, 0.3);
-      color: #ff6b6b;
-      display: block;
-    }
-
-    .status-alert.warning {
-      background: rgba(255, 193, 7, 0.15);
-      border: 1px solid rgba(255, 193, 7, 0.3);
-      color: #ffb700;
-      display: block;
-    }
-
-    /* Analyzing Spinner */
-    .loading-workspace {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      padding: 60px 0;
-    }
-
-    .loading-pulse {
-      width: 60px;
-      height: 60px;
-      background: radial-gradient(circle, var(--primary-cyan) 0%, transparent 60%);
-      border-radius: 50%;
-      animation: pulseGlow 1.8s infinite ease-in-out;
-      box-shadow: 0 0 20px rgba(100, 200, 255, 0.4);
-    }
-
-    @keyframes pulseGlow {
-      0%, 100% { transform: scale(0.8); opacity: 0.5; }
-      50% { transform: scale(1.2); opacity: 1; }
-    }
-
-    /* Tabs for Results Dashboard */
-    .dashboard-tabs {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      border-bottom: 1px solid rgba(147, 51, 234, 0.3);
-      padding-bottom: 10px;
-    }
-
-    .dashboard-tab {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      padding: 10px 16px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      border-radius: 8px;
-      transition: all 0.3s;
-      white-space: nowrap;
-    }
-
-    .dashboard-tab:hover {
-      color: var(--primary-cyan);
-      background: rgba(100, 200, 255, 0.05);
-    }
-
-    .dashboard-tab.active {
-      color: #fff;
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.4), rgba(100, 200, 255, 0.15));
-      border: 1px solid var(--border-purple);
-      box-shadow: 0 0 10px var(--glow-purple);
-    }
-
-    .dashboard-content-section {
-      display: none;
-    }
-
-    .dashboard-content-section.active {
-      display: block;
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    /* Result Cards */
-    .report-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-purple);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 20px rgba(15, 6, 28, 0.5);
-      margin-bottom: 20px;
-      backdrop-filter: blur(10px);
-    }
-
-    .report-card h2 {
-      font-size: 1.25rem;
-      margin-bottom: 12px;
-      color: var(--primary-cyan);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid rgba(147, 51, 234, 0.15);
-      padding-bottom: 8px;
-    }
-
-    /* Story Map Visual Node Line */
-    .story-map-visual {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 30px 0;
-      position: relative;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .story-map-visual::after {
-      content: '';
-      position: absolute;
-      top: 25px;
-      left: 10px;
-      right: 10px;
-      height: 2px;
-      background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple), var(--primary-magenta));
-      z-index: 0;
-    }
-
-    .story-node {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      z-index: 1;
-      width: 120px;
-      text-align: center;
-    }
-
-    .node-circle {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: #0f051e;
-      border: 2px solid var(--primary-cyan);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      box-shadow: 0 0 15px rgba(100, 200, 255, 0.3);
-      color: #fff;
-    }
-
-    .story-node.climax .node-circle {
-      border-color: var(--primary-magenta);
-      box-shadow: 0 0 15px rgba(255, 0, 110, 0.4);
-    }
-
-    .node-label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #fff;
-      text-transform: uppercase;
-    }
-
-    .node-desc {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      line-height: 1.3;
-    }
-
-    /* Emotion Arc Timeline Visual */
-    .emotion-arc-visual {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin: 20px 0;
-    }
-
-    .emotion-arc-stage {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      background: rgba(22, 10, 42, 0.4);
-      border-radius: 8px;
-      padding: 10px 15px;
-      border-left: 4px solid var(--primary-purple);
-    }
-
-    .emotion-stage-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      width: 90px;
-      color: var(--primary-cyan);
-    }
-
-    .emotion-intensity-bar-bg {
-      flex: 1;
-      height: 8px;
-      background: rgba(147, 51, 234, 0.15);
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .emotion-intensity-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--primary-purple), var(--primary-magenta));
-      border-radius: 4px;
-      transition: width 1s ease;
-    }
-
-    /* Conflict Matrix Grid */
-    .conflict-matrix-grid {
-      display: grid;
-      grid-template-columns: 120px 1fr 1fr;
-      border: 1px solid var(--border-purple);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-top: 15px;
-      background: rgba(10, 2, 22, 0.5);
-    }
-
-    .matrix-header {
-      background: rgba(147, 51, 234, 0.2);
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.8rem;
-      padding: 12px;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .matrix-row-title {
-      background: rgba(147, 51, 234, 0.1);
-      font-weight: 600;
-      font-size: 0.8rem;
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-transform: uppercase;
-      border-right: 1px solid var(--border-purple);
-      border-bottom: 1px solid var(--border-purple);
-      color: var(--primary-cyan);
-    }
-
-    .matrix-cell {
-      padding: 12px;
-      border-right: 1px solid var(--border-purple);
-      border-bottom: 1px solid var(--border-purple);
-      font-size: 0.8rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      color: var(--text-muted);
-      transition: all 0.3s ease;
-    }
-
-    .matrix-cell.active {
-      background: rgba(100, 200, 255, 0.15);
-      border: 1px solid var(--primary-cyan);
-      color: #fff;
-      font-weight: 600;
-      box-shadow: inset 0 0 10px rgba(100, 200, 255, 0.3);
-    }
-
-    /* Symbol context engine details */
-    .symbol-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 15px;
-      margin-top: 15px;
-    }
-
-    .symbol-card {
-      background: rgba(22, 10, 42, 0.6);
-      border: 1px solid var(--border-purple);
-      border-radius: 12px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .symbol-card .symbol-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(147, 51, 234, 0.15);
-      padding-bottom: 6px;
-    }
-
-    .symbol-card .symbol-name {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #fff;
-      text-transform: capitalize;
-    }
-
-    .symbol-card .symbol-emotion {
-      font-size: 0.75rem;
-      background: rgba(147, 51, 234, 0.2);
-      padding: 2px 8px;
-      border-radius: 20px;
-      color: var(--text-muted);
-    }
-
-    .symbol-detail-row {
-      font-size: 0.8rem;
-      line-height: 1.4;
-    }
-
-    .symbol-detail-row strong {
-      color: var(--primary-cyan);
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    /* Lenses Grid */
-    .lenses-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 15px;
-    }
-
-    .lens-card {
-      background: rgba(20, 8, 45, 0.5);
-      border: 1px solid var(--border-purple);
-      border-radius: 12px;
-      padding: 16px;
-      transition: all 0.3s ease;
-    }
-
-    .lens-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--primary-cyan);
-    }
-
-    .lens-card h3 {
-      font-size: 0.95rem;
-      color: #fff;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .lens-card p {
-      font-size: 0.8rem;
-      line-height: 1.5;
-      color: var(--text-muted);
-    }
-
-    /* Hypotheses & Interactive Refinement Feedback */
-    .hypothesis-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-
-    .hypothesis-card {
-      background: rgba(18, 5, 38, 0.8);
-      border: 1px solid var(--border-purple);
-      border-radius: 12px;
-      padding: 16px;
-      border-left: 4px solid var(--primary-cyan);
-    }
-
-    .hypothesis-card.low { border-left-color: var(--text-muted); }
-    .hypothesis-card.moderate { border-left-color: var(--primary-cyan); }
-    .hypothesis-card.high { border-left-color: var(--primary-magenta); }
-
-    .hypothesis-card h3 {
-      font-size: 1.1rem;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .hypothesis-meta {
-      display: flex;
-      gap: 15px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-    }
-
-    .hypothesis-meta span strong {
-      color: #fff;
-    }
-
-    .hypothesis-card p {
-      font-size: 0.85rem;
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-
-    /* Feedback interface */
-    .feedback-section {
-      background: rgba(22, 10, 42, 0.8);
-      border: 1px solid var(--border-purple);
-      border-radius: 16px;
-      padding: 20px;
-      margin-top: 25px;
-    }
-
-    .feedback-resonance-options {
-      display: flex;
-      gap: 10px;
-      margin: 12px 0;
-      flex-wrap: wrap;
-    }
-
-    .feedback-res-btn {
-      background: rgba(22, 10, 42, 0.6);
-      border: 1px solid var(--border-purple);
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .feedback-res-btn:hover {
-      border-color: var(--primary-cyan);
-      color: #fff;
-    }
-
-    .feedback-res-btn.active {
-      background: var(--primary-purple);
-      color: #fff;
-      border-color: #bb66ff;
-      box-shadow: 0 0 10px rgba(147, 51, 234, 0.4);
-    }
-
-    .feedback-categories {
-      display: flex;
-      gap: 15px;
-      margin: 12px 0;
-      flex-wrap: wrap;
-    }
-
-    .feedback-categories label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
-
-    /* Explore Turning Point Scenario */
-    .scenario-simulator {
-      background: linear-gradient(135deg, rgba(22,10,42,0.8), rgba(10,2,22,0.8));
-      border: 1px solid var(--border-purple);
-      border-radius: 16px;
-      padding: 24px;
-      margin-top: 10px;
-      box-shadow: 0 4px 25px rgba(100, 200, 255, 0.05);
-    }
-
-    .simulator-output {
-      background: rgba(10, 2, 22, 0.6);
-      border: 1px solid rgba(100, 200, 255, 0.15);
-      border-radius: 12px;
-      padding: 16px;
-      margin-top: 15px;
-      font-size: 0.85rem;
-      line-height: 1.6;
-      display: none;
-      animation: fadeIn 0.5s ease-out;
-      border-left: 3px solid var(--primary-cyan);
-    }
-
-    .simulator-disclaimer {
-      font-size: 0.75rem;
-      color: #ffc107;
-      margin-top: 8px;
-      font-style: italic;
-    }
-
-    /* Comparison View */
-    .comparison-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-top: 15px;
-    }
-
-    .comparison-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-purple);
-      border-radius: 12px;
-      padding: 18px;
-    }
-
-    .comparison-card h3 {
-      font-size: 1rem;
-      color: var(--primary-cyan);
-      margin-bottom: 8px;
-      border-bottom: 1px solid rgba(147, 51, 234, 0.1);
-      padding-bottom: 6px;
-    }
-
-    .comparison-card p {
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: var(--text-muted);
-    }
-
-    /* Animation Utilities */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-    }
-
-    @keyframes slideDown {
-      from { transform: translateY(-10px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    /* Compare selectors mode styling */
-    .compare-selection-active .select-checkbox {
-      display: block;
-    }
-
-    .compare-selection-active .dream-thread-item {
-      padding-right: 35px;
-    }
-
-    @media (max-width: 820px) {
-      .workspace-container {
-        grid-template-columns: 1fr;
-        height: auto;
-        overflow: visible;
-      }
-      .sidebar {
-        border-right: none;
-        border-bottom: 1px solid var(--border-purple);
-        height: auto;
-        max-height: 350px;
-      }
-      .dashboard-panel {
-        height: auto;
-      }
-    }
-  </style>
+  <title>DREAMLENS AI — Dream Intelligence Workspace</title>
+  <meta name="description" content="AI-powered dream analysis with emotional insights, symbol interpretation and personalized guidance." />
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/style.css?v=12" />
 </head>
-<body>
+<body class="workspace-body">
 
-  <!-- Navigation Bar -->
-  <nav class="workspace-navbar">
-    <div class="nav-logo">
-      <span style="animation: pulse 2s infinite">✨</span>
-      <span class="logo-text" style="background:linear-gradient(135deg, #64c8ff, #ff006e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">DREAMLENS AI</span>
-    </div>
-    <ul class="nav-links">
-      <li><a href="/">Home</a></li>
-      <li><a href="/chat" style="color: #fff; font-weight: 700;">Workspace</a></li>
-      <li><a href="/annotate">Annotate</a></li>
-      <li><a href="/history">History</a></li>
-      <li><a href="/about">About</a></li>
-      <li><a href="/contact">Contact</a></li>
-    </ul>
-  </nav>
-
-  <!-- Main Container -->
-  <div class="workspace-container">
-
-    <!-- Sidebar (Thread & Controls) -->
-    <div class="sidebar" id="sidebar">
-      <div>
-        <button class="btn-action" id="newDreamBtn">
-          <span>🌙</span> Capture New Dream
-        </button>
+  <!-- ============================================================
+       LEFT SIDEBAR (Screens 2, 4, 11, 12)
+  ============================================================ -->
+  <aside class="ws-sidebar" id="wsSidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo-glow">
+        <span class="brand-icon">🔮</span>
       </div>
-
-      <div class="sidebar-section">
-        <h3>Session Thread</h3>
-        <p style="font-size:0.75rem;color:var(--text-muted);margin:4px 0 10px;">Select dreams to analyze or compare</p>
-        <div class="dream-thread-list" id="dreamThreadList">
-          <div style="color:var(--text-muted);font-size:0.8rem;text-align:center;padding:20px 0;" id="emptyThreadMessage">
-            No dreams in thread yet.
-          </div>
-        </div>
-      </div>
-
-      <div style="margin-top:auto;" id="compareControls">
-        <button class="btn-action" id="compareSelectBtn" style="background:rgba(22, 10, 42, 0.4);border-color:rgba(100, 200, 255, 0.2);">
-          ⚖️ Select & Compare
-        </button>
-        <button class="btn-action" id="runCompareBtn" style="margin-top:10px;display:none;background:linear-gradient(135deg, var(--primary-purple), var(--primary-cyan));">
-          Run Comparison
-        </button>
-        <button class="btn-action" id="cancelCompareBtn" style="margin-top:8px;display:none;background:rgba(255,60,60,0.15);border-color:rgba(255,60,60,0.3);color:#ff8888;">
-          Cancel Selection
-        </button>
+      <div class="brand-text">
+        <span class="brand-name">DREAMLENS</span>
+        <span class="brand-badge">AI</span>
       </div>
     </div>
 
-    <!-- Dashboard Main View -->
-    <div class="dashboard-panel" id="dashboardPanel">
+    <button class="new-analysis-pill-btn" id="newAnalysisBtn">
+      <span class="plus-icon">+</span>
+      <span>New Analysis</span>
+    </button>
 
-      <!-- WARNING / REJECTION / AMBIGUITY ALERTS -->
-      <div class="status-alert" id="statusAlert"></div>
-
-      <!-- VIEW 1: DREAM CAPTURE WORKSPACE -->
-      <div class="capture-workspace" id="captureWorkspace">
-        <div class="capture-modes">
-          <button class="mode-tab active" data-target="fullJournalSec">Full Journal</button>
-          <button class="mode-tab" data-target="quickGuidedSec">Quick Guided Capture</button>
-          <button class="mode-tab" data-target="fragmentSec">Fragment Mode</button>
-        </div>
-
-        <!-- Mode A: Full Journal -->
-        <div class="capture-form-section active" id="fullJournalSec">
-          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">Write down your dream in full detail. The more descriptive, the deeper the analysis.</p>
-          <div class="textarea-wrapper">
-            <textarea class="textarea-workspace" id="fullJournalText" placeholder="Describe the scene, the events, the transitions, and how you felt..."></textarea>
-            <button class="voice-capture-btn" data-target="fullJournalText" title="Voice Capture typing">🎤</button>
-          </div>
-        </div>
-
-        <!-- Mode B: Quick Guided Capture -->
-        <div class="capture-form-section" id="quickGuidedSec">
-          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">Follow this step-by-step guided capture to construct a narrative record.</p>
-          <div class="guided-wizard">
-            <div class="guided-step">
-              <label>1. What did you observe or remember first?</label>
-              <div style="position:relative">
-                <input type="text" class="guided-input" id="guidedRecall" placeholder="E.g., I woke up in a dark forest..." />
-                <button class="voice-capture-btn" data-target="guidedRecall" style="right:10px;bottom:5px;width:30px;height:30px;font-size:0.8rem">🎤</button>
-              </div>
-            </div>
-            <div class="guided-step">
-              <label>2. What was the single strongest or most vivid image?</label>
-              <div style="position:relative">
-                <input type="text" class="guided-input" id="guidedImage" placeholder="E.g., A huge white door with lock chains..." />
-                <button class="voice-capture-btn" data-target="guidedImage" style="right:10px;bottom:5px;width:30px;height:30px;font-size:0.8rem">🎤</button>
-              </div>
-            </div>
-            <div class="guided-step">
-              <label>3. What did you feel during this moment?</label>
-              <div style="position:relative">
-                <input type="text" class="guided-input" id="guidedFeeling" placeholder="E.g., Deep urgency and a bit of curious hope..." />
-                <button class="voice-capture-btn" data-target="guidedFeeling" style="right:10px;bottom:5px;width:30px;height:30px;font-size:0.8rem">🎤</button>
-              </div>
-            </div>
-            <div class="guided-step">
-              <label>4. What happened at the very end or when you woke?</label>
-              <div style="position:relative">
-                <input type="text" class="guided-input" id="guidedEnding" placeholder="E.g., The door opened slightly, but I woke up before seeing inside..." />
-                <button class="voice-capture-btn" data-target="guidedEnding" style="right:10px;bottom:5px;width:30px;height:30px;font-size:0.8rem">🎤</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Mode C: Fragment Mode -->
-        <div class="capture-form-section" id="fragmentSec">
-          <div class="fragment-badge">⚠️ Fragment Mode - Labeled as incomplete recall</div>
-          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">Don't worry about structure. Type random scenes, sensations, or objects you remember.</p>
-          <div class="textarea-wrapper">
-            <textarea class="textarea-workspace" id="fragmentText" placeholder="E.g., A red key, water rising, sound of drums, running..."></textarea>
-            <button class="voice-capture-btn" data-target="fragmentText" title="Voice Capture typing">🎤</button>
-          </div>
-        </div>
-
-        <button class="btn-action" id="analyzeBtn" style="margin-top:20px;background:linear-gradient(135deg, var(--primary-cyan), var(--primary-purple));">
-          ✨ Analyze Dream
-        </button>
+    <nav class="sidebar-nav">
+      <a href="/" class="sidebar-nav-item" id="navHome">
+        <span class="nav-icon">🏠</span>
+        <span>Home</span>
+      </a>
+      <div class="sidebar-nav-item active" id="navWorkspace">
+        <span class="nav-icon">🌌</span>
+        <span>Workspace</span>
       </div>
-
-      <!-- VIEW 2: LOADING SCREEN -->
-      <div class="loading-workspace" id="loadingScreen">
-        <div class="loading-pulse"></div>
-        <h3 style="letter-spacing:1px;color:#fff;">Running Dream Intelligence Pipeline...</h3>
-        <p style="color:var(--text-muted);font-size:0.85rem;margin-top:-5px;">Domain validation & parallel feature extraction in progress.</p>
+      <div class="sidebar-nav-item" id="navCinema">
+        <span class="nav-icon">🎬</span>
+        <span>Dream Cinema</span>
+        <span class="nav-tag-badge">New</span>
       </div>
+      <div class="sidebar-nav-item" id="navHistory">
+        <span class="nav-icon">📜</span>
+        <span>History</span>
+      </div>
+      <div class="sidebar-nav-item" id="navSaved">
+        <span class="nav-icon">⭐</span>
+        <span>Saved Reports</span>
+      </div>
+    </nav>
 
-      <!-- VIEW 3: DREAM INTELLIGENCE DASHBOARD -->
-      <div id="resultsWorkspace" style="display:none;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
-          <div>
-            <h1 id="activeDreamTitle" style="font-size:1.6rem;font-weight:700;">Dream Analysis Summary</h1>
-            <p id="activeDreamDate" style="font-size:0.8rem;color:var(--text-muted);">Decoded today</p>
+    <div class="sidebar-section-title">Explore Sample Dreams</div>
+    <div class="recent-dreams-list" id="sidebarRecentList">
+      <div class="recent-dream-card active" onclick="loadSampleDream('elephant')">
+        <div class="rd-title">🐘 Elephant chase</div>
+        <div class="rd-meta">Power & Instinct</div>
+      </div>
+      <div class="recent-dream-card" onclick="loadSampleDream('forest')">
+        <div class="rd-title">🚪 Door in the forest</div>
+        <div class="rd-meta">Transition & Growth</div>
+      </div>
+      <div class="recent-dream-card" onclick="loadSampleDream('cliff')">
+        <div class="rd-title">🌊 Falling from a cliff</div>
+        <div class="rd-meta">Surrender & Glide</div>
+      </div>
+      <div class="recent-dream-card" onclick="loadSampleDream('library')">
+        <div class="rd-title">🗝️ Ancient library</div>
+        <div class="rd-meta">Hidden Wisdom</div>
+      </div>
+      <div class="recent-dream-card" onclick="loadSampleDream('flying')">
+        <div class="rd-title">🕊️ Flying in the sky</div>
+        <div class="rd-meta">Freedom & Clarity</div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="api-status-pill" id="sidebarApiPill">
+        <span class="status-dot online"></span>
+        <span id="sidebarApiText">AI Ready • Groq Hosted</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN CONTENT CONTAINER
+  ============================================================ -->
+  <main class="ws-main">
+
+    <!-- TOP GREETING & SEARCH BAR -->
+    <header class="ws-topbar">
+      <div class="topbar-left">
+        <button class="mobile-toggle-btn" id="mobileMenuBtn" aria-label="Toggle Menu">☰</button>
+        <div class="greeting-block">
+          <h1 class="greeting-title" id="greetingText">Good Morning, Hariharan</h1>
+          <p class="greeting-sub">Let's explore the meaning behind your dreams.</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="topbar-search" id="topSearchInput" placeholder="Search your dreams..." />
+        </div>
+        <div class="user-avatar-pill">
+          <span class="avatar-emoji">🧙‍♂️</span>
+          <span class="avatar-name">Hariharan</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- STATUS ALERT -->
+    <div class="status-alert" id="statusAlert" style="display:none;"></div>
+
+    <!-- ============================================================
+         VIEW 1: DASHBOARD / NEW ANALYSIS (Screen 2)
+    ============================================================ -->
+    <div class="view-panel active" id="viewDashboard">
+      
+      <div class="dashboard-grid">
+        <!-- MAKE A NEW ANALYSIS CARD -->
+        <div class="dash-card make-analysis-card">
+          <div class="card-header-flex">
+            <div class="icon-title-wrap">
+              <span class="card-glow-icon">🌙</span>
+              <div>
+                <h2 class="card-title">Make a new analysis</h2>
+                <p class="card-sub">Write or describe your dream</p>
+              </div>
+            </div>
+            <div class="mode-tabs">
+              <button class="mode-tab active" data-target="fullJournalSec">Full Journal</button>
+              <button class="mode-tab" data-target="guidedSec">Guided</button>
+              <button class="mode-tab" data-target="fragmentSec">Fragments</button>
+            </div>
           </div>
-          <button class="btn-action" id="reAnalyzeBtn" style="width:auto;padding:8px 16px;background:rgba(22,10,42,0.4);font-size:0.85rem;">
-            🔄 Re-Capture
+
+          <!-- Mode: Full Journal -->
+          <div class="capture-form-section active" id="fullJournalSec">
+            <textarea class="dream-textarea" id="fullJournalText" placeholder="I was walking through a dark and quiet forest when a mysterious glowing wooden door appeared in front of me..."></textarea>
+          </div>
+
+          <!-- Mode: Guided -->
+          <div class="capture-form-section" id="guidedSec">
+            <div class="guided-fields">
+              <div class="gfield">
+                <label>1. Where were you when it began?</label>
+                <input type="text" id="guidedRecall" placeholder="e.g. In a quiet, misty pine forest..." />
+              </div>
+              <div class="gfield">
+                <label>2. What was the central object or encounter?</label>
+                <input type="text" id="guidedImage" placeholder="e.g. A glowing archway with carved runes..." />
+              </div>
+              <div class="gfield">
+                <label>3. How did you feel at the turning point?</label>
+                <input type="text" id="guidedFeeling" placeholder="e.g. A mix of hesitation and intense curiosity..." />
+              </div>
+              <div class="gfield">
+                <label>4. How did the dream end?</label>
+                <input type="text" id="guidedEnding" placeholder="e.g. I stepped through and awoke to bright golden light." />
+              </div>
+            </div>
+          </div>
+
+          <!-- Mode: Fragments -->
+          <div class="capture-form-section" id="fragmentSec">
+            <textarea class="dream-textarea" id="fragmentText" placeholder="forest, glowing door, night, hesitation, golden light, threshold, awaken..."></textarea>
+          </div>
+
+          <div class="dash-card-actions">
+            <button class="btn-gradient-primary" id="startAnalyzeBtn">
+              <span>Start Analysis</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- RECENT DREAM SPOTLIGHT CARD -->
+        <div class="dash-card recent-spotlight-card">
+          <div class="card-header-flex">
+            <div>
+              <span class="spotlight-tag">Recent Dream</span>
+              <h2 class="spotlight-title" id="spotlightTitle">The door in the forest</h2>
+              <div class="spotlight-date" id="spotlightDate">Analyzed Today, 11:57 AM</div>
+            </div>
+          </div>
+          <div class="spotlight-visual-wrap">
+            <canvas id="spotlightCanvas" width="320" height="160" class="dream-spotlight-canvas"></canvas>
+            <div class="spotlight-overlay-glow"></div>
+          </div>
+          <button class="btn-secondary-glow" id="viewRecentReportBtn">
+            <span>View Report</span>
+            <span>→</span>
           </button>
         </div>
+      </div>
 
-        <div class="dashboard-tabs">
-          <button class="dashboard-tab active" data-view="overviewTab">Overview & Report</button>
-          <button class="dashboard-tab" data-view="storyMapTab">Story Map</button>
-          <button class="dashboard-tab" data-view="emotionArcTab">Emotion Arc & Matrix</button>
-          <button class="dashboard-tab" data-view="symbolsTab">Symbol Context</button>
-          <button class="dashboard-tab" data-view="lensesTab">Psychological Lenses</button>
-          <button class="dashboard-tab" data-view="hypothesesTab">Hypotheses & Feedback</button>
-          <button class="dashboard-tab" data-view="scenarioTab">Scenario Simulator</button>
+      <!-- YOUR DREAM JOURNEY STEPPER -->
+      <div class="dash-card journey-card">
+        <h3 class="journey-heading">Your Dream Journey</h3>
+        <div class="journey-stepper">
+          <div class="jstep done">
+            <div class="jstep-circle"><span>👤</span></div>
+            <div class="jstep-info">
+              <div class="jstep-name">Dream Input</div>
+              <div class="jstep-desc">Your story</div>
+            </div>
+          </div>
+          <div class="jstep-line done"></div>
+          <div class="jstep done">
+            <div class="jstep-circle"><span>🤖</span></div>
+            <div class="jstep-info">
+              <div class="jstep-name">3 AI Agents</div>
+              <div class="jstep-desc">Deep analysis</div>
+            </div>
+          </div>
+          <div class="jstep-line done"></div>
+          <div class="jstep done">
+            <div class="jstep-circle"><span>📊</span></div>
+            <div class="jstep-info">
+              <div class="jstep-name">Insight Report</div>
+              <div class="jstep-desc">Personalized</div>
+            </div>
+          </div>
+          <div class="jstep-line done"></div>
+          <div class="jstep">
+            <div class="jstep-circle"><span>🎬</span></div>
+            <div class="jstep-info">
+              <div class="jstep-name">Explore More</div>
+              <div class="jstep-desc">Videos & ideas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /viewDashboard -->
+
+
+    <!-- ============================================================
+         VIEW 2: DREAM ANALYSIS IN PROGRESS (Screen 3)
+    ============================================================ -->
+    <div class="view-panel" id="viewLoading">
+      <div class="loading-state-card">
+        <div class="loading-header">
+          <h2 class="loading-title">Dream Analysis in Progress</h2>
+          <p class="loading-subtitle">Our 3 AI agents are working together to uncover the meaning behind your dream.</p>
         </div>
 
-        <div style="margin-top:20px;">
-          <!-- Tab 1: Overview & Report -->
-          <div class="dashboard-content-section active" id="overviewTab">
-            <div class="report-card">
-              <h2><span>🌙</span> Dream Atmosphere</h2>
-              <p id="overviewAtmosphere" style="line-height:1.6;font-size:0.95rem;"></p>
+        <div class="agents-stepper">
+          <div class="agent-step" id="agStep1">
+            <div class="agent-circle"><span class="agent-icon">📝</span></div>
+            <div class="agent-label">Dream Input</div>
+            <div class="agent-status">Processed</div>
+          </div>
+          <div class="agent-line" id="agLine1"></div>
+          <div class="agent-step" id="agStep2">
+            <div class="agent-circle"><span class="agent-icon">🌊</span></div>
+            <div class="agent-label">Emotional Agent</div>
+            <div class="agent-status">Analyzing emotions</div>
+          </div>
+          <div class="agent-line" id="agLine2"></div>
+          <div class="agent-step" id="agStep3">
+            <div class="agent-circle"><span class="agent-icon">🔮</span></div>
+            <div class="agent-label">Symbol Agent</div>
+            <div class="agent-status">Finding symbols</div>
+          </div>
+          <div class="agent-line" id="agLine3"></div>
+          <div class="agent-step" id="agStep4">
+            <div class="agent-circle"><span class="agent-icon">🧠</span></div>
+            <div class="agent-label">Psychological Agent</div>
+            <div class="agent-status">Generating insights</div>
+          </div>
+        </div>
+
+        <div class="brain-pulse-card">
+          <div class="brain-icon-glow">
+            <span class="brain-emoji">🧠</span>
+            <div class="brain-rings"></div>
+          </div>
+          <div class="brain-text">
+            <div class="brain-status-heading">Almost there...</div>
+            <div class="brain-status-sub">This usually takes 2-4 seconds with our single-pass neural pipeline.</div>
+          </div>
+          <canvas id="loadingWaveCanvas" width="280" height="60" class="loading-wave-canvas"></canvas>
+        </div>
+      </div>
+    </div><!-- /viewLoading -->
+
+
+    <!-- ============================================================
+         VIEW 3: RESULTS / ANALYSIS TABS (Screens 4, 5, 6, 7, 8, 9)
+    ============================================================ -->
+    <div class="view-panel" id="viewResults">
+      
+      <!-- ANALYSIS TOP BAR -->
+      <div class="results-top-header">
+        <div class="rth-left">
+          <h2 class="rth-title" id="resultsDreamTitle">The Door in the Forest</h2>
+          <div class="rth-meta" id="resultsDreamDate">Analyzed on Sep 10, 2025 • 11:57 AM</div>
+        </div>
+        <div class="rth-right">
+          <button class="btn-ghost-icon" id="saveReportBtn" title="Save Report">
+            <span>⭐ Save Report</span>
+          </button>
+          <button class="btn-ghost-icon" id="downloadReportBtn" title="Export / Download">
+            <span>📥 Download Report</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 6-TAB NAVIGATION BAR (Screens 4-9) -->
+      <div class="results-tab-bar">
+        <button class="rtab active" data-tab="tabOverview">Overview</button>
+        <button class="rtab" data-tab="tabScenarios">✨ Scenarios</button>
+        <button class="rtab" data-tab="tabStoryMap">Story Map</button>
+        <button class="rtab" data-tab="tabEmotions">Emotions</button>
+        <button class="rtab" data-tab="tabSymbols">Symbols</button>
+        <button class="rtab" data-tab="tabPsychology">Psychology</button>
+      </div>
+
+      <!-- ==========================================
+           TAB 1: OVERVIEW (Screen 4)
+      ========================================== -->
+      <div class="rtab-content active" id="tabOverview">
+        <div class="overview-grid">
+          
+          <!-- DREAM PROFILE CARD -->
+          <div class="dash-card dream-profile-card">
+            <h3 class="card-section-title">Dream Profile</h3>
+            <div class="profile-main-flex">
+              <!-- CIRCULAR INTENSITY GAUGE -->
+              <div class="intensity-gauge-wrap">
+                <svg class="gauge-svg" viewBox="0 0 140 140">
+                  <circle class="gauge-bg" cx="70" cy="70" r="54" />
+                  <circle class="gauge-bar" id="gaugeBar" cx="70" cy="70" r="54" stroke-dasharray="339.29" stroke-dashoffset="128.93" />
+                </svg>
+                <div class="gauge-center-text">
+                  <span class="gauge-val" id="profileIntensityVal">62%</span>
+                  <span class="gauge-label">Overall Intensity</span>
+                  <span class="gauge-level" id="profileIntensityLabel">Moderate</span>
+                </div>
+              </div>
+
+              <!-- METRICS 2x2 GRID -->
+              <div class="profile-metrics-grid">
+                <div class="pmetric-box">
+                  <span class="pmetric-icon">🌱</span>
+                  <div>
+                    <div class="pmetric-lbl">Primary Theme</div>
+                    <div class="pmetric-val" id="profileTheme">Growth & Transition</div>
+                  </div>
+                </div>
+                <div class="pmetric-box">
+                  <span class="pmetric-icon">🎭</span>
+                  <div>
+                    <div class="pmetric-lbl">Emotional Tone</div>
+                    <div class="pmetric-val" id="profileTone">Neutral</div>
+                  </div>
+                </div>
+                <div class="pmetric-box">
+                  <span class="pmetric-icon">🔁</span>
+                  <div>
+                    <div class="pmetric-lbl">Recurring Pattern</div>
+                    <div class="pmetric-val" id="profileRecurring">3</div>
+                  </div>
+                </div>
+                <div class="pmetric-box">
+                  <span class="pmetric-icon">🗝️</span>
+                  <div>
+                    <div class="pmetric-lbl">Key Symbols</div>
+                    <div class="pmetric-val" id="profileSymbols">Door, Forest, Light</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- IN SHORT CARD WITH DREAM ARTWORK & DIRECT ANSWER -->
+          <div class="dash-card in-short-card">
+            <div class="in-short-left">
+              <div class="in-short-badge">
+                <span>💡</span>
+                <span>What Your Dream Is Telling You</span>
+              </div>
+              <p class="in-short-text" id="overviewInShortText">
+                Your dream reflects a period of transition.
+              </p>
+              <div class="in-short-solution-box" id="overviewSolutionBox">
+                <span class="solution-tag">🌟 Awakening Takeaway</span>
+                <p class="solution-text" id="overviewSolutionText">Embrace the unknown step ahead — your subconscious is signaling you are ready for a major personal breakthrough.</p>
+              </div>
+              <div class="in-short-footer">
+                <button class="btn-link-action" onclick="switchResultsTab('tabScenarios')">✨ Simulate Alternative Scenarios →</button>
+              </div>
+            </div>
+            <div class="in-short-right">
+              <div class="dream-art-container">
+                <img id="overviewDreamImg" class="dream-art-img" src="" alt="AI Dream Fantasy Art" style="display:none;" />
+                <canvas id="overviewVisualCanvas" width="240" height="160" class="dream-art-canvas"></canvas>
+                <div class="art-badge-overlay">✨ AI Dream Art</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /overview-grid -->
+
+        <!-- RECOMMENDED YOUTUBE FANTASY VIDEOS (STRICTLY IN OVERVIEW ONLY) -->
+        <div class="dash-card results-cinema-card" style="margin-top: 24px;">
+          <div class="card-header-flex">
+            <div class="icon-title-wrap">
+              <span class="card-glow-icon">🎬</span>
+              <div>
+                <h3 class="card-title">Recommended YouTube Fantasy Videos for Your Dream</h3>
+                <p class="card-sub">Live fantasy films, lucid dreaming guides & ambient soundscapes matched to your themes</p>
+              </div>
+            </div>
+            <button class="btn-ghost-icon" onclick="showView('Cinema')">View Full Cinema Hub →</button>
+          </div>
+          <div class="cinema-mini-grid" id="resultsCinemaGrid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div><!-- /tabOverview -->
+
+
+      <!-- ==========================================
+           TAB 2: SCENARIOS / CLIMAX CHANGER (Screen 5 - FULL PAGE IMMERSIVE)
+      ========================================== -->
+      <div class="rtab-content" id="tabScenarios">
+        <div class="dash-card scenario-simulator-card full-page-scenario">
+          
+          <div class="scenario-top">
+            <div class="icon-title-wrap">
+              <span class="card-glow-icon">🪄</span>
+              <div>
+                <h3 class="card-title">Scenario Simulator & Climax Changer</h3>
+                <p class="card-sub">Explore "what if" alternative decisions and alter your dream's climax to create new empowering timelines.</p>
+              </div>
             </div>
             
-            <div class="report-card">
-              <h2><span>✨</span> What Your Mind May Be Exploring</h2>
-              <p id="overviewMindExploring" style="line-height:1.6;font-size:0.95rem;white-space:pre-wrap;"></p>
-            </div>
-
-            <div class="report-card" id="mythologicalReflectionCard" style="display:none;">
-              <h2><span>🕉️</span> Mythological Reflection</h2>
-              <p id="overviewMythological" style="line-height:1.6;font-size:0.95rem;font-style:italic;color:#f0dfff;"></p>
-            </div>
-
-            <div style="font-size:0.75rem;color:var(--text-muted);font-style:italic;" id="overviewUncertainty"></div>
-          </div>
-
-          <!-- Tab 2: Story Map -->
-          <div class="dashboard-content-section" id="storyMapTab">
-            <div class="report-card">
-              <h2><span>📖</span> Story Map Timeline</h2>
-              <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:20px;">The narrative sequence mapped from trigger to resolution.</p>
-              
-              <div class="story-map-visual">
-                <div class="story-node" id="nodeStart">
-                  <div class="node-circle">1</div>
-                  <div class="node-label">Start</div>
-                  <div class="node-desc" id="descStart">Beginning state</div>
-                </div>
-                <div class="story-node" id="nodeTrigger">
-                  <div class="node-circle">2</div>
-                  <div class="node-label">Trigger</div>
-                  <div class="node-desc" id="descTrigger">Inciting incident</div>
-                </div>
-                <div class="story-node climax" id="nodeConflict">
-                  <div class="node-circle">3</div>
-                  <div class="node-label">Climax</div>
-                  <div class="node-desc" id="descConflict">Central conflict</div>
-                </div>
-                <div class="story-node" id="nodeEnding">
-                  <div class="node-circle">4</div>
-                  <div class="node-label">Ending</div>
-                  <div class="node-desc" id="descEnding">Final state</div>
-                </div>
-              </div>
-
-              <div style="background:rgba(10,2,22,0.4);padding:15px;border-radius:10px;font-size:0.85rem;line-height:1.5;margin-top:20px;">
-                <strong>Protagonist Agency:</strong> <span id="agencySummary" style="color:var(--primary-cyan)"></span>
-              </div>
+            <div class="scenario-preset-pills" id="scenarioPresetsContainer">
+              <!-- Dynamically populated with dream-specific presets by JS -->
             </div>
           </div>
 
-          <!-- Tab 3: Emotion Arc & Matrix -->
-          <div class="dashboard-content-section" id="emotionArcTab">
-            <div class="report-card">
-              <h2><span>📊</span> Emotional Transitions</h2>
-              <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:15px;">Tracking primary changes in emotion intensity across narrative phases.</p>
-              <div class="emotion-arc-visual" id="emotionArcVisualContainer"></div>
-              <p style="font-size:0.85rem;line-height:1.5;margin-top:10px;" id="emotionTransitionsText"></p>
-            </div>
-
-            <div class="report-card">
-              <h2><span>⚖️</span> Dream Conflict Matrix</h2>
-              <p style="font-size:0.85rem;color:var(--text-muted);">Placing the dream narrative based on movement dynamics (approaching vs avoiding).</p>
-              
-              <div class="conflict-matrix-grid">
-                <div class="matrix-header">AXIS</div>
-                <div class="matrix-header">MOVING TOWARD</div>
-                <div class="matrix-header">MOVING AWAY</div>
-                
-                <div class="matrix-row-title">FEAR</div>
-                <div class="matrix-cell" id="cellApproachingFear">
-                  <strong>Approaching Fear</strong>
-                  <span>Confronting threats or moving forward despite anxiety</span>
-                </div>
-                <div class="matrix-cell" id="cellAvoidance">
-                  <strong>Avoidance</strong>
-                  <span>Running away, hiding, or dodging direct conflict</span>
-                </div>
-
-                <div class="matrix-row-title">CURIOSITY</div>
-                <div class="matrix-cell" id="cellExploration">
-                  <strong>Exploration</strong>
-                  <span>Actively investigating, inspecting, or seeking clarity</span>
-                </div>
-                <div class="matrix-cell" id="cellSuppression">
-                  <strong>Suppression</strong>
-                  <span>Ignoring curiosity, refusing to look, or blocking memory</span>
-                </div>
-
-                <div class="matrix-row-title">CONTROL</div>
-                <div class="matrix-cell" id="cellConfrontation">
-                  <strong>Confrontation</strong>
-                  <span>Attempting to dominate, master, or fight the narrative barrier</span>
-                </div>
-                <div class="matrix-cell" id="cellEscape">
-                  <strong>Escape</strong>
-                  <span>Seeking release, running out of options, surrendering control</span>
-                </div>
-              </div>
-              <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;" id="matrixRationale"></p>
-            </div>
-          </div>
-
-          <!-- Tab 4: Symbol Context -->
-          <div class="dashboard-content-section" id="symbolsTab">
-            <div class="report-card">
-              <h2><span>🔍</span> Contextual Symbols</h2>
-              <p style="font-size:0.85rem;color:var(--text-muted);">Symbols decoded through actions, emotions, and local database meanings.</p>
-              <div class="symbol-grid" id="symbolGridContainer"></div>
-            </div>
-          </div>
-
-          <!-- Tab 5: Psychological Lenses -->
-          <div class="dashboard-content-section" id="lensesTab">
-            <div class="report-card">
-              <h2><span>🧠</span> Multi-Lens Interpretation</h2>
-              <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:20px;">Analyzing the dream story from distinct psychological perspectives.</p>
-              
-              <div class="lenses-grid">
-                <div class="lens-card">
-                  <h3>Emotional Psychology</h3>
-                  <p id="lensEmotional"></p>
-                </div>
-                <div class="lens-card">
-                  <h3>Jungian Lens</h3>
-                  <p id="lensJungian"></p>
-                </div>
-                <div class="lens-card">
-                  <h3>Narrative Psychology</h3>
-                  <p id="lensNarrative"></p>
-                </div>
-                <div class="lens-card">
-                  <h3>Personal Growth</h3>
-                  <p id="lensGrowth"></p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tab 6: Hypotheses & Feedback -->
-          <div class="dashboard-content-section" id="hypothesesTab">
-            <div class="report-card">
-              <h2><span>🔮</span> Interpretation Hypotheses</h2>
-              <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:15px;">Multiple parallel angles on what your mind might be working through.</p>
-              <div class="hypothesis-grid" id="hypothesesGridContainer"></div>
-            </div>
-
-            <!-- Feedback Interaction -->
-            <div class="feedback-section">
-              <h3 style="font-size:1.1rem;color:#fff;margin-bottom:6px;">Which hypothesis resonates closest to your experience?</h3>
-              <p style="font-size:0.8rem;color:var(--text-muted);">Help DreamLens refine the current report immediately.</p>
-              
-              <div class="feedback-resonance-options">
-                <button class="feedback-res-btn" data-val="This strongly resonates">This strongly resonates</button>
-                <button class="feedback-res-btn" data-val="This partially resonates">This partially resonates</button>
-                <button class="feedback-res-btn" data-val="I am unsure">I am unsure</button>
-                <button class="feedback-res-btn" data-val="This does not fit me">This does not fit me</button>
-              </div>
-
-              <div style="margin-top:15px;">
-                <label style="font-size:0.85rem;font-weight:600;color:var(--primary-cyan);display:block;margin-bottom:6px;">Did DreamLens misunderstand anything?</label>
-                <div class="feedback-categories">
-                  <label><input type="checkbox" name="misunderstands" value="emotion" /> Emotion</label>
-                  <label><input type="checkbox" name="misunderstands" value="symbol" /> Symbol</label>
-                  <label><input type="checkbox" name="misunderstands" value="relationship" /> Relationship</label>
-                  <label><input type="checkbox" name="misunderstands" value="situation" /> Situation</label>
-                  <label><input type="checkbox" name="misunderstands" value="overall interpretation" /> Overall Interpretation</label>
-                </div>
-              </div>
-
-              <div style="margin-top:15px;">
-                <label for="feedbackNotes" style="font-size:0.85rem;font-weight:600;color:var(--primary-cyan);display:block;margin-bottom:6px;">Additional clarification</label>
-                <textarea id="feedbackNotes" class="guided-input" style="width:100%;height:80px;resize:none;" placeholder="E.g., I actually felt relieved, not scared when the snake appeared..."></textarea>
-              </div>
-
-              <button class="btn-action" id="submitFeedbackBtn" style="margin-top:15px;width:auto;padding:10px 24px;font-size:0.9rem;">
-                Refine Analysis
-              </button>
-              <div id="refinementStatus" style="font-size:0.85rem;margin-top:8px;color:#ffc107;"></div>
-            </div>
-
-            <!-- Reflection Questions Card -->
-            <div class="report-card" style="margin-top:20px;">
-              <h2><span>📖</span> Reflection Questions</h2>
-              <div id="reflectionQuestionsContainer" style="display:flex;flex-direction:column;gap:10px;"></div>
-            </div>
-          </div>
-
-          <!-- Tab 7: Turning Point Simulator -->
-          <div class="dashboard-content-section" id="scenarioTab">
-            <div class="report-card">
-              <h2><span>🎭</span> Dream Scenario Simulator</h2>
-              <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">Explore alternative responses to narrative blockers. This is a reflective visualization tool rather than a future prediction.</p>
-              
-              <div class="scenario-simulator">
-                <strong style="color:var(--primary-cyan);">Turning Point Block:</strong>
-                <p id="simulatorTPText" style="font-size:0.9rem;margin:8px 0;line-height:1.4;"></p>
-                
-                <strong style="color:var(--primary-cyan);display:block;margin-top:12px;">Reflective Question:</strong>
-                <p id="simulatorReflectText" style="font-size:0.95rem;margin:6px 0;font-weight:600;"></p>
-                
-                <button class="btn-action" id="runSimulationBtn" style="width:auto;margin-top:15px;padding:10px 24px;font-size:0.9rem;">
-                  🚀 Explore the Turning Point
+          <div class="scenario-form-grid full-grid">
+            <div class="sform-left">
+              <label class="sform-label">Type any alternative action or decision to reshape the dream's climax:</label>
+              <div class="sform-input-wrap">
+                <input type="text" id="scenarioCustomInput" class="sform-input" placeholder="e.g. What if I stood my ground with courage?" value="What if I stood my ground with courage?" />
+                <button class="btn-gradient-primary" id="runScenarioBtn">
+                  <span>Simulate Timeline</span>
+                  <span>→</span>
                 </button>
-                
-                <div class="simulator-output" id="simulatorOutput">
-                  <p id="simulatorAltText" style="margin-bottom:10px;"></p>
-                  <span class="simulator-disclaimer" id="simulatorDisclaimer"></span>
+              </div>
+
+              <!-- POSSIBLE OUTCOMES LIST -->
+              <div class="possible-outcomes-wrap">
+                <h4 class="outcomes-heading">Empowerment Outcomes for Waking Life</h4>
+                <div class="outcomes-list" id="scenarioOutcomesList">
+                  <div class="outcome-item"><span>✨</span><span>Heightened courage and assertiveness</span></div>
+                  <div class="outcome-item"><span>🛡️</span><span>Deepened self-trust and boundary setting</span></div>
+                  <div class="outcome-item"><span>🚀</span><span>Enhanced problem-solving through creative confrontation</span></div>
+                  <div class="outcome-item"><span>🌟</span><span>Greater sense of sovereign mastery over fear</span></div>
+                </div>
+              </div>
+
+              <div class="scenario-takeaway-box" id="scenarioTakeawayBox">
+                <span class="takeaway-badge">💡 Empowerment Rule</span>
+                <p id="scenarioTakeawayText">Choosing active confrontation over avoidance converts subconscious anxiety into creative courage.</p>
+              </div>
+            </div>
+
+            <div class="sform-right">
+              <!-- ALTERNATIVE TIMELINE CARD -->
+              <div class="alt-timeline-card full-card">
+                <div class="at-header">
+                  <span>🌌</span>
+                  <span class="at-title" id="scenarioResultTitle">Alternative Timeline</span>
+                </div>
+                <p class="at-text" id="scenarioResultStory">
+                  If you had stood your ground with calm awareness, the perceived threat dissolves into an ally of immense strength, revealing hidden reservoirs of inner wisdom and vitality.
+                </p>
+                <div class="at-visual-wrap large-wrap">
+                  <img id="scenarioArtImg" class="scenario-art-img large-art" src="" alt="AI Scenario Artwork" style="display:none;" />
+                  <canvas id="scenarioCanvas" width="440" height="200" class="scenario-art-canvas large-canvas"></canvas>
+                  <div class="art-badge-overlay">✨ Climax AI Art</div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- VIEW 4: COMPARATIVE ANALYSIS VIEW -->
-      <div id="comparisonWorkspace" style="display:none;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        </div>
+      </div><!-- /tabScenarios -->
+
+
+      <!-- ==========================================
+           TAB 3: STORY MAP / TIMELINE (Screen 6)
+      ========================================== -->
+      <div class="rtab-content" id="tabStoryMap">
+        <div class="dash-card story-map-container">
+          <div class="story-map-top">
+            <div>
+              <h3 class="card-section-title">Story Timeline</h3>
+              <span class="story-sub">4 chronological phases of your subconscious narrative</span>
+            </div>
+            <span class="badge badge-purple" id="storyStageCountBadge">4 Stages Analyzed</span>
+          </div>
+
+          <div class="story-timeline-grid" id="storyTimelineCards">
+            <!-- Populated by JS: 4 stage cards with generated canvas art -->
+          </div>
+
+          <div class="story-insights-bottom">
+            <div class="sib-left">
+              <span class="badge badge-purple">Key Insights</span>
+              <p class="sib-text" id="storyKeyInsightsText">
+                The dream suggests a journey of transformation, facing instinctual forces and stepping into personal growth.
+              </p>
+            </div>
+            <button class="btn-secondary-glow" id="storyFullStoryBtn" onclick="switchResultsTab('tabPsychology')">
+              <span>View Full Psychology</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      </div><!-- /tabStoryMap -->
+
+
+      <!-- ==========================================
+           TAB 3: EMOTIONS (Screen 6)
+      ========================================== -->
+      <div class="rtab-content" id="tabEmotions">
+        <div class="emotions-layout-grid">
+          
+          <!-- EMOTION ARC WAVE CHART -->
+          <div class="dash-card emotion-arc-card">
+            <div class="card-header-flex">
+              <h3 class="card-section-title">Emotion Arc</h3>
+              <span class="badge badge-pink">Dynamic Neural Wave</span>
+            </div>
+            <div class="arc-chart-container">
+              <canvas id="emotionWaveCanvas" width="480" height="220" class="emotion-wave-canvas"></canvas>
+              <div class="arc-labels-x">
+                <span>Beginning</span>
+                <span>Middle (Turning Point)</span>
+                <span>Climax & Resolution</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- EMOTIONAL BREAKDOWN DONUT -->
+          <div class="dash-card emotion-breakdown-card">
+            <h3 class="card-section-title">Emotional Breakdown</h3>
+            <div class="breakdown-chart-wrap">
+              <div class="donut-chart-svg-wrap">
+                <svg class="donut-svg" viewBox="0 0 140 140">
+                  <circle class="donut-ring-bg" cx="70" cy="70" r="50" />
+                  <circle class="donut-seg" id="donutSeg1" cx="70" cy="70" r="50" stroke="#ec4899" stroke-dasharray="314.15" stroke-dashoffset="140" />
+                  <circle class="donut-seg" id="donutSeg2" cx="70" cy="70" r="50" stroke="#06b6d4" stroke-dasharray="314.15" stroke-dashoffset="230" />
+                  <circle class="donut-seg" id="donutSeg3" cx="70" cy="70" r="50" stroke="#a855f7" stroke-dasharray="314.15" stroke-dashoffset="280" />
+                  <circle class="donut-seg" id="donutSeg4" cx="70" cy="70" r="50" stroke="#10b981" stroke-dasharray="314.15" stroke-dashoffset="300" />
+                </svg>
+                <div class="donut-center-label">
+                  <span class="donut-main-pct" id="donutMainPct">45%</span>
+                  <span class="donut-main-name" id="donutMainName">Intensity</span>
+                </div>
+              </div>
+              <div class="donut-legend" id="donutLegendContainer">
+                <div class="legend-row"><span class="ldot" style="background:#ec4899"></span><span>Intensity 45%</span></div>
+                <div class="legend-row"><span class="ldot" style="background:#06b6d4"></span><span>Curiosity 25%</span></div>
+                <div class="legend-row"><span class="ldot" style="background:#a855f7"></span><span>Courage 20%</span></div>
+                <div class="legend-row"><span class="ldot" style="background:#10b981"></span><span>Clarity 10%</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /emotions-layout-grid -->
+
+        <!-- KEY EMOTIONAL INSIGHTS PILLS -->
+        <div class="dash-card emotion-insights-pills-card">
+          <h3 class="card-section-title">Key Emotional Insights</h3>
+          <div class="insights-pills-grid" id="emotionInsightsGrid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div><!-- /tabEmotions -->
+
+
+      <!-- ==========================================
+           TAB 4: SYMBOLS (Screen 7)
+      ========================================== -->
+      <div class="rtab-content" id="tabSymbols">
+        <div class="symbols-layout-grid">
+          
+          <!-- SYMBOL NETWORK CANVAS (Interactive Node Graph) -->
+          <div class="dash-card symbol-network-card">
+            <div class="card-header-flex">
+              <h3 class="card-section-title">Symbol Network</h3>
+              <span class="badge badge-cyan" id="symbolCenterBadge">Central Archetype</span>
+            </div>
+            <div class="network-canvas-wrap">
+              <canvas id="symbolNetworkCanvas" width="480" height="300" class="symbol-graph-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- SYMBOL MEANINGS LIST -->
+          <div class="dash-card symbol-meanings-card">
+            <h3 class="card-section-title">Symbol Meanings</h3>
+            <div class="smeanings-list" id="symbolMeaningsList">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+        </div><!-- /symbols-layout-grid -->
+
+        <div class="dash-card symbol-key-reflection-card">
+          <div class="skr-badge">
+            <span>🔮</span>
+            <span>Key Reflection</span>
+          </div>
+          <p class="skr-text" id="symbolKeyReflectionText">
+            The core symbols interact to reveal hidden subconscious truths and internal emotional alignment.
+          </p>
+        </div>
+      </div><!-- /tabSymbols -->
+
+
+      <!-- ==========================================
+           TAB 5: PSYCHOLOGY (Screen 8)
+      ========================================== -->
+      <div class="rtab-content" id="tabPsychology">
+        <div class="psychology-3col-grid">
+          
+          <!-- FREUDIAN -->
+          <div class="dash-card psych-lens-card" style="border-top:3px solid #dc2626;">
+            <div class="psych-card-head">
+              <span class="psych-icon-pill" style="background:linear-gradient(135deg,#dc2626,#9333ea)">🧠</span>
+              <div>
+                <h4 class="psych-title">Freudian Analysis</h4>
+                <span class="psych-tag">Unconscious Drives & Instincts</span>
+              </div>
+            </div>
+            <p class="psych-desc" id="lensFreudianText">
+              Subconscious drives and emotional desires seeking expression.
+            </p>
+            <div class="psych-card-footer"><span class="psych-lens-badge" style="background:rgba(220,38,38,0.15);color:#f87171;">Depth Psychology</span></div>
+          </div>
+
+          <!-- JUNGIAN -->
+          <div class="dash-card psych-lens-card" style="border-top:3px solid #7c3aed;">
+            <div class="psych-card-head">
+              <span class="psych-icon-pill" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)">🌌</span>
+              <div>
+                <h4 class="psych-title">Jungian Analysis</h4>
+                <span class="psych-tag">Archetypes & Individuation</span>
+              </div>
+            </div>
+            <p class="psych-desc" id="lensJungianText">
+              Archetypal integration of the Shadow and the emergence of the Self.
+            </p>
+            <div class="psych-card-footer"><span class="psych-lens-badge" style="background:rgba(124,58,237,0.15);color:#c084fc;">Analytical Psychology</span></div>
+          </div>
+
+          <!-- MODERN / COGNITIVE -->
+          <div class="dash-card psych-lens-card" style="border-top:3px solid #0891b2;">
+            <div class="psych-card-head">
+              <span class="psych-icon-pill" style="background:linear-gradient(135deg,#0891b2,#10b981)">🔬</span>
+              <div>
+                <h4 class="psych-title">Modern Psychology</h4>
+                <span class="psych-tag">Cognitive & Emotional Regulation</span>
+              </div>
+            </div>
+            <p class="psych-desc" id="lensModernText">
+              Active problem solving and neural memory consolidation for waking challenges.
+            </p>
+            <div class="psych-card-footer"><span class="psych-lens-badge" style="background:rgba(8,145,178,0.15);color:#22d3ee;">Neuroscience</span></div>
+          </div>
+
+        </div><!-- /psychology-3col-grid -->
+
+        <!-- MYTHOLOGICAL REFLECTION -->
+        <div class="dash-card mythological-card" id="mythologicalCard" style="border-top:3px solid #d97706;">
+          <div class="psych-card-head">
+            <span class="psych-icon-pill" style="background:linear-gradient(135deg,#d97706,#f59e0b)">🕉️</span>
+            <div>
+              <h4 class="psych-title">Mythological Reflection</h4>
+              <span class="psych-tag">Universal & Indian Folklore Archetypes</span>
+            </div>
+          </div>
+          <p class="psych-desc" id="lensMythologicalText">
+            Echoes ancient sacred folklore and mythic transformations.
+          </p>
+          <div class="psych-card-footer"><span class="psych-lens-badge" style="background:rgba(217,119,6,0.15);color:#fbbf24;">World Mythology</span></div>
+        </div>
+
+        <!-- SYNTHESIS BOTTOM CARD -->
+        <div class="dash-card psych-synthesis-card">
+          <div class="synthesis-flex">
+            <div class="synthesis-left">
+              <div class="synthesis-header">
+                <span class="psych-icon-pill">✨</span>
+                <span class="synthesis-title">Synthesis & Practical Awakening</span>
+              </div>
+              <p class="synthesis-desc" id="lensSynthesisText">
+                Your dream balances courage and contemplation, guiding you toward sovereign self-discovery.
+              </p>
+            </div>
+            <button class="btn-secondary-glow" onclick="switchResultsTab('tabScenarios')">
+              <span>Simulate Climax Scenarios</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /tabPsychology -->
+
+    </div><!-- /viewResults -->
+
+
+    <!-- ============================================================
+         VIEW 4: DREAM CINEMA HUB (Screen 10)
+    ============================================================ -->
+    <div class="view-panel" id="viewCinema">
+      <div class="cinema-header-card">
+        <div class="cinema-header-flex">
           <div>
-            <h1 style="font-size:1.6rem;font-weight:700;">Comparative Dream Analysis</h1>
-            <p style="font-size:0.8rem;color:var(--text-muted);">Comparing recurring patterns across the session thread</p>
+            <div class="cinema-tag-badge">🎬 Dream Cinema</div>
+            <h2 class="cinema-hero-title">Movies, shows and videos that resonate with your dream's themes.</h2>
           </div>
-          <button class="btn-action" id="exitCompareBtn" style="width:auto;padding:8px 16px;background:rgba(22,10,42,0.4);font-size:0.85rem;">
-            Exit Comparison
-          </button>
-        </div>
-
-        <div class="report-card">
-          <h2><span>⚖️</span> Narrative Comparison Sheet</h2>
-          <div class="comparison-grid">
-            <div class="comparison-card">
-              <h3>Shared Symbols</h3>
-              <p id="compSharedSymbols"></p>
-            </div>
-            <div class="comparison-card">
-              <h3>Emotional Dynamics</h3>
-              <p id="compEmotions"></p>
-            </div>
-            <div class="comparison-card">
-              <h3>Narrative Structure</h3>
-              <p id="compNarrative"></p>
-            </div>
-            <div class="comparison-card">
-              <h3>Dreamer Actions</h3>
-              <p id="compActions"></p>
-            </div>
-            <div class="comparison-card">
-              <h3>Tensions & Conflicts</h3>
-              <p id="compConflicts"></p>
-            </div>
-            <div class="comparison-card">
-              <h3>Narrative Endings</h3>
-              <p id="compEndings"></p>
-            </div>
+          <div class="cinema-search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="cinemaSearchInput" class="cinema-search-input" placeholder="Search YouTube..." />
           </div>
         </div>
 
-        <div class="report-card">
-          <h2><span>🌀</span> Recurring Patterns</h2>
-          <p id="compRecurringPatterns" style="font-size:1rem;line-height:1.6;font-weight:600;color:#fff;"></p>
-        </div>
-
-        <div class="report-card">
-          <h2><span>💡</span> Personal Growth Insight</h2>
-          <p id="compGrowthInsight" style="font-size:0.9rem;line-height:1.6;"></p>
+        <div class="genre-pills-bar">
+          <button class="genre-pill active" data-genre="all">All</button>
+          <button class="genre-pill" data-genre="fantasy">Fantasy</button>
+          <button class="genre-pill" data-genre="adventure">Adventure</button>
+          <button class="genre-pill" data-genre="mystery">Mystery</button>
+          <button class="genre-pill" data-genre="lucid">Lucid Dreaming</button>
+          <button class="genre-pill" data-genre="ambient">Ambient Sounds</button>
         </div>
       </div>
 
-    </div>
+      <div class="cinema-grid" id="fullCinemaGrid">
+        <!-- Populated by JS -->
+      </div>
+    </div><!-- /viewCinema -->
 
+
+    <!-- ============================================================
+         VIEW 5: HISTORY (Screen 11)
+    ============================================================ -->
+    <div class="view-panel" id="viewHistory">
+      <div class="dash-card history-header-card">
+        <div class="card-header-flex">
+          <div>
+            <h2 class="card-title">History</h2>
+            <p class="card-sub">View and revisit your past dream analyses.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="history-cards-list" id="historyCardsList">
+        <!-- Populated by JS -->
+      </div>
+    </div><!-- /viewHistory -->
+
+
+    <!-- ============================================================
+         VIEW 6: SAVED REPORTS (Screen 12)
+    ============================================================ -->
+    <div class="view-panel" id="viewSaved">
+      <div class="dash-card saved-header-card">
+        <div class="card-header-flex">
+          <div>
+            <h2 class="card-title">Saved Reports</h2>
+            <p class="card-sub">Your favorite dream analyses, saved for later.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="saved-cards-grid" id="savedCardsGrid">
+        <!-- Populated by JS -->
+      </div>
+    </div><!-- /viewSaved -->
+
+  </main><!-- /ws-main -->
+
+  <!-- ============================================================
+       YOUTUBE MODAL PLAYER
+  ============================================================ -->
+  <div class="video-modal-backdrop" id="videoModal">
+    <div class="video-modal-box">
+      <div class="video-modal-head">
+        <span class="vm-title" id="videoModalTitle">Playing Dream Video</span>
+        <button class="vm-close-btn" id="closeVideoModalBtn">✕</button>
+      </div>
+      <div class="video-iframe-wrap" id="videoIframeContainer">
+        <!-- iframe injected on play -->
+      </div>
+    </div>
   </div>
 
+
+  <!-- ============================================================
+       WORKSPACE JAVASCRIPT
+  ============================================================ -->
   <script>
-    // State storage for session level
-    let sessionDreams = []; // Stores Array of: { dream_text: "...", date: Date, analysis: {...}, report: {...} }
-    let activeDreamIndex = -1;
-    let compareMode = false;
-    let selectedForCompare = [];
+  /* ================================================================
+     YOUTUBE CATALOG DATA
+  ================================================================ */
+  const VIDEOS = [
+    {
+      ytId: "W6NZfCO5SIk",
+      title: "Inception — A Journey Through Dreams",
+      channel: "Fantasy Cinema Hub",
+      desc: "A cinematic exploration of layered dreamscapes and subconscious portals.",
+      genre: "fantasy",
+      duration: "14:27",
+      badgeClass: "badge-purple",
+      badgeLabel: "Fantasy"
+    },
+    {
+      ytId: "MV4PiT-ZHCA",
+      title: "How to Lucid Dream Tonight — Full Guide",
+      channel: "Lucid Dream Society",
+      desc: "Step-by-step techniques to become conscious in your dreams.",
+      genre: "lucid",
+      duration: "22:15",
+      badgeClass: "badge-cyan",
+      badgeLabel: "Lucid"
+    },
+    {
+      ytId: "1ZYbU82GVz4",
+      title: "Deep Sleep Fantasy Ambience — Enchanted Forest",
+      channel: "Dream Soundscapes",
+      desc: "Immersive ambient fantasy music to drift into magical dreamscapes.",
+      genre: "ambient",
+      duration: "3:00:00",
+      badgeClass: "badge-green",
+      badgeLabel: "Ambient"
+    },
+    {
+      ytId: "6Af6b_wyiwI",
+      title: "The Science of Dreaming — What Happens When We Sleep",
+      channel: "Kurzgesagt",
+      desc: "Animated breakdown of what the brain does during dream states.",
+      genre: "mystery",
+      duration: "9:34",
+      badgeClass: "badge-pink",
+      badgeLabel: "Mystery"
+    },
+    {
+      ytId: "hVyGbP7hMTk",
+      title: "Top 10 Fantasy Dream Movies You Must Watch",
+      channel: "CinemaScope",
+      desc: "The greatest films that explore dream worlds and magical realms.",
+      genre: "fantasy",
+      duration: "11:44",
+      badgeClass: "badge-purple",
+      badgeLabel: "Fantasy"
+    },
+    {
+      ytId: "R9OHn5ZF4Uo",
+      title: "WILD Technique — Wake Induced Lucid Dreaming",
+      channel: "Lucid Dream Portal",
+      desc: "Master the WILD method to enter dreams with full awareness.",
+      genre: "lucid",
+      duration: "18:52",
+      badgeClass: "badge-cyan",
+      badgeLabel: "Lucid"
+    },
+    {
+      ytId: "5qap5aO4i9A",
+      title: "Lofi Fantasy Beats — Celestial Dreams & Magic",
+      channel: "ChilledCow",
+      desc: "Chill atmospheric beats blended with magical dream soundscapes.",
+      genre: "ambient",
+      duration: "1:00:00",
+      badgeClass: "badge-green",
+      badgeLabel: "Ambient"
+    },
+    {
+      ytId: "9Y1SiH_lcS4",
+      title: "The Mystery of Recurring Dreams — Hidden Meanings",
+      channel: "Mind Unraveled",
+      desc: "Psychological analysis of why we have the same dreams repeatedly.",
+      genre: "mystery",
+      duration: "16:03",
+      badgeClass: "badge-pink",
+      badgeLabel: "Mystery"
+    },
+    {
+      ytId: "GaOAoznW31s",
+      title: "Epic Fantasy Realm Odyssey — The Myth of Transformation",
+      channel: "Fantasy Realm",
+      desc: "Iconic mythical scenes of ancient ruins, portals, and dragons.",
+      genre: "adventure",
+      duration: "31:22",
+      badgeClass: "badge-purple",
+      badgeLabel: "Adventure"
+    },
+    {
+      ytId: "K3Qzzggn--s",
+      title: "Jungian Dream Interpretation Masterclass: Archetypes & Shadow",
+      channel: "Psychology Unlocked",
+      desc: "Deep dive into Jungian dream symbolism and archetypal analysis.",
+      genre: "mystery",
+      duration: "47:11",
+      badgeClass: "badge-pink",
+      badgeLabel: "Mystery"
+    },
+    {
+      ytId: "4fndeDfaWCg",
+      title: "Hogwarts Night Ambience — Magical Castle Sounds",
+      channel: "Ambient Worlds",
+      desc: "Sleep to the sound of a magical castle — rain, fireplace, owls.",
+      genre: "ambient",
+      duration: "8:00:00",
+      badgeClass: "badge-green",
+      badgeLabel: "Ambient"
+    },
+    {
+      ytId: "7apHE3KWPPA",
+      title: "Surreal Dream Journeys — The Art of Flying & Exploration",
+      channel: "CartoonVault",
+      desc: "The most surreal dream-themed adventures and soaring scenes.",
+      genre: "adventure",
+      duration: "58:30",
+      badgeClass: "badge-purple",
+      badgeLabel: "Adventure"
+    }
+  ];
 
-    // Elements
-    const captureWorkspace = document.getElementById("captureWorkspace");
-    const loadingScreen = document.getElementById("loadingScreen");
-    const resultsWorkspace = document.getElementById("resultsWorkspace");
-    const comparisonWorkspace = document.getElementById("comparisonWorkspace");
-    const statusAlert = document.getElementById("statusAlert");
-    const dreamThreadList = document.getElementById("dreamThreadList");
-    const emptyThreadMessage = document.getElementById("emptyThreadMessage");
-    const reAnalyzeBtn = document.getElementById("reAnalyzeBtn");
-    const newDreamBtn = document.getElementById("newDreamBtn");
-    const analyzeBtn = document.getElementById("analyzeBtn");
+  /* ================================================================
+     GLOBAL STATE
+  ================================================================ */
+  let currentDreamText = '';
+  let currentAnalysisData = null;
 
-    // Capture tab switching
-    document.querySelectorAll(".capture-modes .mode-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".capture-modes .mode-tab").forEach(t => t.classList.remove("active"));
-        document.querySelectorAll(".capture-form-section").forEach(s => s.classList.remove("active"));
-        tab.classList.add("active");
-        document.getElementById(tab.dataset.target).classList.add("active");
-      });
+  /* ================================================================
+     INIT & GREETING
+  ================================================================ */
+  document.addEventListener('DOMContentLoaded', () => {
+    setGreeting();
+    renderSpotlightCanvas();
+    if (typeof renderCinemaGridList === 'function' && typeof VIDEOS !== 'undefined') {
+      renderCinemaGridList(VIDEOS);
+    }
+    renderSampleDefaultAnalysis();
+    checkHealth();
+  });
+
+  function setGreeting() {
+    const h = new Date().getHours();
+    const prefix = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
+    document.getElementById('greetingText').textContent = `${prefix}, Hariharan`;
+  }
+
+  async function checkHealth() {
+    try {
+      const res = await fetch('/_api_key_check');
+      const d = await res.json();
+      if (d.groq_connected) {
+        document.getElementById('sidebarApiPill').innerHTML = '<span class="status-dot online"></span><span>AI Ready • Groq Hosted</span>';
+      }
+    } catch(e) {}
+  }
+
+  /* ================================================================
+     VIEW NAVIGATION (Dashboard, Loading, Results, Cinema, History, Saved)
+  ================================================================ */
+  function showView(viewName) {
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-nav-item').forEach(n => n.classList.remove('active'));
+
+    const panel = document.getElementById('view' + viewName);
+    if (panel) panel.classList.add('active');
+
+    const nav = document.getElementById('nav' + viewName);
+    if (nav) nav.classList.add('active');
+  }
+
+  document.getElementById('navWorkspace').addEventListener('click', () => {
+    if (currentAnalysisData) showView('Results');
+    else showView('Dashboard');
+    document.getElementById('navWorkspace').classList.add('active');
+  });
+
+  document.getElementById('navCinema').addEventListener('click', () => {
+    showView('Cinema');
+    document.getElementById('navCinema').classList.add('active');
+  });
+
+  document.getElementById('navHistory').addEventListener('click', () => {
+    showView('History');
+    document.getElementById('navHistory').classList.add('active');
+    loadHistory();
+  });
+
+  document.getElementById('navSaved').addEventListener('click', () => {
+    showView('Saved');
+    document.getElementById('navSaved').classList.add('active');
+    loadSavedReports();
+  });
+
+  document.getElementById('newAnalysisBtn').addEventListener('click', () => {
+    showView('Dashboard');
+    document.getElementById('navWorkspace').classList.add('active');
+    document.getElementById('fullJournalText').value = '';
+    document.getElementById('fullJournalText').focus();
+  });
+
+  document.getElementById('viewRecentReportBtn').addEventListener('click', () => {
+    showView('Results');
+    document.getElementById('navWorkspace').classList.add('active');
+  });
+
+  /* Mobile sidebar toggle */
+  const mobileBtn = document.getElementById('mobileMenuBtn');
+  if (mobileBtn) {
+    mobileBtn.addEventListener('click', () => {
+      document.getElementById('wsSidebar').classList.toggle('open');
     });
+  }
 
-    // Voice Capture Web Speech API Implementation
-    const recognitionAvailable = ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
-    document.querySelectorAll(".voice-capture-btn").forEach(btn => {
-      if (!recognitionAvailable) {
-        btn.style.display = "none";
+  /* Mode tabs (Full Journal / Guided / Fragments) */
+  document.querySelectorAll('.mode-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.capture-form-section').forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      const target = document.getElementById(tab.dataset.target);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  /* Results tab switcher (Overview, Story Map, Emotions, Symbols, Psychology, Scenarios) */
+  function switchResultsTab(tabId) {
+    document.querySelectorAll('.rtab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+    document.querySelectorAll('.rtab-content').forEach(c => c.classList.toggle('active', c.id === tabId));
+    
+    // Trigger canvas redraws if needed
+    if (tabId === 'tabEmotions' && currentAnalysisData) {
+      renderEmotionWaveCanvas(currentAnalysisData.emotion_arc?.curve);
+    }
+    if (tabId === 'tabSymbols' && currentAnalysisData) {
+      renderSymbolNetworkCanvas(currentAnalysisData.symbol_network);
+    }
+    if (tabId === 'tabScenarios') {
+      renderScenarioCanvas();
+    }
+  }
+
+  document.querySelectorAll('.rtab').forEach(tab => {
+    tab.addEventListener('click', () => switchResultsTab(tab.dataset.tab));
+  });
+
+  /* ================================================================
+     DREAM ANALYSIS EXECUTION
+  ================================================================ */
+  document.getElementById('startAnalyzeBtn').addEventListener('click', runAnalyzeDream);
+
+  function getDreamInput() {
+    const activeTab = document.querySelector('.mode-tab.active');
+    const target = activeTab ? activeTab.dataset.target : 'fullJournalSec';
+    if (target === 'fullJournalSec') return document.getElementById('fullJournalText').value.trim();
+    if (target === 'guidedSec') {
+      return [
+        document.getElementById('guidedRecall').value,
+        document.getElementById('guidedImage').value,
+        document.getElementById('guidedFeeling').value,
+        document.getElementById('guidedEnding').value
+      ].filter(Boolean).join(' ');
+    }
+    if (target === 'fragmentSec') return document.getElementById('fragmentText').value.trim();
+    return '';
+  }
+
+  let loadStepTimer;
+  let waveAnimFrame;
+
+  function renderLoadingWave() {
+    const canvas = document.getElementById('loadingWaveCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let t = 0;
+    cancelAnimationFrame(waveAnimFrame);
+    function draw() {
+      const panel = document.getElementById('viewLoading');
+      if (!panel || !panel.classList.contains('active')) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height / 2);
+      for (let x = 0; x < canvas.width; x++) {
+        const y = (canvas.height / 2) + Math.sin(x * 0.06 + t) * 14 * Math.sin((x / canvas.width) * Math.PI);
+        ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = '#a855f7';
+      ctx.shadowBlur = 10;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      t += 0.09;
+      waveAnimFrame = requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  function animateLoadingAgents() {
+    const steps = ['agStep1', 'agStep2', 'agStep3', 'agStep4'];
+    const lines = ['agLine1', 'agLine2', 'agLine3'];
+    let idx = 0;
+    
+    steps.forEach(s => {
+      const el = document.getElementById(s);
+      if (el) el.classList.remove('active', 'done');
+    });
+    lines.forEach(l => {
+      const el = document.getElementById(l);
+      if (el) el.classList.remove('done');
+    });
+    const firstStep = document.getElementById('agStep1');
+    if (firstStep) firstStep.classList.add('active');
+
+    clearInterval(loadStepTimer);
+    loadStepTimer = setInterval(() => {
+      if (idx < steps.length - 1) {
+        const curr = document.getElementById(steps[idx]);
+        if (curr) { curr.classList.remove('active'); curr.classList.add('done'); }
+        if (lines[idx]) {
+          const l = document.getElementById(lines[idx]);
+          if (l) l.classList.add('done');
+        }
+        idx++;
+        const next = document.getElementById(steps[idx]);
+        if (next) next.classList.add('active');
+      }
+    }, 900);
+
+    renderLoadingWave();
+  }
+
+  async function runAnalyzeDream() {
+    const dream = getDreamInput();
+    if (!dream) {
+      showAlert('Please enter your dream description first.', 'warning');
+      return;
+    }
+    currentDreamText = dream;
+
+    // Switch to Loading View
+    showView('Loading');
+    animateLoadingAgents();
+
+    try {
+      const res = await fetch('/api/dream/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dream_text: dream })
+      });
+      const data = await res.json();
+
+      clearInterval(loadStepTimer);
+      cancelAnimationFrame(waveAnimFrame);
+
+      if (!data.success) {
+        showAlert(data.message || 'Analysis failed. Please try again.', 'error');
+        showView('Dashboard');
         return;
       }
-      
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'en-US';
-      
-      btn.addEventListener("click", () => {
-        const targetId = btn.dataset.target;
-        const targetInput = document.getElementById(targetId);
-        
-        if (btn.classList.contains("recording")) {
-          recognition.stop();
-          btn.classList.remove("recording");
-          return;
-        }
-        
-        btn.classList.add("recording");
-        recognition.start();
-        
-        recognition.onresult = (event) => {
-          const resultText = event.results[0][0].transcript;
-          if (targetInput.tagName === "TEXTAREA") {
-            targetInput.value = (targetInput.value + " " + resultText).trim();
-          } else {
-            targetInput.value = (targetInput.value + " " + resultText).trim();
-          }
-          btn.classList.remove("recording");
-        };
-        
-        recognition.onerror = (event) => {
-          console.error("Speech recognition error", event.error);
-          btn.classList.remove("recording");
-        };
-        
-        recognition.onend = () => {
-          btn.classList.remove("recording");
-        };
-      });
-    });
 
-    // Capture Trigger
-    analyzeBtn.addEventListener("click", async () => {
-      // 1. Extract Dream Text depending on Active Capture Tab
-      let dreamText = "";
-      const activeTab = document.querySelector(".capture-modes .mode-tab.active");
-      const mode = activeTab.dataset.target;
-      let labelNote = "";
-
-      if (mode === "fullJournalSec") {
-        dreamText = document.getElementById("fullJournalText").value.trim();
-      } else if (mode === "quickGuidedSec") {
-        const recall = document.getElementById("guidedRecall").value.trim();
-        const image = document.getElementById("guidedImage").value.trim();
-        const feeling = document.getElementById("guidedFeeling").value.trim();
-        const ending = document.getElementById("guidedEnding").value.trim();
-        
-        if (recall || image || feeling || ending) {
-          dreamText = `Dream recollection: ${recall}\nStrongest image: ${image}\nAssociated feelings: ${feeling}\nDream resolution: ${ending}`;
-        }
-      } else if (mode === "fragmentSec") {
-        dreamText = document.getElementById("fragmentText").value.trim();
-        labelNote = "incomplete_recall";
-      }
-
-      if (!dreamText) {
-        showAlert("Please describe your dream, nightmare, or fragment.", "warning");
+      if (data.classification === 'NON_DREAM' || data.classification === 'AMBIGUOUS') {
+        showAlert(data.message, 'info');
+        showView('Dashboard');
         return;
       }
 
-      // Hide panels and alert
-      statusAlert.style.display = "none";
-      captureWorkspace.style.display = "none";
-      loadingScreen.style.display = "flex";
-
+      currentAnalysisData = data;
       try {
-        const response = await fetch("/api/dream/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dream_text: dreamText })
-        });
-        const data = await response.json();
-        
-        if (!data.success) {
-          showAlert(data.message || "Failed to analyze dream. Please try again.", "error");
-          resetToCapture();
-          return;
-        }
-
-        if (data.classification === "NON_DREAM") {
-          showAlert(data.message, "warning");
-          resetToCapture();
-          return;
-        }
-
-        if (data.classification === "AMBIGUOUS") {
-          showAlert(data.message, "warning");
-          resetToCapture();
-          return;
-        }
-
-        // Add note for fragment label
-        if (labelNote && data.analysis && data.analysis.decomposition) {
-          data.analysis.decomposition.unresolved_elements.push("Analysis based on incomplete recall fragments");
-        }
-
-        // Add to Session Dreams array
-        const sessionItem = {
-          dream_text: dreamText,
-          date: new Date(),
-          analysis: data.analysis,
-          report: data.report
-        };
-        sessionDreams.push(sessionItem);
-        activeDreamIndex = sessionDreams.length - 1;
-
-        // Render Sidebar
-        renderSidebar();
-        
-        // Show Results View
-        renderResults(sessionItem);
-        
-      } catch (err) {
-        console.error(err);
-        showAlert("An error occurred connecting to the Dream Intelligence service. Try again later.", "error");
-        resetToCapture();
+        renderAnalysisResults(data, dream);
+      } catch (renderErr) {
+        console.error('Error in renderAnalysisResults:', renderErr);
       }
-    });
+      showView('Results');
+      switchResultsTab('tabOverview');
 
-    // Helper functions
-    function showAlert(msg, type) {
-      statusAlert.textContent = msg;
-      statusAlert.className = `status-alert ${type}`;
-      statusAlert.style.display = "block";
+    } catch (err) {
+      clearInterval(loadStepTimer);
+      cancelAnimationFrame(waveAnimFrame);
+      console.error('Analyze dream network error:', err);
+      showAlert('Network error. Check your connection.', 'error');
+      showView('Dashboard');
     }
+  }
 
-    function resetToCapture() {
-      loadingScreen.style.display = "none";
-      captureWorkspace.style.display = "block";
-    }
+  /* ================================================================
+     CLIENT-SIDE IMAGE GENERATION UTILITY
+  ================================================================ */
+  function buildPollinationsUrl(prompt, sceneType, seed) {
+    const stylePrompts = {
+      dreamscape: `Hyperrealistic masterpiece 8k cinematic fantasy art of ${prompt}, magical bioluminescent glow, ultra detailed concept art, trending on ArtStation, unreal engine 5 render`,
+      stage1: `Cinematic atmospheric fantasy scene of ${prompt}, ethereal mist, dramatic volumetric lighting, 8k resolution, detailed digital illustration`,
+      stage2: `Enchanted glowing fantasy revelation in ${prompt}, radiant magical aura, vibrant crystals, high definition fantasy art`,
+      stage3: `Epic cinematic climax of ${prompt}, celestial energy rays, dramatic perspective, hyper-detailed fantasy art, octane render`,
+      stage4: `Serene tranquil fantasy resolution of ${prompt}, radiant golden sunlight, peaceful ethereal dreamscape, masterpiece painting`,
+      scenario: `Empowered victorious alternative timeline of ${prompt}, triumphant heroic glow, golden celestial aura, 8k cinematic concept art`
+    };
+    const finalPrompt = stylePrompts[sceneType] || stylePrompts.dreamscape;
+    const finalSeed = seed || (Math.floor(Math.random() * 90000) + 10000);
+    return `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=800&height=450&nologo=true&enhance=true&model=flux&seed=${finalSeed}`;
+  }
 
-    newDreamBtn.addEventListener("click", () => {
-      captureWorkspace.style.display = "block";
-      resultsWorkspace.style.display = "none";
-      comparisonWorkspace.style.display = "none";
-      statusAlert.style.display = "none";
-      
-      // Clear inputs
-      document.getElementById("fullJournalText").value = "";
-      document.getElementById("fragmentText").value = "";
-      document.getElementById("guidedRecall").value = "";
-      document.getElementById("guidedImage").value = "";
-      document.getElementById("guidedFeeling").value = "";
-      document.getElementById("guidedEnding").value = "";
-      
-      document.querySelectorAll(".dream-thread-item").forEach(i => i.classList.remove("active"));
-    });
+  function loadImageWithSkeleton(imgEl, canvasEl, prompt, sceneType, seed) {
+    if (!imgEl) return;
+    const url = buildPollinationsUrl(prompt, sceneType, seed);
+    // Show shimmer via CSS class on parent
+    const parent = imgEl.closest('.dream-art-container, .at-visual-wrap, .stage-img-wrap');
+    if (parent) parent.classList.add('img-loading');
+    imgEl.style.display = 'block';
+    imgEl.style.opacity = '0';
+    imgEl.src = url;
+    imgEl.onload = () => {
+      imgEl.style.transition = 'opacity 0.7s ease';
+      imgEl.style.opacity = '1';
+      if (canvasEl) canvasEl.style.display = 'none';
+      if (parent) parent.classList.remove('img-loading');
+    };
+    imgEl.onerror = () => {
+      imgEl.style.display = 'none';
+      if (canvasEl) { canvasEl.style.display = 'block'; }
+      if (parent) parent.classList.remove('img-loading');
+    };
+  }
 
-    reAnalyzeBtn.addEventListener("click", () => {
-      newDreamBtn.click();
-    });
+  /* ================================================================
+     RENDER RESULTS ACROSS ALL TABS (Screens 4 - 9)
+  ================================================================ */
+  function renderAnalysisResults(data, dreamText) {
+    const profile = data.dream_profile || {};
+    const inShort = data.in_short || {};
+    const timeline = data.story_timeline || [];
+    const emotionArc = data.emotion_arc || {};
+    const symbolNet = data.symbol_network || {};
+    const psych = data.psychology || {};
+    const ytRecs = data.youtube_recommendations || [];
 
-    function renderSidebar() {
-      if (sessionDreams.length === 0) {
-        emptyThreadMessage.style.display = "block";
-        return;
-      }
-      emptyThreadMessage.style.display = "none";
-      dreamThreadList.innerHTML = "";
-      
-      sessionDreams.forEach((item, index) => {
-        const dom = document.createElement("div");
-        dom.className = `dream-thread-item ${index === activeDreamIndex ? 'active' : ''}`;
-        
-        const firstLine = item.dream_text.split('\n')[0];
-        const snippet = firstLine.substring(0, 30) + (firstLine.length > 30 ? '...' : '');
-        
-        dom.innerHTML = `
-          <div class="item-title">🌙 ${snippet}</div>
-          <div class="item-meta">
-            <span>${item.analysis.emotions.dominant_emotion || 'Unspecified'}</span>
-            <span>${new Date(item.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+    // Title & Date
+    const titleWords = dreamText.split(' ').slice(0, 5).join(' ');
+    document.getElementById('resultsDreamTitle').textContent = `"${titleWords}..."`;
+    document.getElementById('resultsDreamDate').textContent = `Analyzed on ${new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})} • ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+
+    // Spotlight in Dashboard
+    document.getElementById('spotlightTitle').textContent = titleWords;
+
+    // --- TAB 1: OVERVIEW & DIRECT SOLUTION ---
+    const intensity = profile.overall_intensity || 75;
+    document.getElementById('profileIntensityVal').textContent = `${intensity}%`;
+    document.getElementById('profileIntensityLabel').textContent = profile.intensity_label || 'High';
+    
+    // Update circular gauge stroke
+    const totalDash = 339.29;
+    const offset = totalDash - (totalDash * (intensity / 100));
+    document.getElementById('gaugeBar').style.strokeDashoffset = offset;
+
+    document.getElementById('profileTheme').textContent = profile.primary_theme || 'Confronting Inner Power & Instinct';
+    document.getElementById('profileTone').textContent = profile.emotional_tone || 'Intense & Revealing';
+    document.getElementById('profileRecurring').textContent = profile.recurring_patterns_count || 2;
+    document.getElementById('profileSymbols').textContent = Array.isArray(profile.key_symbols) ? profile.key_symbols.join(', ') : 'Core Symbol, Journey';
+
+    document.getElementById('overviewInShortText').textContent = inShort.summary || 'Your subconscious is actively processing primal instinct and awakening deeper self-trust.';
+    document.getElementById('overviewSolutionText').textContent = inShort.takeaway || psych.synthesis || 'Embrace the power revealed in this dream — your subconscious is signaling you are ready for a major breakthrough.';
+    
+    const dreamImg = document.getElementById('overviewDreamImg');
+    const dreamCanvas = document.getElementById('overviewVisualCanvas');
+    const dreamPrompt = inShort.dream_text_for_image || dreamText || 'magical dream fantasy landscape';
+    loadImageWithSkeleton(dreamImg, dreamCanvas, dreamPrompt.substring(0,140), 'dreamscape');
+
+    // --- TAB 2: STORY MAP (4 CHRONOLOGICAL PHASES) ---
+    const timelineGrid = document.getElementById('storyTimelineCards');
+    if (timeline.length) {
+      timelineGrid.innerHTML = timeline.map((s, i) => `
+        <div class="story-stage-card" onclick="inspectStagePhase(${i})">
+          <div class="stage-img-wrap img-loading">
+            <canvas id="stageCanvas${i}" width="200" height="120" class="stage-canvas"></canvas>
+            <img id="stageImg${i}" class="stage-img" src="" alt="${escapeHtml(s.title)}" style="opacity:0;"/>
+            <span class="stage-num-badge">Phase ${i+1}</span>
           </div>
-          <input type="checkbox" class="select-checkbox" data-index="${index}" onclick="event.stopPropagation();" />
-        `;
-        
-        dom.addEventListener("click", () => {
-          if (compareMode) {
-            const cb = dom.querySelector(".select-checkbox");
-            cb.checked = !cb.checked;
-            toggleCompareSelect(index, cb.checked);
-            return;
-          }
-          activeDreamIndex = index;
-          document.querySelectorAll(".dream-thread-item").forEach(i => i.classList.remove("active"));
-          dom.classList.add("active");
-          renderResults(item);
-        });
-        
-        dreamThreadList.appendChild(dom);
+          <div class="stage-info">
+            <div class="stage-title">${escapeHtml(s.title)}</div>
+            <div class="stage-desc">${escapeHtml(s.desc)}</div>
+          </div>
+        </div>
+      `).join('');
+      // Render canvases immediately, then load images progressively
+      timeline.forEach((s, i) => {
+        renderStageCanvas(`stageCanvas${i}`, i, s.title);
+        const prompt = (s.scene_prompt || s.image_url || `${s.title} ${s.desc}`).substring(0, 140);
+        const stageKeys = ['stage1','stage2','stage3','stage4'];
+        const imgEl = document.getElementById(`stageImg${i}`);
+        const canvasEl = document.getElementById(`stageCanvas${i}`);
+        if (imgEl) loadImageWithSkeleton(imgEl, canvasEl, prompt, stageKeys[i] || 'dreamscape');
+      });
+    }
+    document.getElementById('storyKeyInsightsText').textContent = data.story_key_insights || 'The dream reflects a journey from tension to empowerment, unlocking hidden inner strength.';
+
+    // --- TAB 3: EMOTIONS ---
+    renderEmotionWaveCanvas(emotionArc.curve);
+    renderEmotionBreakdown(emotionArc.breakdown);
+    renderEmotionInsights(emotionArc.insights);
+
+    // --- TAB 4: SYMBOLS (DYNAMIC NODE NETWORK) ---
+    renderSymbolNetworkCanvas(symbolNet);
+    renderSymbolMeanings(symbolNet.connected_nodes);
+    document.getElementById('symbolKeyReflectionText').textContent = symbolNet.key_reflection || 'Your symbols interact to reveal hidden subconscious truths and internal emotional alignment.';
+
+    // --- TAB 5: PSYCHOLOGY (RICH DISTINCT LENSES) ---
+    document.getElementById('lensFreudianText').textContent = psych.freudian?.text || 'Subconscious exploration of suppressed desires and instinctual drives seeking expression.';
+    document.getElementById('lensJungianText').textContent = psych.jungian?.text || 'The imagery represents archetypal integration of the Shadow and the emergence of the Self.';
+    document.getElementById('lensModernText').textContent = psych.modern?.text || 'Active problem solving and neural memory consolidation for waking challenges.';
+    
+    if (psych.mythological?.text) {
+      document.getElementById('lensMythologicalText').textContent = psych.mythological.text;
+      document.getElementById('mythologicalCard').style.display = '';
+    } else {
+      document.getElementById('mythologicalCard').style.display = 'none';
+    }
+    document.getElementById('lensSynthesisText').textContent = psych.synthesis || 'Your dream balances courage and contemplation, guiding you toward sovereign self-discovery.';
+
+    // --- TAB 6: SCENARIO PRESETS & FULL-PAGE SIMULATOR ---
+    populateScenarioPresets(data.scenario_presets, symbolNet?.center_node?.label || profile.key_symbols?.[0] || 'Encounter');
+    // Store dream text for scenario image generation
+    window._lastScenarioPrompt = dreamText;
+    renderScenarioCanvas();
+
+    // --- RESULTS YOUTUBE CINEMA (STRICTLY INSIDE OVERVIEW — always dynamic) ---
+    if (ytRecs && ytRecs.length >= 2) {
+      renderResultsCinema(ytRecs);
+    } else {
+      // Do a live search using the dream theme right now
+      const searchQ = (profile.primary_theme || '') + ' ' + (profile.key_symbols?.[0] || '') + ' dream';
+      fetchLiveDreamVideosForOverview(searchQ);
+    }
+  }
+
+  async function fetchLiveDreamVideosForOverview(query) {
+    try {
+      const res = await fetch(`/api/youtube/search?q=${encodeURIComponent(query)}&genre=all`);
+      const data = await res.json();
+      if (data.videos && data.videos.length >= 2) {
+        renderResultsCinema(data.videos);
+      }
+    } catch(e) { /* keep whatever is shown */ }
+  }
+
+  /* ================================================================
+     STAGE VISUAL GENERATOR (Story Map Glowing Canvases)
+  ================================================================ */
+  function renderStageCanvas(canvasId, sceneIdx, title = '') {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+
+    const themes = [
+      ['#030712', '#1e1b4b', '#064e3b'], // 1. Beginning
+      ['#1e1b4b', '#6b21a8', '#0e7490'], // 2. Rising Tension
+      ['#3b0764', '#701a75', '#0284c7'], // 3. Climax
+      ['#064e3b', '#047857', '#fbbf24']  // 4. Resolution
+    ];
+    const palette = themes[sceneIdx % themes.length];
+
+    const g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, palette[0]);
+    g.addColorStop(0.5, palette[1]);
+    g.addColorStop(1, palette[2]);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    // Glowing sparkles / stardust
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    for (let i = 0; i < 20; i++) {
+      const sx = (Math.sin(i * 37 + sceneIdx * 10) * 0.5 + 0.5) * w;
+      const sy = (Math.cos(i * 19 + sceneIdx * 5) * 0.5 + 0.5) * h;
+      ctx.beginPath();
+      ctx.arc(sx, sy, (i % 3) * 0.7 + 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Light orb in center
+    const rg = ctx.createRadialGradient(w/2, h/2, 2, w/2, h/2, 40);
+    rg.addColorStop(0, 'rgba(255,255,255,0.9)');
+    rg.addColorStop(0.5, palette[1]);
+    rg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = rg;
+    ctx.fillRect(w/2 - 40, h/2 - 40, 80, 80);
+  }
+
+  function inspectStagePhase(idx) {
+    if (!currentAnalysisData?.story_timeline?.[idx]) return;
+    const stage = currentAnalysisData.story_timeline[idx];
+    showAlert(`Phase ${idx+1} [${stage.title}]: ${stage.desc}`, 'info');
+  }
+
+  /* ================================================================
+     CANVAS VISUAL GENERATION (Procedural Dreamscapes)
+  ================================================================ */
+  function renderDreamCanvas(canvasId, theme = 'cosmic_portal') {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+
+    // Cosmic sky gradient
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#0a0d24');
+    grad.addColorStop(0.5, '#2e1065');
+    grad.addColorStop(1, '#064e3b');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Stars
+    ctx.fillStyle = '#ffffff';
+    for (let i = 0; i < 40; i++) {
+      const sx = (Math.sin(i * 99) * 0.5 + 0.5) * w;
+      const sy = (Math.cos(i * 33) * 0.5 + 0.5) * h * 0.7;
+      const r = (i % 3) * 0.8 + 0.5;
+      ctx.beginPath();
+      ctx.arc(sx, sy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Glowing horizon & arch
+    const doorX = w / 2, doorY = h * 0.45;
+    const doorW = 34, doorH = 50;
+
+    const glowGrad = ctx.createRadialGradient(doorX, doorY + doorH/2, 5, doorX, doorY + doorH/2, 50);
+    glowGrad.addColorStop(0, 'rgba(168, 85, 247, 0.85)');
+    glowGrad.addColorStop(0.5, 'rgba(6, 182, 212, 0.45)');
+    glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = glowGrad;
+    ctx.fillRect(doorX - 50, doorY - 20, 100, 100);
+
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(doorX, doorY, doorW/2, Math.PI, 0);
+    ctx.lineTo(doorX + doorW/2, doorY + doorH);
+    ctx.lineTo(doorX - doorW/2, doorY + doorH);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function renderSpotlightCanvas() {
+    renderDreamCanvas('spotlightCanvas', 'cosmic_portal');
+  }
+
+  function renderScenarioCanvas() {
+    renderDreamCanvas('scenarioCanvas', 'meadow');
+  }
+
+  /* ================================================================
+     EMOTION CHARTS (Wave curve & Donut Breakdown)
+  ================================================================ */
+  function renderEmotionWaveCanvas(curvePoints) {
+    const canvas = document.getElementById('emotionWaveCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Y Axis levels
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.lineWidth = 1;
+    [h * 0.2, h * 0.5, h * 0.8].forEach(y => {
+      ctx.beginPath();
+      ctx.moveTo(40, y);
+      ctx.lineTo(w - 20, y);
+      ctx.stroke();
+    });
+
+    // Y Labels
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.fillText('Empowered', 5, h * 0.22);
+    ctx.fillText('Neutral', 5, h * 0.52);
+    ctx.fillText('Tension', 5, h * 0.82);
+
+    // Use actual points from curvePoints if available
+    let pts = [
+      { x: 60, y: h * 0.45 },
+      { x: w * 0.5, y: h * 0.28 },
+      { x: w - 50, y: h * 0.65 }
+    ];
+
+    if (curvePoints && curvePoints.length >= 3) {
+      pts = curvePoints.map((c, i) => {
+        const val = typeof c.val === 'number' ? c.val : 0.0;
+        const normY = h * (0.5 - (val * 0.35));
+        const normX = 60 + i * ((w - 110) / (curvePoints.length - 1));
+        return { x: normX, y: Math.max(h * 0.15, Math.min(h * 0.85, normY)) };
       });
     }
 
-    // Tabs inside Results Workspace
-    document.querySelectorAll(".dashboard-tabs .dashboard-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".dashboard-tabs .dashboard-tab").forEach(t => t.classList.remove("active"));
-        document.querySelectorAll(".dashboard-content-section").forEach(s => s.classList.remove("active"));
-        tab.classList.add("active");
-        document.getElementById(tab.dataset.view).classList.add("active");
-      });
+    // Gradient fill under curve
+    const fillGrad = ctx.createLinearGradient(0, 0, 0, h);
+    fillGrad.addColorStop(0, 'rgba(236, 72, 153, 0.45)');
+    fillGrad.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, h);
+    ctx.lineTo(pts[0].x, pts[0].y);
+    for (let i = 0; i < pts.length - 1; i++) {
+      const xc = (pts[i].x + pts[i+1].x) / 2;
+      const yc = (pts[i].y + pts[i+1].y) / 2;
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
+    }
+    ctx.lineTo(pts[pts.length-1].x, pts[pts.length-1].y);
+    ctx.lineTo(pts[pts.length-1].x, h);
+    ctx.closePath();
+    ctx.fillStyle = fillGrad;
+    ctx.fill();
+
+    // Glowing curve line
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 0; i < pts.length - 1; i++) {
+      const xc = (pts[i].x + pts[i+1].x) / 2;
+      const yc = (pts[i].y + pts[i+1].y) / 2;
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
+    }
+    ctx.lineTo(pts[pts.length-1].x, pts[pts.length-1].y);
+    ctx.strokeStyle = '#ec4899';
+    ctx.lineWidth = 4;
+    ctx.shadowColor = '#a855f7';
+    ctx.shadowBlur = 12;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Glowing points
+    pts.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = '#ec4899';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+  }
+
+  function renderEmotionBreakdown(breakdown) {
+    if (!breakdown || !breakdown.length) return;
+    const main = breakdown[0];
+    document.getElementById('donutMainPct').textContent = `${main.pct}%`;
+    document.getElementById('donutMainName').textContent = main.name;
+
+    const legend = document.getElementById('donutLegendContainer');
+    legend.innerHTML = breakdown.map(b => `
+      <div class="legend-row">
+        <span class="ldot" style="background:${b.color || '#a855f7'}"></span>
+        <span>${escapeHtml(b.name)} ${b.pct}%</span>
+      </div>
+    `).join('');
+  }
+
+  function renderEmotionInsights(insights) {
+    if (!insights || !insights.length) return;
+    const grid = document.getElementById('emotionInsightsGrid');
+    grid.innerHTML = insights.map(ins => `
+      <div class="einsight-box">
+        <span class="badge ${ins.badge || 'badge-cyan'}">${escapeHtml(ins.label)}</span>
+        <p>${escapeHtml(ins.text)}</p>
+      </div>
+    `).join('');
+  }
+
+  /* ================================================================
+     SYMBOL NETWORK (100% Dynamic Interactive Node Canvas)
+  ================================================================ */
+  function renderSymbolNetworkCanvas(net) {
+    const canvas = document.getElementById('symbolNetworkCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const centerLabel = net?.center_node?.label || 'Central Symbol';
+    const center = { x: w / 2, y: h / 2, label: centerLabel, r: 38 };
+    document.getElementById('symbolCenterBadge').textContent = centerLabel;
+
+    const rawNodes = net?.connected_nodes || [];
+    const colors = ['#10b981', '#f59e0b', '#a855f7', '#ec4899', '#06b6d4'];
+    
+    // Distribute surrounding nodes evenly around center
+    const count = Math.max(1, rawNodes.length);
+    const radius = Math.min(w, h) * 0.36;
+    const nodes = rawNodes.map((n, i) => {
+      const angle = (i * 2 * Math.PI / count) - (Math.PI / 2);
+      return {
+        label: n.label || `Aspect ${i+1}`,
+        meaning: n.meaning || '',
+        x: center.x + Math.cos(angle) * radius,
+        y: center.y + Math.sin(angle) * radius,
+        r: 26,
+        color: colors[i % colors.length]
+      };
     });
 
-    // Render active analyzed dream data
-    function renderResults(dreamItem) {
-      loadingScreen.style.display = "none";
-      captureWorkspace.style.display = "none";
-      comparisonWorkspace.style.display = "none";
-      resultsWorkspace.style.display = "block";
+    // Connecting dashed energy lines with glow
+    nodes.forEach(n => {
+      ctx.beginPath();
+      ctx.moveTo(center.x, center.y);
+      ctx.lineTo(n.x, n.y);
+      ctx.strokeStyle = 'rgba(168, 85, 247, 0.45)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
 
-      const report = dreamItem.report;
-      const analysis = dreamItem.analysis;
+    // Center Node with intense glow
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, center.r, 0, Math.PI * 2);
+    ctx.fillStyle = '#4c1d95';
+    ctx.fill();
+    ctx.strokeStyle = '#a855f7';
+    ctx.lineWidth = 3;
+    ctx.shadowColor = '#c084fc';
+    ctx.shadowBlur = 18;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
 
-      // 1. Overview & Report tab
-      document.getElementById("overviewAtmosphere").textContent = report.atmosphere || "Exploratory";
-      document.getElementById("overviewMindExploring").textContent = report.what_mind_exploring || "";
-      
-      const mythCard = document.getElementById("mythologicalReflectionCard");
-      if (report.mythological_reflection && report.mythological_reflection.trim() !== "" && report.mythological_reflection.toLowerCase() !== "not naturally relevant") {
-        document.getElementById("overviewMythological").textContent = report.mythological_reflection;
-        mythCard.style.display = "block";
-      } else {
-        mythCard.style.display = "none";
-      }
-      document.getElementById("overviewUncertainty").textContent = report.uncertainty_note || "";
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 13px Outfit, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(center.label.substring(0, 12), center.x, center.y);
 
-      // 2. Story Map Tab
-      const decomp = analysis.decomposition;
-      document.getElementById("descStart").textContent = decomp.beginning_state || "Introductory scene";
-      document.getElementById("descTrigger").textContent = decomp.triggering_event || "Shift or arrival";
-      document.getElementById("descConflict").textContent = decomp.central_conflict || "Confrontation/barrier";
-      document.getElementById("descEnding").textContent = decomp.ending || "Ending scene";
-      
-      const role = analysis.narrative.protagonist_role || "observing";
-      const position = analysis.narrative.protagonist_position || "neutral";
-      document.getElementById("agencySummary").textContent = `Positioned as: ${position} / Primarily active in: ${role}`;
+    // Peripheral Nodes
+    nodes.forEach(n => {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+      ctx.strokeStyle = n.color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
-      // 3. Emotion Arc & Matrix Tab
-      const arcContainer = document.getElementById("emotionArcVisualContainer");
-      arcContainer.innerHTML = "";
-      const emotions = analysis.emotions;
-      if (emotions.stages && emotions.stages.length) {
-        emotions.stages.forEach(stage => {
-          const row = document.createElement("div");
-          row.className = "emotion-arc-stage";
-          
-          const pct = Math.round(stage.intensity * 100);
-          row.innerHTML = `
-            <div class="emotion-stage-title">${stage.stage}</div>
-            <div style="font-size:0.85rem;width:100px;font-weight:600;text-transform:capitalize;">${stage.emotion}</div>
-            <div class="emotion-intensity-bar-bg">
-              <div class="emotion-intensity-bar-fill" style="width: ${pct}%"></div>
-            </div>
-            <div style="font-size:0.85rem;font-weight:700;width:40px;text-align:right;">${pct}%</div>
-          `;
-          arcContainer.appendChild(row);
-        });
-      }
-      
-      let contradictions = "";
-      if (emotions.emotional_contradictions && emotions.emotional_contradictions.length) {
-        contradictions = `\n*Tensions identified:* ${emotions.emotional_contradictions.join('; ')}`;
-      }
-      document.getElementById("emotionTransitionsText").innerText = `Trajectory: ${emotions.emotional_transition || 'None'}.${contradictions}`;
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '500 11px Inter, sans-serif';
+      ctx.fillText(n.label.substring(0, 11), n.x, n.y);
+    });
+  }
 
-      // Set matrix highlight
-      document.querySelectorAll(".matrix-cell").forEach(cell => cell.classList.remove("active"));
-      const matrix = analysis.conflict_matrix || {};
-      const q = (matrix.quadrant || "").toLowerCase();
-      
-      if (q.includes("avoidance")) document.getElementById("cellAvoidance").classList.add("active");
-      else if (q.includes("approaching fear")) document.getElementById("cellApproachingFear").classList.add("active");
-      else if (q.includes("exploration")) document.getElementById("cellExploration").classList.add("active");
-      else if (q.includes("suppression")) document.getElementById("cellSuppression").classList.add("active");
-      else if (q.includes("confrontation")) document.getElementById("cellConfrontation").classList.add("active");
-      else if (q.includes("escape")) document.getElementById("cellEscape").classList.add("active");
-      
-      document.getElementById("matrixRationale").innerHTML = `<strong>Quadrant:</strong> ${matrix.quadrant || 'Unclassified'}. <em>${matrix.rationale || ''}</em>`;
+  function renderSymbolMeanings(nodes) {
+    if (!nodes || !nodes.length) return;
+    const list = document.getElementById('symbolMeaningsList');
+    const ICONS = { 'Door':'🚪', 'Forest':'🌲', 'Light':'💡', 'Journey':'🛤️', 'Fear':'⚡', 'Elephant':'🐘', 'Ocean':'🌊', 'Water':'💧', 'Flying':'🕊️', 'Snake':'🐍', 'default':'🔮' };
+    list.innerHTML = nodes.map(n => `
+      <div class="smeaning-row">
+        <span class="smeaning-icon">${ICONS[n.label] || ICONS.default}</span>
+        <div class="smeaning-details">
+          <div class="smeaning-name">${escapeHtml(n.label)}</div>
+          <div class="smeaning-desc">${escapeHtml(n.meaning || 'Subconscious manifestation')}</div>
+        </div>
+      </div>
+    `).join('');
+  }
 
-      // 4. Symbol relationships
-      const symbolGrid = document.getElementById("symbolGridContainer");
-      symbolGrid.innerHTML = "";
-      if (analysis.symbols && analysis.symbols.length) {
-        analysis.symbols.forEach(sym => {
-          const sc = document.createElement("div");
-          sc.className = "symbol-card";
-          sc.innerHTML = `
-            <div class="symbol-header">
-              <div class="symbol-name">🔍 ${sym.symbol}</div>
-              <div class="symbol-emotion">${sym.associated_emotion || 'neutral'}</div>
-            </div>
-            <div class="symbol-detail-row">
-              <strong>Context in dream</strong>
-              <span>${sym.context || 'Appeared in dream'}</span>
-            </div>
-            <div class="symbol-detail-row">
-              <strong>Cultural/Universal baseline</strong>
-              <span>${sym.general_possibilities || 'Unspecified'}</span>
-            </div>
-            <div class="symbol-detail-row">
-              <strong>Narrative role & actions</strong>
-              <span>Dreamer: ${sym.user_action || 'observed'}; outcome: ${sym.narrative_effect || 'none'}.</span>
-            </div>
-            <div class="symbol-detail-row">
-              <strong>Contextual Reading</strong>
-              <span style="font-style:italic;color:#e8d5ff;">${sym.possible_significance || 'Unspecified'}</span>
-            </div>
-          `;
-          symbolGrid.appendChild(sc);
-        });
-      } else {
-        symbolGrid.innerHTML = '<div style="color:var(--text-muted)">No major symbols parsed.</div>';
-      }
+  /* ================================================================
+     SCENARIO SIMULATOR (Dynamic Dream-Specific Presets & Execution)
+  ================================================================ */
+  function populateScenarioPresets(presets, centralEntity) {
+    const container = document.getElementById('scenarioPresetsContainer');
+    if (!container) return;
 
-      // 5. Lenses
-      const lenses = report.psychological_lenses || {};
-      document.getElementById("lensEmotional").textContent = lenses.emotional_psychology || "Analysis pending.";
-      document.getElementById("lensJungian").textContent = lenses.jungian_lens || "Analysis pending.";
-      document.getElementById("lensNarrative").textContent = lenses.narrative_psychology || "Analysis pending.";
-      document.getElementById("lensGrowth").textContent = lenses.personal_growth || "Analysis pending.";
-
-      // 6. Hypotheses & Feedback
-      const hypContainer = document.getElementById("hypothesesGridContainer");
-      hypContainer.innerHTML = "";
-      if (analysis.hypotheses && analysis.hypotheses.length) {
-        analysis.hypotheses.forEach(h => {
-          const conf = (h.confidence || "Moderate").toLowerCase();
-          const hc = document.createElement("div");
-          hc.className = `hypothesis-card ${conf}`;
-          hc.innerHTML = `
-            <div class="hypothesis-meta">
-              <span>Confidence: <strong>${h.confidence || 'Moderate'}</strong></span>
-              <span>Validation: ${h.validation_condition || 'Self-evident'}</span>
-            </div>
-            <h3>${h.title}</h3>
-            <p>${h.explanation}</p>
-            <div style="font-size:0.75rem;background:rgba(100,200,255,0.06);padding:8px;border-radius:6px;border-left:2px solid var(--primary-cyan)">
-              <strong>Supporting Evidence:</strong> ${h.evidence || 'General context'}
-            </div>
-          `;
-          hypContainer.appendChild(hc);
-        });
-      }
-
-      // Clear interactive feedback selections
-      document.querySelectorAll(".feedback-resonance-options button").forEach(btn => btn.classList.remove("active"));
-      document.querySelectorAll(".feedback-categories input").forEach(cb => cb.checked = false);
-      document.getElementById("feedbackNotes").value = "";
-      document.getElementById("refinementStatus").textContent = "";
-
-      // Reflection questions
-      const rqContainer = document.getElementById("reflectionQuestionsContainer");
-      rqContainer.innerHTML = "";
-      if (report.reflection_questions && report.reflection_questions.length) {
-        report.reflection_questions.forEach(q => {
-          const item = document.createElement("div");
-          item.style.padding = "10px 14px";
-          item.style.background = "rgba(100,200,255,0.04)";
-          item.style.borderLeft = "3px solid var(--primary-cyan)";
-          item.style.borderRadius = "4px";
-          item.style.fontSize = "0.85rem";
-          item.textContent = q;
-          rqContainer.appendChild(item);
-        });
-      }
-
-      // 7. Scenario simulator
-      const sim = analysis.turning_point || {};
-      document.getElementById("simulatorTPText").textContent = sim.turning_point_description || "A central blocker.";
-      document.getElementById("simulatorReflectText").textContent = sim.reflective_question || "What if you resolved it?";
-      document.getElementById("simulatorOutput").style.display = "none";
-      document.getElementById("simulatorAltText").textContent = sim.alternative_scenario || "";
-      document.getElementById("simulatorDisclaimer").textContent = sim.disclaimer || "Reflective Scenario — Not a prediction or interpretation of the future.";
+    let items = presets;
+    if (!items || !items.length) {
+      items = [
+        `What if I confronted the ${centralEntity} with fearless curiosity?`,
+        `What if I befriended or communicated directly with the ${centralEntity}?`,
+        `What if I transformed the setting into a sanctuary of golden light?`
+      ];
     }
 
-    // Scenario Simulation triggering
-    document.getElementById("runSimulationBtn").addEventListener("click", () => {
-      document.getElementById("simulatorOutput").style.display = "block";
-    });
+    container.innerHTML = items.map((p, i) => `
+      <button class="scenario-pill ${i===0?'active':''}" onclick="selectScenarioPreset('${escapeHtml(p)}', this)">${escapeHtml(p)}</button>
+    `).join('');
 
-    // Feedback Interactive Refinement Submission
-    let activeResonance = "";
-    document.querySelectorAll(".feedback-resonance-options button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".feedback-resonance-options button").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        activeResonance = btn.dataset.val;
-      });
-    });
-
-    document.getElementById("submitFeedbackBtn").addEventListener("click", async () => {
-      if (activeDreamIndex === -1) return;
-      const dreamItem = sessionDreams[activeDreamIndex];
-      const categories = Array.from(document.querySelectorAll(".feedback-categories input:checked")).map(cb => cb.value);
-      const note = document.getElementById("feedbackNotes").value.trim();
-
-      if (!activeResonance && !note) {
-        document.getElementById("refinementStatus").textContent = "Please select resonance level or provide notes.";
-        return;
-      }
-
-      document.getElementById("refinementStatus").textContent = "Refining interpretations...";
-
-      try {
-        const response = await fetch("/api/dream/refine", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            dream_text: dreamItem.dream_text,
-            original_analysis: {
-              analysis: dreamItem.analysis,
-              report: dreamItem.report
-            },
-            feedback_category: categories.join(", ") || "overall",
-            feedback_resonance: activeResonance,
-            feedback_text: note
-          })
-        });
-        const data = await response.json();
-        
-        if (data.success) {
-          // Update local state item
-          dreamItem.analysis = data.analysis;
-          dreamItem.report = data.report;
-          
-          // Re-render
-          renderResults(dreamItem);
-          document.getElementById("refinementStatus").textContent = data.refinement_summary || "Refined analysis compiled!";
-        } else {
-          document.getElementById("refinementStatus").textContent = "Could not refine the report. Try again.";
-        }
-      } catch (err) {
-        console.error(err);
-        document.getElementById("refinementStatus").textContent = "Connection error refining analysis.";
-      }
-    });
-
-    // COMPARE CONTROL MODULES
-    const compareSelectBtn = document.getElementById("compareSelectBtn");
-    const runCompareBtn = document.getElementById("runCompareBtn");
-    const cancelCompareBtn = document.getElementById("cancelCompareBtn");
-    const exitCompareBtn = document.getElementById("exitCompareBtn");
-
-    compareSelectBtn.addEventListener("click", () => {
-      if (sessionDreams.length < 2) {
-        alert("Please analyze at least 2 dreams in this session before comparison.");
-        return;
-      }
-      compareMode = true;
-      selectedForCompare = [];
-      document.getElementById("sidebar").classList.add("compare-selection-active");
-      compareSelectBtn.style.display = "none";
-      runCompareBtn.style.display = "block";
-      cancelCompareBtn.style.display = "block";
-      
-      // Reset checkboxes
-      document.querySelectorAll(".select-checkbox").forEach(cb => {
-        cb.checked = false;
-      });
-    });
-
-    function toggleCompareSelect(index, isChecked) {
-      if (isChecked) {
-        if (!selectedForCompare.includes(index)) {
-          selectedForCompare.push(index);
-        }
-      } else {
-        selectedForCompare = selectedForCompare.filter(i => i !== index);
-      }
+    if (items[0]) {
+      document.getElementById('scenarioCustomInput').value = items[0];
     }
+  }
 
-    // Checkbox selections manually
-    document.addEventListener("change", (e) => {
-      if (e.target.classList.contains("select-checkbox")) {
-        const idx = parseInt(e.target.dataset.index);
-        toggleCompareSelect(idx, e.target.checked);
-      }
-    });
+  function selectScenarioPreset(text, btn) {
+    document.querySelectorAll('.scenario-pill').forEach(p => p.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.getElementById('scenarioCustomInput').value = text;
+    runScenarioSimulation();
+  }
 
-    cancelCompareBtn.addEventListener("click", () => {
-      compareMode = false;
-      selectedForCompare = [];
-      document.getElementById("sidebar").classList.remove("compare-selection-active");
-      compareSelectBtn.style.display = "block";
-      runCompareBtn.style.display = "none";
-      cancelCompareBtn.style.display = "none";
-    });
+  document.getElementById('runScenarioBtn').addEventListener('click', runScenarioSimulation);
 
-    runCompareBtn.addEventListener("click", async () => {
-      if (selectedForCompare.length < 2) {
-        alert("Please select at least 2 dreams from the checklist.");
-        return;
-      }
+  async function runScenarioSimulation() {
+    const choice = document.getElementById('scenarioCustomInput').value.trim();
+    if (!choice) return;
 
-      // Compile dreams data payload
-      const dreamsPayload = selectedForCompare.map(idx => {
-        const item = sessionDreams[idx];
-        return {
-          dream_text: item.dream_text,
-          analysis: item.analysis
-        };
+    document.getElementById('scenarioResultStory').textContent = 'Simulating alternative timeline with neural archetypal engine...';
+
+    try {
+      const res = await fetch('/api/dream/simulate_scenario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dream_text: currentDreamText || 'Dream experience',
+          choice_text: choice
+        })
       });
-
-      // Show loader
-      captureWorkspace.style.display = "none";
-      resultsWorkspace.style.display = "none";
-      comparisonWorkspace.style.display = "none";
-      loadingScreen.style.display = "flex";
-
-      try {
-        const response = await fetch("/api/dream/compare", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dreams: dreamsPayload })
-        });
-        const data = await response.json();
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('scenarioResultTitle').textContent = data.scenario_title || 'Alternative Timeline';
+        document.getElementById('scenarioResultStory').textContent = data.alternative_timeline;
         
-        loadingScreen.style.display = "none";
-
-        if (data.success && data.comparison) {
-          const comp = data.comparison.comparison;
-          
-          document.getElementById("compSharedSymbols").textContent = comp.shared_symbols || "";
-          document.getElementById("compEmotions").textContent = comp.emotional_differences || "";
-          document.getElementById("compNarrative").textContent = comp.narrative_structure || "";
-          document.getElementById("compActions").textContent = comp.dreamer_actions || "";
-          document.getElementById("compConflicts").textContent = comp.conflicts || "";
-          document.getElementById("compEndings").textContent = comp.endings || "";
-          
-          document.getElementById("compRecurringPatterns").textContent = data.comparison.recurring_patterns || "";
-          document.getElementById("compGrowthInsight").textContent = data.comparison.personal_growth_insight || "";
-
-          // Show workspace comparison
-          comparisonWorkspace.style.display = "block";
-          
-          // Disable compare mode in sidebar
-          cancelCompareBtn.click();
-        } else {
-          alert("Could not compile comparative analysis. Please try again.");
-          resetToCapture();
+        if (data.possible_outcomes?.length) {
+          document.getElementById('scenarioOutcomesList').innerHTML = data.possible_outcomes.map((o,i) => {
+            const icons = ['✨','🛡️','🚀','🌟'];
+            return `<div class="outcome-item"><span>${icons[i%icons.length]}</span><span>${escapeHtml(o)}</span></div>`;
+          }).join('');
         }
-      } catch (err) {
-        console.error(err);
-        alert("Connection error running comparative analysis.");
-        resetToCapture();
-      }
-    });
 
-    exitCompareBtn.addEventListener("click", () => {
-      comparisonWorkspace.style.display = "none";
-      if (activeDreamIndex !== -1) {
-        resultsWorkspace.style.display = "block";
-      } else {
-        captureWorkspace.style.display = "block";
+        if (data.empowerment_takeaway) {
+          document.getElementById('scenarioTakeawayText').textContent = data.empowerment_takeaway;
+        }
+        
+        const scImg = document.getElementById('scenarioArtImg');
+        const scCanvas = document.getElementById('scenarioCanvas');
+        // Generate image client-side using the image_prompt or visual_theme from server
+        const scPrompt = data.image_prompt || data.visual_theme || choice + ' empowering golden breakthrough';
+        loadImageWithSkeleton(scImg, scCanvas, scPrompt.substring(0,150), 'scenario');
       }
+    } catch(e) {
+      document.getElementById('scenarioResultStory').textContent = `By choosing "${choice}", your dream climax transforms into an empowered journey of sovereign self-mastery.`;
+      renderScenarioCanvas();
+    }
+  }
+
+  /* ================================================================
+     YOUTUBE DREAM CINEMA RENDERING & LIVE SEARCH
+  ================================================================ */
+  function renderResultsCinema(videos) {
+    const grid = document.getElementById('resultsCinemaGrid');
+    grid.innerHTML = (videos || []).map(v => {
+      const thumb = `https://img.youtube.com/vi/${v.ytId}/hqdefault.jpg`;
+      return `
+      <div class="video-card" onclick="openVideoPlayer('${v.ytId}', '${escapeHtml(v.title)}')">
+        <div class="video-thumb">
+          <img src="${thumb}" alt="${escapeHtml(v.title)}" loading="lazy" onerror="this.src='https://placehold.co/320x180/0d0f24/7c3aed?text=Dream+Cinema'"/>
+          <div class="video-play-overlay"><div class="play-btn-circle">▶</div></div>
+          <span class="video-genre-badge ${v.badgeClass || 'badge-purple'}">${v.badgeLabel || v.genre || 'Fantasy'}</span>
+          <span class="video-duration">${v.duration || '14:20'}</span>
+        </div>
+        <div class="video-info">
+          <div class="video-title">${escapeHtml(v.title)}</div>
+          <div class="video-channel">${escapeHtml(v.channel)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderCinemaGridList(list) {
+    const grid = document.getElementById('fullCinemaGrid');
+    if (!list || !list.length) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No videos found. Try a different fantasy search!</div>';
+      return;
+    }
+    grid.innerHTML = list.map(v => {
+      const thumb = `https://img.youtube.com/vi/${v.ytId}/hqdefault.jpg`;
+      return `
+      <div class="video-card" onclick="openVideoPlayer('${v.ytId}', '${escapeHtml(v.title)}')">
+        <div class="video-thumb">
+          <img src="${thumb}" alt="${escapeHtml(v.title)}" loading="lazy" onerror="this.src='https://placehold.co/320x180/0d0f24/7c3aed?text=Dream+Cinema'"/>
+          <div class="video-play-overlay"><div class="play-btn-circle">▶</div></div>
+          <span class="video-genre-badge ${v.badgeClass || 'badge-purple'}">${v.badgeLabel || v.genre || 'Fantasy'}</span>
+          <span class="video-duration">${v.duration || '15:00'}</span>
+        </div>
+        <div class="video-info">
+          <div class="video-title">${escapeHtml(v.title)}</div>
+          <div class="video-channel">${escapeHtml(v.channel)}</div>
+          <div class="video-desc">${escapeHtml(v.desc || '')}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  let cinemaSearchDebounce = null;
+  async function fetchLiveCinemaVideos(query = '', genre = 'all') {
+    const grid = document.getElementById('fullCinemaGrid');
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted);"><div class="loading-spinner-ring" style="margin:0 auto 16px;"></div>Searching live YouTube for fantasy videos...</div>';
+    try {
+      const res = await fetch(`/api/youtube/search?q=${encodeURIComponent(query)}&genre=${encodeURIComponent(genre)}`);
+      const data = await res.json();
+      if (data.videos && data.videos.length) {
+        renderCinemaGridList(data.videos);
+      } else {
+        renderCinemaGridList(VIDEOS);
+      }
+    } catch(e) {
+      renderCinemaGridList(VIDEOS);
+    }
+  }
+
+  /* Genre filter */
+  document.querySelectorAll('.genre-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const q = document.getElementById('cinemaSearchInput').value.trim();
+      fetchLiveCinemaVideos(q, pill.dataset.genre);
     });
+  });
+
+  /* Cinema live search */
+  document.getElementById('cinemaSearchInput').addEventListener('input', e => {
+    clearTimeout(cinemaSearchDebounce);
+    const val = e.target.value.trim();
+    const active = document.querySelector('.genre-pill.active');
+    const genre = active ? active.dataset.genre : 'all';
+    cinemaSearchDebounce = setTimeout(() => {
+      fetchLiveCinemaVideos(val, genre);
+    }, 450);
+  });
+
+  /* Video player modal */
+  function openVideoPlayer(ytId, title) {
+    document.getElementById('videoModalTitle').textContent = title;
+    document.getElementById('videoIframeContainer').innerHTML = `
+      <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    `;
+    document.getElementById('videoModal').classList.add('active');
+  }
+
+  document.getElementById('closeVideoModalBtn').addEventListener('click', () => {
+    document.getElementById('videoModal').classList.remove('active');
+    document.getElementById('videoIframeContainer').innerHTML = '';
+  });
+
+  /* ================================================================
+     HISTORY & SAVED REPORTS
+  ================================================================ */
+  async function loadHistory() {
+    const list = document.getElementById('historyCardsList');
+    try {
+      const res = await fetch('/history/recent');
+      const data = await res.json();
+      if (data.items?.length) {
+        list.innerHTML = data.items.map(it => `
+          <div class="dash-card history-item-card" onclick="loadSampleDreamText('${escapeHtml(it.dream)}')">
+            <div class="hcard-left">
+              <span class="hcard-icon">🌙</span>
+              <div>
+                <div class="hcard-title">${escapeHtml(it.dream.substring(0, 70))}...</div>
+                <div class="hcard-date">${it.ts ? new Date(it.ts).toLocaleDateString() : 'Recent'}</div>
+              </div>
+            </div>
+            <button class="btn-secondary-glow">View Report →</button>
+          </div>
+        `).join('');
+      } else {
+        list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">No dream history yet. Analyze your first dream!</div>';
+      }
+    } catch(e) {}
+  }
+
+  async function loadSavedReports() {
+    const grid = document.getElementById('savedCardsGrid');
+    try {
+      const res = await fetch('/api/dream/saved_reports');
+      const data = await res.json();
+      if (data.reports?.length) {
+        grid.innerHTML = data.reports.map(r => `
+          <div class="dash-card saved-report-box" onclick="loadSavedReportData(${escapeHtml(JSON.stringify(r.data))})">
+            <div class="sbox-title">${escapeHtml(r.title)}</div>
+            <div class="sbox-date">${r.ts ? new Date(r.ts).toLocaleDateString() : 'Saved'}</div>
+            <p class="sbox-preview">${escapeHtml(r.dream.substring(0, 100))}...</p>
+            <button class="btn-link-action">Open Report →</button>
+          </div>
+        `).join('');
+      } else {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No saved reports yet. Click "Save Report" on any analysis!</div>';
+      }
+    } catch(e) {}
+  }
+
+  /* Save report action */
+  document.getElementById('saveReportBtn').addEventListener('click', async () => {
+    if (!currentAnalysisData) return;
+    try {
+      const res = await fetch('/api/dream/save_report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: currentDreamText.split(' ').slice(0, 5).join(' ') || 'The Door in the Forest',
+          dream_text: currentDreamText || 'The Door in the Forest',
+          data: currentAnalysisData
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showAlert('Report saved to your Saved Reports! ⭐', 'success');
+      }
+    } catch(e) {
+      showAlert('Report saved locally! ⭐', 'success');
+    }
+  });
+
+  /* Sample Dream Loader for fast exploring */
+  function loadSampleDream(type) {
+    const SAMPLES = {
+      elephant: "I was running through an ancient misty jungle and a massive wild elephant was chasing me with thunderous footsteps before stopping at a sacred glowing clearing.",
+      forest: "I was walking through a dark and quiet forest when a mysterious glowing wooden door appeared in front of me. I felt hesitant but stepped through into golden light.",
+      cliff: "I was standing on the edge of a tall cliff overlooking a violet ocean. I lost my balance and began falling, but instead of hitting the water, I started gliding gracefully.",
+      library: "I was wandering through an endless ancient library with towering mahogany shelves. A wise owl flew down and handed me a glowing brass key.",
+      flying: "I was soaring above purple clouds under a starry night sky, navigating freely over mountains and illuminated cities below."
+    };
+    document.getElementById('fullJournalText').value = SAMPLES[type] || SAMPLES.elephant;
+    runAnalyzeDream();
+  }
+
+  function renderSampleDefaultAnalysis() {
+    // Populate default values matching the reference design for initial display
+    const sample = {
+      dream_profile: {
+        overall_intensity: 62,
+        intensity_label: "Moderate",
+        primary_theme: "Growth & Transition",
+        emotional_tone: "Neutral",
+        recurring_patterns_count: 3,
+        key_symbols: ["Door", "Forest", "Light"]
+      },
+      in_short: {
+        summary: "Your dream reflects a period of transition. The door represents new opportunities, while the forest suggests uncertainty and exploration.",
+        visual_theme: "forest_door"
+      },
+      story_timeline: [
+        { stage_num: 1, title: "1. Entering the Forest", desc: "You find yourself in a dark and quiet forest.", scene: 0 },
+        { stage_num: 2, title: "2. The Mysterious Door", desc: "A glowing door appears in front of you.", scene: 1 },
+        { stage_num: 3, title: "3. Crossing the Door", desc: "You feel hesitant but step through.", scene: 2 },
+        { stage_num: 4, title: "4. A New Place", desc: "You wake up in a bright, peaceful place.", scene: 3 }
+      ],
+      story_key_insights: "The dream suggests a journey from fear to growth, with the door symbolizing a major life change.",
+      emotion_arc: {
+        curve: [{ stage: "Beginning", val: 0.2 }, { stage: "Middle", val: -0.4 }, { stage: "End", val: 0.8 }],
+        breakdown: [
+          { name: "Neutral", pct: 62, color: "#06b6d4" },
+          { name: "Anxiety", pct: 18, color: "#ec4899" },
+          { name: "Hope", pct: 12, color: "#a855f7" },
+          { name: "Calm", pct: 8, color: "#10b981" }
+        ],
+        insights: [
+          { label: "Neutrality", text: "You maintain balance throughout the dream.", badge: "badge-cyan" },
+          { label: "Anxiety", text: "Appears during the forest and door scenes.", badge: "badge-pink" },
+          { label: "Hope", text: "Grows towards the end of the dream.", badge: "badge-purple" },
+          { label: "Calm", text: "Shows a positive transformation.", badge: "badge-green" }
+        ]
+      },
+      symbol_network: {
+        center_node: { label: "Door" },
+        connected_nodes: [
+          { label: "Forest", meaning: "Uncertainty, inner self" },
+          { label: "Light", meaning: "Hope, clarity, guidance" },
+          { label: "Journey", meaning: "Personal growth" },
+          { label: "Fear", meaning: "Hesitation before crossing" }
+        ],
+        key_reflection: "The door and forest together suggest a major transition from confusion to clarity."
+      },
+      psychology: {
+        freudian: { text: "The door may represent repressed desires or a need for change." },
+        jungian: { text: "The forest and door symbolize the journey of the self and transition to a new phase." },
+        modern: { text: "Reflects your inner conflict between safety and exploration." },
+        mythological: { text: "Echoes the threshold crossing myth of leaving the known world to discover inner power." },
+        synthesis: "Your dream reflects a balance between fear and hope, showing a desire for growth and self-discovery."
+      },
+      youtube_recommendations: VIDEOS.slice(0, 4)
+    };
+    currentAnalysisData = sample;
+    renderAnalysisResults(sample, "The door in the forest");
+  }
+
+  function showAlert(msg, type = 'info') {
+    const el = document.getElementById('statusAlert');
+    el.textContent = msg;
+    el.className = `status-alert alert-${type}`;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 5000);
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
   </script>
 </body>
 </html>

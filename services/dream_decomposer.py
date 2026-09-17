@@ -1,6 +1,6 @@
 import json
 import logging
-from groq_client import _client, GROQ_MODEL, GROQ_API_KEY
+from groq_client import safe_groq_completion, GROQ_MODEL, GROQ_API_KEY
 
 def decompose_dream(dream_text: str) -> dict:
     """
@@ -48,18 +48,16 @@ def decompose_dream(dream_text: str) -> dict:
     )
 
     try:
-        client = _client()
-        response = client.chat.completions.create(
-            model=GROQ_MODEL,
+        content = safe_groq_completion(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Dream: \"{dream_text}\""}
             ],
+            model=GROQ_MODEL,
             response_format={"type": "json_object"},
             temperature=0.1,
             max_tokens=500
         )
-        content = (response.choices[0].message.content or "").strip()
         data = json.loads(content)
 
         # Enforce defaults and clean types

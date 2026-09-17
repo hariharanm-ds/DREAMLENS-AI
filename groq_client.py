@@ -37,9 +37,9 @@ def _load_local_env(path: str = ".env"):
 
 _load_local_env()
 
-GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-20b")
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-GROQ_TIMEOUT = int(os.environ.get("GROQ_TIMEOUT", "120"))
+GROQ_TIMEOUT = int(os.environ.get("GROQ_TIMEOUT", "30"))
 
 # --------------- System Prompt ---------------
 
@@ -920,6 +920,46 @@ def check_groq_health() -> dict:
     return result
 
 
+def safe_groq_completion(messages, model=None, response_format=None, temperature=0.7, max_tokens=1000) -> str:
+    """Execute chat completion with instant fallback — skips rate-limited models immediately without waiting."""
+    client = _client()
+    # Priority: gpt-oss-20b (fastest ~1.8s, high rate limit), gpt-oss-120b (~2.1s), qwen (~1.5s), compound-mini
+    candidate_models = [model or GROQ_MODEL, "openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b", "groq/compound-mini"]
+    seen = set()
+    unique_candidates = [m for m in candidate_models if m and not (m in seen or seen.add(m))]
+
+    last_err = None
+    for cand in unique_candidates:
+        try:
+            kwargs = {
+                "model": cand,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+            }
+            if response_format:
+                kwargs["response_format"] = response_format
+            resp = client.chat.completions.create(**kwargs)
+            if resp.choices:
+                content = (resp.choices[0].message.content or "").strip()
+                if content:
+                    _log(f"Model {cand} succeeded")
+                    return content
+        except Exception as e:
+            err_str = str(e)
+            last_err = e
+            # On rate limit (429) or JSON validation error (400) — skip to next model immediately
+            if "rate_limit_exceeded" in err_str or "429" in err_str or "json_validate_failed" in err_str:
+                _log(f"Model {cand} skipped (rate limit / JSON error), trying next")
+                continue
+            _log(f"Model {cand} completion attempt error: {e}")
+            continue
+
+    if last_err:
+        raise last_err
+    return ""
+
+
 # --------------- Dream Interpretation ---------------
 
 def interpret_dream(dream_text: str, db_context: str = "") -> dict:
@@ -948,20 +988,15 @@ def interpret_dream(dream_text: str, db_context: str = "") -> dict:
         return {"success": False, "interpretation": "", "model": GROQ_MODEL, "error": msg}
 
     try:
-        response = _client().chat.completions.create(
-            model=GROQ_MODEL,
+        interpretation = safe_groq_completion(
             messages=[
                 {"role": "system", "content": DREAM_SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
             ],
+            model=GROQ_MODEL,
             temperature=0.7,
-            top_p=0.9,
             max_tokens=1024,
         )
-
-        interpretation = ""
-        if response.choices:
-            interpretation = (response.choices[0].message.content or "").strip()
 
         if not interpretation:
             _log("Groq returned empty response")
@@ -984,3 +1019,4 @@ def interpret_dream(dream_text: str, db_context: str = "") -> dict:
         msg = f"Unexpected error calling Groq: {e}"
         _log(msg)
         return {"success": False, "interpretation": "", "model": GROQ_MODEL, "error": msg}
+

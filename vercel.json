@@ -10,6 +10,7 @@
   "env": {
     "PIP_NO_CACHE_DIR": "1",
     "PYTHONOPTIMIZE": "2",
-    "PYTHONHASHSEED": "0"
+    "PYTHONHASHSEED": "0",
+    "GROQ_MODEL": "openai/gpt-oss-120b"
   }
 }

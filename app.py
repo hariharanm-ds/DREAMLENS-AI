@@ -9,7 +9,13 @@ from datetime import datetime
 
 # Groq Llama integration
 from groq_client import interpret_dream as groq_interpret, check_groq_health
-from services.pipeline import run_dream_pipeline, run_refinement_pipeline, run_comparison_pipeline
+from services.pipeline import (
+    run_dream_pipeline,
+    run_refinement_pipeline,
+    run_comparison_pipeline,
+    simulate_scenario_pipeline,
+    BASE_YOUTUBE_CATALOG
+)
 
 # Runtime configuration
 IS_VERCEL = bool(os.environ.get("VERCEL"))
@@ -296,6 +302,91 @@ def api_compare_dreams():
     return jsonify({"success": True, "comparison": result})
 
 
+@app.route("/api/dream/simulate_scenario", methods=["POST"])
+def api_simulate_scenario():
+    data = request.get_json() or {}
+    dream_text = (data.get("dream_text") or "").strip()
+    scenario_type = (data.get("scenario_type") or "alternative_choice").strip()
+    choice_text = (data.get("choice_text") or "").strip()
+
+    if not dream_text or not choice_text:
+        return jsonify({"success": False, "message": "Please provide both the dream text and chosen scenario action."}), 400
+
+    result = simulate_scenario_pipeline(dream_text, scenario_type, choice_text)
+    return jsonify(result)
+
+
+@app.route("/api/youtube/search", methods=["GET"])
+def api_youtube_search():
+    query = (request.args.get("q") or "").strip()
+    genre = (request.args.get("genre") or "all").strip().lower()
+
+    search_term = query if query else (f"{genre} dream fantasy meditation" if genre != "all" else "fantasy dream exploration")
+    from services.youtube_search import search_live_youtube_videos
+    videos = search_live_youtube_videos(search_term, max_results=12)
+
+    if genre and genre != "all":
+        # Keep matching genre prioritized or tagged
+        filtered = [v for v in videos if v.get("genre") == genre]
+        if filtered:
+            videos = filtered
+
+    return jsonify({"success": True, "videos": videos})
+
+
+# Saved Reports (SQLite)
+@app.route("/api/dream/save_report", methods=["POST"])
+def api_save_report():
+    payload = request.get_json() or {}
+    title = (payload.get("title") or "Untitled Dream").strip()
+    dream_text = (payload.get("dream_text") or "").strip()
+    report_data = json.dumps(payload.get("data") or {})
+
+    if not dream_text:
+        return jsonify({"success": False, "message": "No dream text provided"}), 400
+
+    try:
+        import sqlite3
+        ensure_dir(DATA_DIR)
+        conn = sqlite3.connect(os.path.join(DATA_DIR, 'history.db'))
+        cur = conn.cursor()
+        cur.execute('''CREATE TABLE IF NOT EXISTS saved_reports (id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, title TEXT, dream TEXT, data TEXT)''')
+        cur.execute('INSERT INTO saved_reports (ts, title, dream, data) VALUES (?,?,?,?)', (datetime.utcnow().isoformat(), title, dream_text, report_data))
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True, "message": "Report saved successfully"})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/dream/saved_reports", methods=["GET"])
+def api_get_saved_reports():
+    items = []
+    try:
+        import sqlite3
+        conn = sqlite3.connect(os.path.join(DATA_DIR, 'history.db'))
+        cur = conn.cursor()
+        cur.execute('''CREATE TABLE IF NOT EXISTS saved_reports (id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, title TEXT, dream TEXT, data TEXT)''')
+        cur.execute('SELECT id, ts, title, dream, data FROM saved_reports ORDER BY id DESC LIMIT 50')
+        rows = cur.fetchall()
+        for r in rows:
+            try:
+                parsed_data = json.loads(r[4])
+            except Exception:
+                parsed_data = {}
+            items.append({
+                "id": r[0],
+                "ts": r[1],
+                "title": r[2],
+                "dream": r[3],
+                "data": parsed_data
+            })
+        conn.close()
+    except Exception as e:
+        print("Failed to read saved_reports:", e)
+    return jsonify({"success": True, "reports": items})
+
+
 @app.route("/interpret", methods=["POST"])
 def interpret():
     # Maintain full backwards compatibility for the existing Annotate and Admin pages.
@@ -459,6 +550,37 @@ def env_check():
         return jsonify(info)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/_api_key_check')
+def api_key_check():
+    """Safe endpoint to verify GROQ_API_KEY is set correctly on Vercel without leaking the full secret."""
+    key = os.environ.get('GROQ_API_KEY', '')
+    model = os.environ.get('GROQ_MODEL', 'not set')
+    is_vercel = bool(os.environ.get('VERCEL'))
+    if key:
+        masked = key[:8] + '*' * max(0, len(key) - 8)
+        key_set = True
+        key_length = len(key)
+    else:
+        masked = 'NOT SET'
+        key_set = False
+        key_length = 0
+    groq_status = check_groq_health()
+    return jsonify({
+        'api_key_set': key_set,
+        'api_key_preview': masked,
+        'api_key_length': key_length,
+        'model': model,
+        'is_vercel': is_vercel,
+        'groq_connected': groq_status.get('connected', False),
+        'groq_error': groq_status.get('error'),
+        'fix_instructions': (
+            'Go to Vercel Dashboard → Project → Settings → Environment Variables '
+            'and add GROQ_API_KEY with your key, then redeploy.'
+            if not key_set else 'API key is set correctly!'
+        )
+    })
 
 
 if __name__ == "__main__":

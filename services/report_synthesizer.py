@@ -1,6 +1,6 @@
 import json
 import logging
-from groq_client import _client, GROQ_MODEL, GROQ_API_KEY
+from groq_client import safe_groq_completion, GROQ_MODEL, GROQ_API_KEY
 
 def synthesize_report(dream_text: str, extracted_data: dict, interpretations: dict) -> dict:
     """
@@ -68,18 +68,16 @@ def synthesize_report(dream_text: str, extracted_data: dict, interpretations: di
     )
 
     try:
-        client = _client()
-        response = client.chat.completions.create(
-            model=GROQ_MODEL,
+        content = safe_groq_completion(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
+            model=GROQ_MODEL,
             response_format={"type": "json_object"},
             temperature=0.3,
-            max_tokens=800
+            max_tokens=600
         )
-        content = (response.choices[0].message.content or "").strip()
         data = json.loads(content)
 
         # Structure checks
