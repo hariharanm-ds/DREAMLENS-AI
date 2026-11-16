@@ -150,4 +150,4 @@ def generate_dream_image_url(dream_text: str, scene_type: str = "dreamscape", se
 
     prompt = style_prompts.get(scene_type, style_prompts["dreamscape"])
     encoded = urllib.parse.quote(prompt)
-    return f"https://image.pollinations.ai/prompt/{encoded}?width=800&height=450&nologo=true&enhance=true&model=flux&seed={seed}"
+    return f"https://image.pollinations.ai/prompt/{encoded}?width=768&height=432&nologo=true&model=dreamshaper&seed={seed}"

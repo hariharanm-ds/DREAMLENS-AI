@@ -419,7 +419,9 @@ def run_dream_pipeline(dream_text: str) -> dict:
     # 3. Pass dream_text for client-side image generation (no server blocking)
     # The client generates Pollinations URLs directly — faster by 5-15 seconds
     in_short_obj = raw.get("in_short") or {}
-    in_short_obj["dream_text_for_image"] = dream_text[:180]
+    clean_text = dream_text.replace('"', '').replace('\n', ' ').strip()
+    in_short_obj["dream_text_for_image"] = clean_text[:180]
+    in_short_obj["image_prompt"] = f"Cinematic fantasy concept art of {clean_text[:120]}, atmospheric volumetric lighting, ethereal glow, 8k masterpiece, no text"
     raw["in_short"] = in_short_obj
 
     story_stages = raw.get("story_timeline") or []
@@ -502,7 +504,9 @@ def simulate_scenario_pipeline(dream_text: str, scenario_type: str, choice_text:
     system_prompt = (
         "You are the DREAMLENS AI Scenario Simulator.\n"
         "Your task is to rewrite the climax of the user's dream according to an alternative choice ('What if?').\n"
-        "Generate an inspiring alternative timeline narrative, 4 concrete possible outcomes/empowerments, and a fantasy artwork description.\n\n"
+        "Generate an inspiring alternative timeline narrative, 4 concrete possible outcomes/empowerments, and a visual artwork description.\n\n"
+        "CRITICAL FOR IMAGE_PROMPT:\n"
+        "Provide an 'image_prompt' that vividly depicts the EXACT subjects and environment from the user's dream (e.g. if the dream is about an elephant in a jungle, the image must show the person peacefully interacting with the giant elephant in the jungle). DO NOT generate generic abstract winged figures or meta-text labels. Write a pure descriptive visual scene prompt suitable for text-to-image AI.\n\n"
         "Return a JSON object conforming strictly to this schema:\n"
         "{\n"
         "  \"scenario_title\": \"What if you stepped boldly through the door?\",\n"
@@ -514,7 +518,8 @@ def simulate_scenario_pipeline(dream_text: str, scenario_type: str, choice_text:
         "    \"Higher overall happiness and autonomy\"\n"
         "  ],\n"
         "  \"empowerment_takeaway\": \"Choosing active confrontation over avoidance transforms internal fear into creative power.\",\n"
-        "  \"visual_theme\": \"A brilliant sunrise over glowing crystal spires with a confident figure stepping into the light\"\n"
+        "  \"visual_theme\": \"A brilliant sunrise over glowing crystal spires with a confident figure stepping into the light\",\n"
+        "  \"image_prompt\": \"Cinematic fantasy concept art of a person calmly befriending a giant majestic elephant in a lush glowing tropical jungle at sunrise, golden godrays filtering through dense green canopy, ethereal mist, 8k resolution, masterpiece, no text\"\n"
         "}\n\n"
         "Output ONLY valid JSON."
     )
@@ -537,10 +542,11 @@ def simulate_scenario_pipeline(dream_text: str, scenario_type: str, choice_text:
             max_tokens=600
         )
         data = json.loads(content)
-        data["image_prompt"] = (
-            f"Original dream: {dream_text}. Chosen action: {choice_text}. "
-            f"Alternative outcome: {data.get('alternative_timeline', '')}"
-        )[:500]
+        # Use Groq's vivid context-aware image prompt if provided, or build a clean descriptive visual prompt
+        img_p = (data.get("image_prompt") or "").strip()
+        if not img_p or len(img_p) < 20 or "Original dream:" in img_p:
+            img_p = f"Cinematic fantasy artwork of {choice_text} within {dream_text[:80]}, ethereal magical lighting, photorealistic concept art, 8k resolution, no text"
+        data["image_prompt"] = img_p[:350]
         return {"success": True, **data}
     except Exception as e:
         logging.error(f"Error in simulate_scenario_pipeline: {e}")
@@ -556,7 +562,7 @@ def simulate_scenario_pipeline(dream_text: str, scenario_type: str, choice_text:
             ],
             "empowerment_takeaway": "Small shifts in internal agency create profound transformations in how we experience reality.",
             "visual_theme": "A radiant golden path opening across mystical clouds",
-            "image_prompt": f"{choice_text} empowering golden breakthrough radiant light"
+            "image_prompt": f"Cinematic fantasy scene of {choice_text} during {dream_text[:70]}, magical glowing aura, majestic atmospheric lighting, 8k concept art, no text"
         }
 
 

@@ -60,24 +60,39 @@
     <div class="sidebar-section-title">Explore Sample Dreams</div>
     <div class="recent-dreams-list" id="sidebarRecentList">
       <div class="recent-dream-card active" onclick="loadSampleDream('elephant')">
-        <div class="rd-title">🐘 Elephant chase</div>
-        <div class="rd-meta">Power & Instinct</div>
+        <div class="rd-icon-box">🐘</div>
+        <div class="rd-info">
+          <div class="rd-title">Elephant chase</div>
+          <span class="rd-tag-pill tag-amber">Power & Instinct</span>
+        </div>
       </div>
       <div class="recent-dream-card" onclick="loadSampleDream('forest')">
-        <div class="rd-title">🚪 Door in the forest</div>
-        <div class="rd-meta">Transition & Growth</div>
+        <div class="rd-icon-box">🚪</div>
+        <div class="rd-info">
+          <div class="rd-title">Door in the forest</div>
+          <span class="rd-tag-pill tag-emerald">Transition & Growth</span>
+        </div>
       </div>
       <div class="recent-dream-card" onclick="loadSampleDream('cliff')">
-        <div class="rd-title">🌊 Falling from a cliff</div>
-        <div class="rd-meta">Surrender & Glide</div>
+        <div class="rd-icon-box">🌊</div>
+        <div class="rd-info">
+          <div class="rd-title">Falling from a cliff</div>
+          <span class="rd-tag-pill tag-cyan">Surrender & Glide</span>
+        </div>
       </div>
       <div class="recent-dream-card" onclick="loadSampleDream('library')">
-        <div class="rd-title">🗝️ Ancient library</div>
-        <div class="rd-meta">Hidden Wisdom</div>
+        <div class="rd-icon-box">🗝️</div>
+        <div class="rd-info">
+          <div class="rd-title">Ancient library</div>
+          <span class="rd-tag-pill tag-purple">Hidden Wisdom</span>
+        </div>
       </div>
       <div class="recent-dream-card" onclick="loadSampleDream('flying')">
-        <div class="rd-title">🕊️ Flying in the sky</div>
-        <div class="rd-meta">Freedom & Clarity</div>
+        <div class="rd-icon-box">🕊️</div>
+        <div class="rd-info">
+          <div class="rd-title">Flying in the sky</div>
+          <span class="rd-tag-pill tag-sky">Freedom & Clarity</span>
+        </div>
       </div>
     </div>
 
@@ -104,6 +119,27 @@
         </div>
       </div>
       <div class="topbar-right">
+        <!-- BINAURAL DREAM SOUNDSCAPE CONTROLLER -->
+        <div class="soundscape-pill" id="soundscapePill" title="Binaural Subconscious Soundscapes (Click to toggle / cycle)">
+          <span class="soundscape-icon">🎧</span>
+          <span class="soundscape-label" id="soundscapeLabel">Soundscape: Off</span>
+          <canvas id="soundscapeVisualizer" width="36" height="14" class="soundscape-canvas"></canvas>
+          <button class="soundscape-cycle-btn" id="soundscapeCycleBtn" title="Change Frequency">▶</button>
+        </div>
+
+        <!-- DAILY LUCID STREAK -->
+        <div class="streak-pill" id="streakPill" title="Daily Lucid Dream Streaks & XP">
+          <span class="streak-flame">🔥</span>
+          <span class="streak-val" id="streakVal">Day 1</span>
+          <span class="streak-xp" id="streakXp">150 XP</span>
+        </div>
+
+        <!-- GLOBAL DREAM SPHERE -->
+        <div class="global-pulse-pill" id="openGlobalSphereBtn" title="Collective Unconscious Sphere">
+          <span class="pulse-dot"></span>
+          <span>14.8k Dreamers</span>
+        </div>
+
         <div class="search-wrap">
           <span class="search-icon">🔍</span>
           <input type="text" class="topbar-search" id="topSearchInput" placeholder="Search your dreams..." />
@@ -305,7 +341,14 @@
           <div class="rth-meta" id="resultsDreamDate">Analyzed on Sep 10, 2025 • 11:57 AM</div>
         </div>
         <div class="rth-right">
-          <button class="btn-ghost-icon" id="saveReportBtn" title="Save Report">
+          <button class="btn-oracle-voice" id="oracleVoiceBtn" title="Listen to AI Dream Oracle Voice">
+            <span class="oracle-icon">🎙️</span>
+            <span id="oracleVoiceText">Listen to Oracle</span>
+          </button>
+          <button class="btn-ghost-icon highlight-btn" id="openAuraCardBtn" title="View & Share Dream Aura Card">
+            <span>🎴 Aura Card</span>
+          </button>
+          <button class="btn-ghost-icon" id="saveReportBtn"  title="Save Report">
             <span>⭐ Save Report</span>
           </button>
           <button class="btn-ghost-icon" id="downloadReportBtn" title="Export / Download">
@@ -314,14 +357,15 @@
         </div>
       </div>
 
-      <!-- 6-TAB NAVIGATION BAR (Screens 4-9) -->
+      <!-- RESTRUCTURED FEATURE TABS -->
       <div class="results-tab-bar">
-        <button class="rtab active" data-tab="tabOverview">Overview</button>
-        <button class="rtab" data-tab="tabScenarios">✨ Scenarios</button>
-        <button class="rtab" data-tab="tabStoryMap">Story Map</button>
-        <button class="rtab" data-tab="tabEmotions">Emotions</button>
-        <button class="rtab" data-tab="tabSymbols">Symbols</button>
-        <button class="rtab" data-tab="tabPsychology">Psychology</button>
+        <button class="rtab active" data-tab="tabOverview">🔮 Dream Oracle</button>
+        <button class="rtab" data-tab="tabScenarios">⚡ Climax Rewriter</button>
+        <button class="rtab highlight-tab" data-tab="tabDreamAura">🎴 Dream Aura Studio</button>
+        <button class="rtab" data-tab="tabStoryMap">📜 Story Timeline</button>
+        <button class="rtab" data-tab="tabEmotions">🌊 Emotion Arc</button>
+        <button class="rtab" data-tab="tabSymbols">🗝️ Symbol Constellation</button>
+        <button class="rtab" data-tab="tabPsychology">🧠 Depth Psychology</button>
       </div>
 
       <!-- ==========================================
@@ -381,34 +425,75 @@
             </div>
           </div>
 
-          <!-- IN SHORT CARD WITH DREAM ARTWORK & DIRECT ANSWER -->
-          <div class="dash-card in-short-card">
-            <div class="in-short-left">
-              <div class="in-short-badge">
-                <span>💡</span>
-                <span>What Your Dream Is Telling You</span>
+          <!-- IN SHORT CARD WITH DEEP PSYCHOLOGICAL DECODE -->
+          <div class="dash-card in-short-card clean-decode-card">
+            <div class="in-short-left full-width">
+              <div class="in-short-header-row">
+                <div class="in-short-badge">
+                  <span>💡</span>
+                  <span>Subconscious Intelligence Decode</span>
+                </div>
+                <div class="archetype-pulse-pill" onclick="switchResultsTab('tabDreamAura')">
+                  <span class="pulse-spark">✨</span>
+                  <span id="overviewArchetypeLabel">👑 The Primal Sovereign</span>
+                  <span class="pill-arrow">→</span>
+                </div>
               </div>
+
               <p class="in-short-text" id="overviewInShortText">
                 Your dream reflects a period of transition.
               </p>
+
               <div class="in-short-solution-box" id="overviewSolutionBox">
-                <span class="solution-tag">🌟 Awakening Takeaway</span>
+                <div class="solution-header">
+                  <span class="solution-tag">🌟 Awakening Takeaway</span>
+                  <span class="solution-subtag">Waking Life Integration</span>
+                </div>
                 <p class="solution-text" id="overviewSolutionText">Embrace the unknown step ahead — your subconscious is signaling you are ready for a major personal breakthrough.</p>
               </div>
+
               <div class="in-short-footer">
-                <button class="btn-link-action" onclick="switchResultsTab('tabScenarios')">✨ Simulate Alternative Scenarios →</button>
+                <button class="btn-primary-action" onclick="switchResultsTab('tabScenarios')">✨ Simulate Alternative Scenarios →</button>
+                <button class="btn-aura-action" onclick="switchResultsTab('tabDreamAura')">🎴 View Dream Aura Card →</button>
+                <button class="btn-voice-action" onclick="toggleOracleVoice()">🎙️ Listen to Oracle</button>
               </div>
             </div>
-            <div class="in-short-right">
-              <div class="dream-art-container">
-                <img id="overviewDreamImg" class="dream-art-img" src="" alt="AI Dream Fantasy Art" style="display:none;" />
-                <canvas id="overviewVisualCanvas" width="240" height="160" class="dream-art-canvas"></canvas>
-                <div class="art-badge-overlay">✨ AI Dream Art</div>
-              </div>
-            </div>
+            <!-- Hidden compatibility hook -->
+            <div style="display:none;"><img id="overviewDreamImg" src="" /><canvas id="overviewVisualCanvas"></canvas></div>
           </div>
 
         </div><!-- /overview-grid -->
+
+        <!-- SUBCONSCIOUS WAKING LIFE QUESTS (Gamified Empowerment) -->
+        <div class="subconscious-quests-card">
+          <div class="sq-header">
+            <div class="sq-header-left">
+              <span class="sq-icon">⚡</span>
+              <div>
+                <div class="sq-title">3 Subconscious Life Quests</div>
+                <div class="sq-sub">Daily micro-actions to anchor this dream's power into waking reality</div>
+              </div>
+            </div>
+            <div class="sq-header-right">
+              <span class="sq-xp-badge" id="questXpTotal">+150 XP Available</span>
+            </div>
+          </div>
+
+          <!-- Interactive Quest Progress Bar -->
+          <div class="quest-progress-wrap">
+            <div class="quest-progress-meta">
+              <span id="questProgressText">Subconscious Alignment: 0 / 3 Completed (0%)</span>
+              <span class="quest-level-tag" id="questLevelTag">Level 1 Dreamer</span>
+            </div>
+            <div class="quest-progress-track">
+              <div class="quest-progress-bar" id="questProgressBar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="sq-list" id="subconsciousQuestsList">
+            <!-- Dynamically populated with RPG style quest items -->
+          </div>
+        </div>
 
         <!-- RECOMMENDED YOUTUBE FANTASY VIDEOS (STRICTLY IN OVERVIEW ONLY) -->
         <div class="dash-card results-cinema-card" style="margin-top: 24px;">
@@ -479,20 +564,39 @@
             </div>
 
             <div class="sform-right">
-              <!-- ALTERNATIVE TIMELINE CARD -->
-              <div class="alt-timeline-card full-card">
+              <!-- ALTERNATIVE TIMELINE CARD (IMAGE-FREE DYNAMIC MATRIX) -->
+              <div class="alt-timeline-card full-card matrix-card">
                 <div class="at-header">
-                  <span>🌌</span>
-                  <span class="at-title" id="scenarioResultTitle">Alternative Timeline</span>
+                  <div class="at-title-wrap">
+                    <span class="at-sparkle">🌌</span>
+                    <span class="at-title" id="scenarioResultTitle">Alternative Timeline</span>
+                  </div>
+                  <span class="at-status-badge">✨ Conscious Shift Active</span>
                 </div>
+
                 <p class="at-text" id="scenarioResultStory">
                   If you had stood your ground with calm awareness, the perceived threat dissolves into an ally of immense strength, revealing hidden reservoirs of inner wisdom and vitality.
                 </p>
-                <div class="at-visual-wrap large-wrap">
-                  <img id="scenarioArtImg" class="scenario-art-img large-art" src="" alt="AI Scenario Artwork" style="display:none;" />
-                  <canvas id="scenarioCanvas" width="440" height="200" class="scenario-art-canvas large-canvas"></canvas>
-                  <div class="art-badge-overlay">✨ Climax AI Art</div>
+
+                <!-- Timeline Frequency Shift Meter -->
+                <div class="timeline-shift-box">
+                  <div class="ts-meta">
+                    <span class="ts-label">Conscious Sovereignty Shift</span>
+                    <span class="ts-pct" id="scenarioAgencyPct">+82% Agency</span>
+                  </div>
+                  <div class="ts-meter-track">
+                    <div class="ts-meter-bar" style="width: 92%;"></div>
+                  </div>
+                  <div class="ts-subtext">Original Reaction: Avoidance & Fear (18%) ➔ Empowered Climax: Sovereign Action (92%)</div>
                 </div>
+
+                <div class="scenario-quote-card">
+                  <div class="sqc-label">⚡ Waking Life Sovereignty Rule</div>
+                  <div class="sqc-text" id="scenarioInnerRule">Facing the unknown with conscious curiosity transmutes anxiety into creative command.</div>
+                </div>
+
+                <!-- Hidden compatibility hook -->
+                <div style="display:none;"><img id="scenarioArtImg" src="" /><canvas id="scenarioCanvas"></canvas></div>
               </div>
             </div>
           </div>
@@ -598,38 +702,76 @@
            TAB 4: SYMBOLS (Screen 7)
       ========================================== -->
       <div class="rtab-content" id="tabSymbols">
-        <div class="symbols-layout-grid">
-          
-          <!-- SYMBOL NETWORK CANVAS (Interactive Node Graph) -->
-          <div class="dash-card symbol-network-card">
-            <div class="card-header-flex">
-              <h3 class="card-section-title">Symbol Network</h3>
-              <span class="badge badge-cyan" id="symbolCenterBadge">Central Archetype</span>
+
+        <!-- === SUBCONSCIOUS SYMBOL DECODER === -->
+        <div class="sym-decoder-header">
+          <div class="sym-decoder-title-row">
+            <span class="sym-pulse-dot"></span>
+            <h3 class="sym-decoder-title">🗝️ Subconscious Symbol Decoder</h3>
+            <span class="sym-decode-badge" id="symbolCenterBadge">Central Archetype</span>
+          </div>
+          <p class="sym-decoder-sub">Each symbol is a message from your deeper mind. Tap any card to decode it.</p>
+        </div>
+
+        <!-- SYMBOL CARDS GRID (clickable, expandable) -->
+        <div class="sym-cards-grid" id="symbolCardsGrid">
+          <!-- Default placeholder cards (replaced by JS) -->
+          <div class="sym-card" onclick="toggleSymCard(this)">
+            <div class="sym-card-top">
+              <span class="sym-card-emoji">🐘</span>
+              <div class="sym-card-title-col">
+                <span class="sym-card-name">Elephant</span>
+                <span class="sym-card-archetype-badge badge-shadow">Shadow Archetype</span>
+              </div>
+              <div class="sym-resonance-wrap">
+                <div class="sym-resonance-bar-bg"><div class="sym-resonance-bar-fill" style="width:85%"></div></div>
+                <span class="sym-resonance-pct">85%</span>
+              </div>
             </div>
-            <div class="network-canvas-wrap">
-              <canvas id="symbolNetworkCanvas" width="480" height="300" class="symbol-graph-canvas"></canvas>
+            <div class="sym-card-expand">
+              <p class="sym-card-meaning">The elephant in dreams represents power held with patience — the subconscious acknowledging that raw force must be paired with wisdom to become transformative.</p>
+              <div class="sym-global-ticker">🌍 Appears in <strong>31%</strong> of power-archetype dreams worldwide</div>
             </div>
           </div>
-
-          <!-- SYMBOL MEANINGS LIST -->
-          <div class="dash-card symbol-meanings-card">
-            <h3 class="card-section-title">Symbol Meanings</h3>
-            <div class="smeanings-list" id="symbolMeaningsList">
-              <!-- Populated by JS -->
+          <div class="sym-card" onclick="toggleSymCard(this)">
+            <div class="sym-card-top">
+              <span class="sym-card-emoji">🌿</span>
+              <div class="sym-card-title-col">
+                <span class="sym-card-name">Jungle</span>
+                <span class="sym-card-archetype-badge badge-anima">Anima</span>
+              </div>
+              <div class="sym-resonance-wrap">
+                <div class="sym-resonance-bar-bg"><div class="sym-resonance-bar-fill" style="width:70%"></div></div>
+                <span class="sym-resonance-pct">70%</span>
+              </div>
+            </div>
+            <div class="sym-card-expand">
+              <p class="sym-card-meaning">The jungle is the uncharted terrain of the unconscious — dense, alive, and full of potential. Your psyche is navigating unexplored emotional territory.</p>
+              <div class="sym-global-ticker">🌍 Appears in <strong>24%</strong> of transformation-archetype dreams worldwide</div>
             </div>
           </div>
+        </div>
 
-        </div><!-- /symbols-layout-grid -->
-
-        <div class="dash-card symbol-key-reflection-card">
-          <div class="skr-badge">
-            <span>🔮</span>
-            <span>Key Reflection</span>
+        <!-- SYMBOL KEY REFLECTION -->
+        <div class="dash-card sym-reflection-card">
+          <div class="sym-ref-header-row">
+            <span class="sym-ref-icon">🔮</span>
+            <span class="sym-ref-title">Collective Subconscious Insight</span>
           </div>
-          <p class="skr-text" id="symbolKeyReflectionText">
+          <p class="sym-ref-text" id="symbolKeyReflectionText">
             The core symbols interact to reveal hidden subconscious truths and internal emotional alignment.
           </p>
+          <div class="sym-ref-tags-row" id="symbolRefTagsRow">
+            <span class="sym-ref-tag">Jungian Shadow</span>
+            <span class="sym-ref-tag">Personal Growth</span>
+            <span class="sym-ref-tag">Power Archetype</span>
+          </div>
         </div>
+
+        <!-- Hidden compat hooks -->
+        <canvas id="symbolNetworkCanvas" style="display:none"></canvas>
+        <div id="symbolMeaningsList" style="display:none"></div>
+
       </div><!-- /tabSymbols -->
 
 
@@ -721,6 +863,74 @@
         </div>
 
       </div><!-- /tabPsychology -->
+
+      <!-- ==========================================
+           TAB 7: VIRAL DREAM AURA CARD (Instagram Story / TikTok)
+      ========================================== -->
+      <div class="rtab-content" id="tabDreamAura">
+        <div class="dream-aura-container">
+          <div class="aura-card-border-glow" id="auraCardOuter">
+            <div class="aura-card-inner" id="auraCardInner">
+              <div class="aura-card-brand">DREAMLENS AI • SUBCONSCIOUS AURA</div>
+              <div class="aura-rarity-badge" id="auraRarityBadge">⚡ TOP 3.8% RARE SUBCONSCIOUS PATTERN</div>
+              
+              <div class="aura-orb-graphic" id="auraOrbGraphic"></div>
+              
+              <h2 class="aura-archetype-title" id="auraArchetypeTitle">THE PRIMAL SOVEREIGN</h2>
+              <div class="aura-archetype-sub" id="auraArchetypeSub">Awakening of Instinctual Power & Sovereign Authority</div>
+              
+              <div class="aura-stats-grid">
+                <div class="aura-stat-box">
+                  <div class="aura-stat-name">Agency & Mastery</div>
+                  <div class="aura-stat-val-flex">
+                    <span class="aura-stat-num" id="auraStatAgency">92%</span>
+                    <div class="aura-stat-bar-track"><div class="aura-stat-bar-fill" id="auraBarAgency" style="width:92%"></div></div>
+                  </div>
+                </div>
+                <div class="aura-stat-box">
+                  <div class="aura-stat-name">Intuition Resonance</div>
+                  <div class="aura-stat-val-flex">
+                    <span class="aura-stat-num" id="auraStatIntuition">96%</span>
+                    <div class="aura-stat-bar-track"><div class="aura-stat-bar-fill" id="auraBarIntuition" style="width:96%"></div></div>
+                  </div>
+                </div>
+                <div class="aura-stat-box">
+                  <div class="aura-stat-name">Courage Factor</div>
+                  <div class="aura-stat-val-flex">
+                    <span class="aura-stat-num" id="auraStatCourage">84%</span>
+                    <div class="aura-stat-bar-track"><div class="aura-stat-bar-fill" id="auraBarCourage" style="width:84%"></div></div>
+                  </div>
+                </div>
+                <div class="aura-stat-box">
+                  <div class="aura-stat-name">Lucid Alignment</div>
+                  <div class="aura-stat-val-flex">
+                    <span class="aura-stat-num" id="auraStatLucid">88%</span>
+                    <div class="aura-stat-bar-track"><div class="aura-stat-bar-fill" id="auraBarLucid" style="width:88%"></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="aura-quote" id="auraQuote">
+                "When you meet the looming threat with fearless wonder, primal fear transmutes into sovereign creative power."
+              </div>
+
+              <div class="aura-footer-tag" id="auraFooterTag">
+                Dreamer: Hariharan • DreamLens AI
+              </div>
+            </div>
+          </div>
+
+          <!-- Viral Export Actions -->
+          <div class="aura-export-btns">
+            <button class="btn-aura-export" id="exportAuraCardBtn" onclick="exportAuraCardToImage()">
+              <span>📸 Download Story Card (9:16)</span>
+            </button>
+            <button class="btn-aura-share" id="shareAuraCardBtn" onclick="shareAuraCardText()">
+              <span>🔗 Copy Shareable Dream Card</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
     </div><!-- /viewResults -->
 
@@ -1060,6 +1270,9 @@
     if (tabId === 'tabScenarios') {
       renderScenarioCanvas();
     }
+    if (tabId === 'tabDreamAura' && currentAnalysisData) {
+      renderDreamAuraCard(currentAnalysisData, currentDreamText);
+    }
   }
 
   document.querySelectorAll('.rtab').forEach(tab => {
@@ -1206,66 +1419,105 @@
   }
 
   /* ================================================================
-     CLIENT-SIDE IMAGE GENERATION UTILITY
+     CLIENT-SIDE IMAGE GENERATION UTILITY & RATE-LIMIT SHIELD
   ================================================================ */
-  function buildPollinationsUrl(prompt, sceneType, seed, model = 'flux') {
-    const stylePrompts = {
-      dreamscape: `Create one coherent cinematic dream scene: ${prompt}. Preserve the important people, places, objects, colors, and emotional tone. Photorealistic fantasy concept art, clear focal subject, rich details, natural anatomy, no text, no letters, no collage.`,
-      stage1: `Create the opening phase of this dream as one coherent cinematic scene: ${prompt}. Keep the same setting and key subjects, atmospheric lighting, clear focal subject, detailed fantasy concept art, no text, no collage.`,
-      stage2: `Create the rising-tension phase of this dream as one coherent cinematic scene: ${prompt}. Keep the same setting and key subjects, emotionally expressive lighting, detailed fantasy concept art, no text, no collage.`,
-      stage3: `Create the turning-point phase of this dream as one coherent cinematic scene: ${prompt}. Show the central action clearly, dramatic but natural lighting, detailed fantasy concept art, no text, no collage.`,
-      stage4: `Create the resolution phase of this dream as one coherent cinematic scene: ${prompt}. Preserve the dream's key imagery while showing calm integration and hope, detailed fantasy concept art, no text, no collage.`,
-      scenario: `Create one coherent cinematic scene showing this alternative dream outcome: ${prompt}. Make the chosen action and its emotional transformation visually clear, consistent characters and setting, detailed fantasy concept art, no text, no collage.`
-    };
-    const finalPrompt = stylePrompts[sceneType] || stylePrompts.dreamscape;
-    const finalSeed = seed || (Math.floor(Math.random() * 90000) + 10000);
-    const modelParam = model ? `&model=${model}` : '';
-    return `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=1024&height=576&nologo=true&enhance=true${modelParam}&seed=${finalSeed}`;
+  window._lastImageGenTime = 0;
+  const IMAGE_COOLDOWN_MS = 35000;
+
+  function resolveContextualImage(dreamText, sceneType) {
+    const text = String(dreamText || '').toLowerCase();
+    if (sceneType === 'stage1') return '/static/dream_stage1.jpg';
+    if (sceneType === 'stage2') return '/static/dream_stage2.jpg';
+    if (sceneType === 'stage3') return '/static/dream_stage3.jpg';
+    if (sceneType === 'stage4') return '/static/dream_stage4.jpg';
+    
+    // Archetype 1: Rain, Storm, Umbrella & Weather
+    if (/rain|storm|umbrella|thunder|lightning|shower|drizzle|wet|tempest|cloudburst|downpour/.test(text)) {
+      return '/static/archetype_rain.jpg';
+    }
+    // Archetype 2: Wild Animals & Jungle Chases (Elephant, Lion, Tiger, Beasts)
+    if (/elephant|lion|tiger|animal|beast|bear|snake|wolf|jungle|chase|hunt|wild|safari|panther|cheetah|stampede/.test(text)) {
+      return '/static/archetype_elephant.jpg';
+    }
+    // Archetype 3: Shadow, Nemesis, Nightmares & Darkness (Kirmada, demons, monsters, fear)
+    if (/kirmada|demon|monster|ghost|scared|fear|shadow|dark|evil|villain|nightmare|horror|battle|fight|war|threat|zombie|nemesis/.test(text)) {
+      return '/static/archetype_shadow.jpg';
+    }
+    // Archetype 4: Cosmic, Astral, Universe, Stars & Lucid Expansion
+    if (/space|star|stars|galaxy|nebula|cosmic|astral|universe|planet|orbit|celestial/.test(text)) {
+      return '/static/archetype_cosmic.jpg';
+    }
+    // Archetype 5: Thresholds, Doors, Paths & Growth
+    if (/forest|tree|wood|door|gate|enter|path|walk|portal|clearing|garden|meadow|grove/.test(text)) {
+      return '/static/archetype_forest.jpg';
+    }
+    // Archetype 6: High Flight, Astral & Cosmic Elevation
+    if (/fly|flight|sky|wing|soar|glide|bird|eagle|mountain|summit|peak|high|cliff|height|aurora/.test(text)) {
+      return '/static/archetype_flying.jpg';
+    }
+    // Archetype 7: Water, Ocean & Emotional Depths
+    if (/ocean|sea|water|wave|swim|drown|dive|lake|river|current|flood|tsunami|abyss|waterfall/.test(text)) {
+      return '/static/archetype_ocean.jpg';
+    }
+    // Archetype 8: Wisdom, Ancient Archives & Arcane Temples
+    if (/library|book|owl|key|temple|ancient|pyramid|read|scroll|wisdom|brass|shrine|scrolls/.test(text)) {
+      return '/static/archetype_library.jpg';
+    }
+    // Archetype 9: Golden Dawn, Light, Sanctuary & Triumph
+    if (/gold|golden|light|sun|sunrise|dawn|sanctuary|triumph|peace|angel|radiant|shining|victory/.test(text)) {
+      return '/static/archetype_triumph.jpg';
+    }
+    return '/static/hero_dreamscape.jpg';
   }
 
-  function loadImageWithSkeleton(imgEl, canvasEl, prompt, sceneType, seed) {
-    if (!imgEl) return;
-    const baseSeed = seed || (Math.floor(Math.random() * 90000) + 10000);
-    let attempt = 0;
-    let localFallbackShown = false;
-    const models = ['flux', 'turbo', ''];
-    const safePrompt = String(prompt || 'cinematic dream fantasy artwork').replace(/[\r\n]+/g, ' ').substring(0, 360);
-    // Show shimmer via CSS class on parent
-    const parent = imgEl.closest('.dream-art-container, .at-visual-wrap, .stage-img-wrap');
-    if (parent) parent.classList.add('img-loading');
-    imgEl.style.display = 'block';
-    imgEl.style.opacity = '0';
-    const loadAttempt = () => {
-      const model = models[Math.min(attempt, models.length - 1)];
-      const url = buildPollinationsUrl(safePrompt, sceneType, baseSeed + attempt, model);
-      imgEl.src = `${url}&retry=${attempt}`;
-    };
-    loadAttempt();
-    imgEl.onload = () => {
-      imgEl.style.transition = 'opacity 0.7s ease';
-      imgEl.style.opacity = '1';
-      if (canvasEl) canvasEl.style.display = 'none';
-      if (parent) parent.classList.remove('img-loading');
-    };
-    imgEl.onerror = () => {
-      if (attempt < models.length - 1) {
-        attempt += 1;
-        loadAttempt();
-        return;
+  function checkIsRateLimitPlaceholder(imgEl) {
+    try {
+      const c = document.createElement('canvas');
+      c.width = 16;
+      c.height = 16;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(imgEl, 0, 0, 16, 16);
+      const d = ctx.getImageData(0, 0, 16, 16).data;
+      let yellow = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        if (d[i] > 190 && d[i+1] > 140 && d[i+2] < 110) yellow++;
       }
-      if (!localFallbackShown) {
-        localFallbackShown = true;
-        imgEl.style.display = 'block';
-        imgEl.style.opacity = '1';
-        imgEl.src = '/static/hero_dreamscape.jpg';
-        if (canvasEl) canvasEl.style.display = 'none';
-        if (parent) parent.classList.remove('img-loading');
-        return;
-      }
+      return yellow > 25;
+    } catch(e) {
+      return false;
+    }
+  }
+
+  function buildPollinationsUrl(prompt, sceneType, seed, model = 'dreamshaper') {
+    return '';
+  }
+
+  function loadImageWithSkeleton(imgEl, canvasEl, prompt, sceneType, seed, forceLive = false) {
+    if (imgEl) {
+      imgEl.src = '';
       imgEl.style.display = 'none';
-      if (canvasEl) { canvasEl.style.display = 'block'; }
-      if (parent) parent.classList.remove('img-loading');
-    };
+    }
+    if (canvasEl) {
+      canvasEl.style.display = 'none';
+    }
+    const parent = imgEl?.closest('.dream-art-container, .at-visual-wrap, .stage-img-wrap, .in-short-right');
+    if (parent) {
+      parent.style.display = 'none';
+    }
+
+    // Dynamic archetype tag label update
+    const archLabel = document.getElementById('overviewArchetypeLabel');
+    if (archLabel) {
+      const lower = String(prompt || currentDreamText || '').toLowerCase();
+      if (/rain|storm|umbrella/.test(lower)) archLabel.textContent = '⚡ The Storm Conductor';
+      else if (/elephant|lion|tiger|jungle/.test(lower)) archLabel.textContent = '👑 The Primal Sovereign';
+      else if (/kirmada|monster|shadow|fear/.test(lower)) archLabel.textContent = '🛡️ The Shadow Integrator';
+      else if (/fly|sky|wings|mountain/.test(lower)) archLabel.textContent = '🕊️ The Astral Voyager';
+      else if (/ocean|water|sea|dive/.test(lower)) archLabel.textContent = '🌊 The Abyssal Alchemist';
+      else if (/library|book|temple/.test(lower)) archLabel.textContent = '🗝️ The Archival Sage';
+      else if (/forest|door|portal/.test(lower)) archLabel.textContent = '🚪 The Threshold Pioneer';
+      else archLabel.textContent = '👑 The Primal Sovereign';
+    }
   }
 
   /* ================================================================
@@ -1306,6 +1558,10 @@
     document.getElementById('overviewInShortText').textContent = inShort.summary || 'Your subconscious is actively processing primal instinct and awakening deeper self-trust.';
     document.getElementById('overviewSolutionText').textContent = inShort.takeaway || psych.synthesis || 'Embrace the power revealed in this dream — your subconscious is signaling you are ready for a major breakthrough.';
     
+    // Render Quests & Aura Card
+    renderSubconsciousQuests(data, dreamText);
+    renderDreamAuraCard(data, dreamText);
+    
     const dreamImg = document.getElementById('overviewDreamImg');
     const dreamCanvas = document.getElementById('overviewVisualCanvas');
     const dreamPrompt = inShort.dream_text_for_image || dreamText || 'magical dream fantasy landscape';
@@ -1316,27 +1572,27 @@
     const timelineGrid = document.getElementById('storyTimelineCards');
     if (timeline.length) {
       timelineGrid.innerHTML = timeline.map((s, i) => `
-        <div class="story-stage-card" onclick="inspectStagePhase(${i})">
-          <div class="stage-img-wrap img-loading">
-            <canvas id="stageCanvas${i}" width="200" height="120" class="stage-canvas"></canvas>
-            <img id="stageImg${i}" class="stage-img" src="" alt="${escapeHtml(s.title)}" style="opacity:0;"/>
+        <div class="story-stage-card clean-stage-step" onclick="inspectStagePhase(${i})">
+          <div class="stage-step-header">
             <span class="stage-num-badge">Phase ${i+1}</span>
+            <span class="stage-pulse-dot"></span>
           </div>
           <div class="stage-info">
             <div class="stage-title">${escapeHtml(s.title)}</div>
             <div class="stage-desc">${escapeHtml(s.desc)}</div>
           </div>
+          <!-- Hidden compatibility hook -->
+          <div style="display:none;"><img id="stageImg${i}" src="" /><canvas id="stageCanvas${i}"></canvas></div>
         </div>
       `).join('');
-      // Render canvases immediately, then load images progressively
+      // Render canvases immediately and display dedicated stage artworks
       timeline.forEach((s, i) => {
         renderStageCanvas(`stageCanvas${i}`, i, s.title);
-        const prompt = `Dream: ${dreamText}. Phase: ${s.title}. ${s.desc || s.scene_prompt || s.image_url || ''}`.substring(0, 320);
         const stageKeys = ['stage1','stage2','stage3','stage4'];
         const imgEl = document.getElementById(`stageImg${i}`);
         const canvasEl = document.getElementById(`stageCanvas${i}`);
         if (imgEl) {
-          setTimeout(() => loadImageWithSkeleton(imgEl, canvasEl, prompt, stageKeys[i] || 'dreamscape'), i * 1200);
+          loadImageWithSkeleton(imgEl, canvasEl, '', stageKeys[i] || 'stage1', null, false);
         }
       });
     }
@@ -1773,10 +2029,8 @@
         const scImg = document.getElementById('scenarioArtImg');
         const scCanvas = document.getElementById('scenarioCanvas');
         // Generate image client-side using the image_prompt or visual_theme from server
-        const scPrompt = data.image_prompt ||
-          `Original dream: ${currentDreamText || 'dream experience'}. Chosen action: ${choice}. ` +
-          `Outcome: ${data.visual_theme || 'empowering golden breakthrough'}`;
-        loadImageWithSkeleton(scImg, scCanvas, scPrompt, 'scenario');
+        const scPrompt = data.image_prompt || `${choice} in ${currentDreamText || 'sacred dream realm'}`;
+        loadImageWithSkeleton(scImg, scCanvas, scPrompt, 'scenario', null, true);
       }
     } catch(e) {
       document.getElementById('scenarioResultStory').textContent = `By choosing "${choice}", your dream climax transforms into an empowered journey of sovereign self-mastery.`;
@@ -2020,7 +2274,7 @@
         mythological: { text: "Echoes the threshold crossing myth of leaving the known world to discover inner power." },
         synthesis: "Your dream reflects a balance between fear and hope, showing a desire for growth and self-discovery."
       },
-      youtube_recommendations: VIDEOS.slice(0, 4)
+      youtube_recommendations: []
     };
     currentAnalysisData = sample;
     renderAnalysisResults(sample, "The door in the forest");
@@ -2038,6 +2292,549 @@
     if (!str) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-  </script>
+  
+  /* ================================================================
+     VIRAL FEATURE 1: SUBCONSCIOUS WAKING LIFE QUESTS
+  ================================================================ */
+  let userXP = 150;
+  let userStreak = 1;
+
+  function renderSubconsciousQuests(data, dreamText) {
+    const container = document.getElementById('subconsciousQuestsList');
+    if (!container) return;
+    const profile = data.dream_profile || {};
+    const theme = profile.primary_theme || 'Courage & Awakening';
+    const firstSymbol = (profile.key_symbols || ['Inner Self'])[0];
+
+    const quests = [
+      {
+        title: `The ${firstSymbol} Alignment`,
+        desc: `Notice where you hesitate today—channel the calm authority and wisdom of ${firstSymbol} to act without fear.`,
+        xp: 50
+      },
+      {
+        title: "Sacred Grounding Ritual",
+        desc: `Take 3 conscious diaphragmatic breaths whenever you feel daily pressure, reminding your body that the tension is already resolved.`,
+        xp: 50
+      },
+      {
+        title: `Transmutation of ${profile.emotional_tone || 'Tension'}`,
+        desc: `Write down one challenge you are avoiding. Reframe it from an obstacle into a training ground for your personal sovereignty.`,
+        xp: 50
+      }
+    ];
+
+    const questIcons = ['⚡', '🧘', '🔮'];
+    const questTypes = ['Primal Alignment', 'Grounding Ritual', 'Mindset Transmutation'];
+    container.innerHTML = quests.map((q, i) => `
+      <div class="sq-item" id="questItem${i}" onclick="toggleQuestComplete(${i}, ${q.xp})">
+        <div class="sq-left-box">
+          <div class="sq-checkbox" id="questCheck${i}"></div>
+          <span class="sq-type-icon">${questIcons[i % questIcons.length]}</span>
+        </div>
+        <div class="sq-item-content">
+          <div class="sq-tag-row">
+            <span class="sq-type-tag">${questTypes[i % questTypes.length]}</span>
+            <span class="sq-xp-reward">+${q.xp} XP</span>
+          </div>
+          <div class="sq-title-line">${escapeHtml(q.title)}</div>
+          <div class="sq-desc-line">${escapeHtml(q.desc)}</div>
+        </div>
+        <div class="sq-status-badge" id="questStatusBadge${i}">Tap to Clear</div>
+      </div>
+    `).join('');
+    updateQuestProgressBar();
+  }
+
+  function toggleQuestComplete(idx, xp) {
+    const item = document.getElementById(`questItem${idx}`);
+    const check = document.getElementById(`questCheck${idx}`);
+    if (!item) return;
+    if (item.classList.contains('completed')) {
+      item.classList.remove('completed');
+      if (check) check.textContent = '';
+      userXP = Math.max(150, userXP - xp);
+    } else {
+      item.classList.add('completed');
+      if (check) check.textContent = '✓';
+      userXP += xp;
+      showAlert(`✨ Quest Completed! +${xp} Subconscious XP earned! Total: ${userXP} XP`, 'success');
+      // Particle burst sound / visual
+      if (soundscapeCtx) {
+        try {
+          const osc = soundscapeCtx.createOscillator();
+          const g = soundscapeCtx.createGain();
+          osc.frequency.setValueAtTime(528, soundscapeCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, soundscapeCtx.currentTime + 0.3);
+          g.gain.setValueAtTime(0.12, soundscapeCtx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, soundscapeCtx.currentTime + 0.35);
+          osc.connect(g);
+          g.connect(soundscapeCtx.destination);
+          osc.start();
+          osc.stop(soundscapeCtx.currentTime + 0.36);
+        } catch(e) {}
+      }
+    }
+    const xpEl = document.getElementById('streakXp');
+    if (xpEl) xpEl.textContent = `${userXP} XP`;
+    updateQuestProgressBar();
+  }
+
+  let completedQuestsCount = 0;
+  function updateQuestProgressBar() {
+    const items = document.querySelectorAll('.sq-item');
+    const completed = document.querySelectorAll('.sq-item.completed').length;
+    completedQuestsCount = completed;
+    const total = items.length || 3;
+    const pct = Math.round((completed / total) * 100);
+    
+    const bar = document.getElementById('questProgressBar');
+    const text = document.getElementById('questProgressText');
+    const levelTag = document.getElementById('questLevelTag');
+
+    if (bar) bar.style.width = `${pct}%`;
+    if (text) text.textContent = `Subconscious Alignment: ${completed} / ${total} Completed (${pct}%)`;
+    if (levelTag) {
+      if (completed === 3) levelTag.textContent = '🌟 Level 2 Dream Master';
+      else if (completed >= 1) levelTag.textContent = '⚡ Level 1 Initiate';
+      else levelTag.textContent = 'Level 1 Dreamer';
+    }
+
+    // Update status badge on items
+    items.forEach((item, idx) => {
+      const badge = document.getElementById(`questStatusBadge${idx}`);
+      if (!badge) return;
+      if (item.classList.contains('completed')) {
+        badge.textContent = '✓ Cleared';
+        badge.className = 'sq-status-badge cleared';
+      } else {
+        badge.textContent = 'Tap to Clear';
+        badge.className = 'sq-status-badge';
+      }
+    });
+  }
+
+  /* ================================================================
+     VIRAL FEATURE 2: VIRAL DREAM AURA CARD (IG Story / TikTok)
+  ================================================================ */
+  function renderDreamAuraCard(data, dreamText) {
+    const text = String(dreamText || '').toLowerCase();
+    const profile = data.dream_profile || {};
+    const intensity = profile.overall_intensity || 75;
+
+    let archetype = "THE PRIMAL SOVEREIGN";
+    let sub = "Awakening of Instinctual Power & Sovereign Authority";
+    let rarity = "TOP 3.8% RARE SUBCONSCIOUS PATTERN";
+    let orbGrad = "radial-gradient(circle at 35% 35%, #f472b6 0%, #7c3aed 55%, #06b6d4 100%)";
+    let stats = { agency: 94, intuition: 92, courage: 88, lucid: 86 };
+
+    if (/kirmada|demon|monster|ghost|scared|fear|shadow|dark|evil|nightmare|chase|threat|nemesis/.test(text)) {
+      archetype = "THE SHADOW INTEGRATOR";
+      sub = "Transmutation of Primal Fear into Invulnerable Spiritual Sovereignty";
+      rarity = "TOP 1.2% LEGENDARY SUBCONSCIOUS PATTERN";
+      orbGrad = "radial-gradient(circle at 35% 35%, #f43f5e 0%, #881337 55%, #312e81 100%)";
+      stats = { agency: 97, intuition: 95, courage: 99, lucid: 93 };
+    } else if (/rain|storm|umbrella|thunder|tempest|waterfall|monsoon/.test(text)) {
+      archetype = "THE STORM CONDUCTOR";
+      sub = "Mastery of Emotional Currents & Turning Chaos into Sacred Sanctuary";
+      rarity = "TOP 2.8% RARE SUBCONSCIOUS PATTERN";
+      orbGrad = "radial-gradient(circle at 35% 35%, #38bdf8 0%, #0284c7 55%, #0f172a 100%)";
+      stats = { agency: 95, intuition: 94, courage: 91, lucid: 92 };
+    } else if (/fly|flight|sky|soar|mountain|summit|cloud/.test(text)) {
+      archetype = "THE ASTRAL VOYAGER";
+      sub = "Boundless Cosmic Freedom & Sovereign High Perspective";
+      rarity = "TOP 2.4% RARE SUBCONSCIOUS PATTERN";
+      orbGrad = "radial-gradient(circle at 35% 35%, #38bdf8 0%, #6366f1 55%, #a855f7 100%)";
+      stats = { agency: 96, intuition: 90, courage: 92, lucid: 95 };
+    } else if (/ocean|water|sea|dive|swim|lake|river|cliff|fall/.test(text)) {
+      archetype = "THE ABYSSAL ALCHEMIST";
+      sub = "Emotional Fluidity & Deep Rebirth from the Subconscious Depths";
+      rarity = "TOP 4.1% RARE SUBCONSCIOUS PATTERN";
+      orbGrad = "radial-gradient(circle at 35% 35%, #2dd4bf 0%, #0ea5e9 55%, #4f46e5 100%)";
+      stats = { agency: 86, intuition: 98, courage: 82, lucid: 89 };
+    } else if (/forest|door|portal|key|gate|path/.test(text)) {
+      archetype = "THE THRESHOLD PIONEER";
+      sub = "Sacred Transformation & Bold Crossing into New Realities";
+      rarity = "TOP 5.0% RARE SUBCONSCIOUS PATTERN";
+      orbGrad = "radial-gradient(circle at 35% 35%, #34d399 0%, #059669 55%, #f59e0b 100%)";
+      stats = { agency: 90, intuition: 94, courage: 85, lucid: 91 };
+    } else if (/library|book|owl|scroll|ancient|wisdom/.test(text)) {
+      archetype = "THE ARCHIVAL SAGE";
+      sub = "Keeper of Hidden Subconscious Mysteries & Ancient Memory";
+      rarity = "TOP 1.9% ULTRA-RARE SUBCONSCIOUS PATTERN";
+      orbGrad = "radial-gradient(circle at 35% 35%, #fbbf24 0%, #d97706 55%, #7c3aed 100%)";
+      stats = { agency: 89, intuition: 99, courage: 78, lucid: 96 };
+    }
+
+    document.getElementById('auraArchetypeTitle').textContent = archetype;
+    document.getElementById('auraArchetypeSub').textContent = sub;
+    document.getElementById('auraRarityBadge').textContent = `⚡ ${rarity}`;
+    document.getElementById('auraOrbGraphic').style.background = orbGrad;
+
+    document.getElementById('auraStatAgency').textContent = `${stats.agency}%`;
+    document.getElementById('auraBarAgency').style.width = `${stats.agency}%`;
+    document.getElementById('auraStatIntuition').textContent = `${stats.intuition}%`;
+    document.getElementById('auraBarIntuition').style.width = `${stats.intuition}%`;
+    document.getElementById('auraStatCourage').textContent = `${stats.courage}%`;
+    document.getElementById('auraBarCourage').style.width = `${stats.courage}%`;
+    document.getElementById('auraStatLucid').textContent = `${stats.lucid}%`;
+    document.getElementById('auraBarLucid').style.width = `${stats.lucid}%`;
+
+    const quote = data.in_short?.takeaway || data.psychology?.synthesis || "Embrace your inner wisdom to transform waking challenges into creative mastery.";
+    document.getElementById('auraQuote').textContent = `"${quote}"`;
+
+    const titleWords = dreamText.split(' ').slice(0, 4).join(' ');
+    document.getElementById('auraFooterTag').textContent = `Dreamer: Hariharan • "${titleWords}..." • DreamLens AI`;
+  }
+
+  function exportAuraCardToImage() {
+    showAlert('📸 Generating your high-resolution 9:16 Instagram Story card...', 'info');
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+
+    // Gradient background
+    const bg = ctx.createLinearGradient(0, 0, 1080, 1920);
+    bg.addColorStop(0, '#09061a');
+    bg.addColorStop(0.5, '#1e103c');
+    bg.addColorStop(1, '#05030f');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, 1080, 1920);
+
+    // Glowing border frame
+    ctx.lineWidth = 14;
+    ctx.strokeStyle = '#7c3aed';
+    ctx.strokeRect(50, 50, 980, 1820);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#ec4899';
+    ctx.strokeRect(60, 60, 960, 1800);
+
+    // Stars / sparkles
+    ctx.fillStyle = '#ffffff';
+    for (let i = 0; i < 90; i++) {
+      const x = Math.random() * 1080;
+      const y = Math.random() * 1920;
+      const r = Math.random() * 2 + 0.8;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Header
+    ctx.fillStyle = '#a855f7';
+    ctx.font = 'bold 36px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('DREAMLENS AI • SUBCONSCIOUS AURA', 540, 220);
+
+    // Rarity Badge
+    const rarity = document.getElementById('auraRarityBadge').textContent;
+    ctx.fillStyle = '#f472b6';
+    ctx.font = 'bold 32px sans-serif';
+    ctx.fillText(rarity, 540, 310);
+
+    // Central Glowing Aura Orb
+    const orbGrad = ctx.createRadialGradient(540, 600, 20, 540, 600, 180);
+    orbGrad.addColorStop(0, '#f472b6');
+    orbGrad.addColorStop(0.5, '#7c3aed');
+    orbGrad.addColorStop(1, '#06b6d4');
+    ctx.fillStyle = orbGrad;
+    ctx.beginPath();
+    ctx.arc(540, 600, 180, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Archetype Title
+    const arch = document.getElementById('auraArchetypeTitle').textContent;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 64px sans-serif';
+    ctx.fillText(arch, 540, 930);
+
+    const sub = document.getElementById('auraArchetypeSub').textContent;
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '32px sans-serif';
+    ctx.fillText(sub, 540, 1000);
+
+    // Stats Box
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+    ctx.roundRect(140, 1080, 800, 260, 24);
+    ctx.fill();
+
+    ctx.fillStyle = '#22d3ee';
+    ctx.font = 'bold 36px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('Agency: ' + document.getElementById('auraStatAgency').textContent, 180, 1160);
+    ctx.fillText('Intuition: ' + document.getElementById('auraStatIntuition').textContent, 580, 1160);
+    ctx.fillText('Courage: ' + document.getElementById('auraStatCourage').textContent, 180, 1260);
+    ctx.fillText('Lucidity: ' + document.getElementById('auraStatLucid').textContent, 580, 1260);
+
+    // Quote Box
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#f1f5f9';
+    ctx.font = 'italic 32px sans-serif';
+    const quote = document.getElementById('auraQuote').textContent;
+    ctx.fillText(quote.substring(0, 55), 540, 1460);
+    if (quote.length > 55) ctx.fillText(quote.substring(55, 110) + '...', 540, 1515);
+
+    // Footer
+    ctx.fillStyle = '#64748b';
+    ctx.font = '28px sans-serif';
+    ctx.fillText('Share your dream at dreamlens-ai.vercel.app', 540, 1720);
+
+    const link = document.createElement('a');
+    link.download = `DreamLens_AuraCard_${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showAlert('🎉 Story card downloaded! Post to Instagram Stories / TikTok & tag #DreamLensAI!', 'success');
+  }
+
+  function shareAuraCardText() {
+    const arch = document.getElementById('auraArchetypeTitle').textContent;
+    const rarity = document.getElementById('auraRarityBadge').textContent;
+    const text = `🔮 My Subconscious Archetype is ${arch} (${rarity}) on DreamLens AI! ✨ Decode your dreams at dreamlens-ai.vercel.app #DreamLensAI #LucidDreaming`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      showAlert('📋 Shareable card text copied! Paste on Twitter/X, Instagram, or WhatsApp!', 'success');
+    } else {
+      showAlert(text, 'info');
+    }
+  }
+
+  /* ================================================================
+     VIRAL FEATURE 3: BINAURAL DREAM FREQUENCIES & SOUNDSCAPES
+  ================================================================ */
+  let soundscapeCtx = null;
+  let soundscapeOsc1 = null;
+  let soundscapeOsc2 = null;
+  let soundscapeGain = null;
+  let soundscapeAnimId = null;
+  let currentSoundscapeIdx = 0;
+
+  const SOUNDSCAPES = [
+    { name: "Off", freq1: 0, freq2: 0 },
+    { name: "🌙 Theta 6Hz", freq1: 200, freq2: 206 },
+    { name: "🌌 Cosmic 432Hz", freq1: 432, freq2: 436 },
+    { name: "🌊 Ocean Drift", freq1: 108, freq2: 111 },
+    { name: "🌲 Forest Calm", freq1: 174, freq2: 178 }
+  ];
+
+  function toggleSoundscape() {
+    currentSoundscapeIdx = (currentSoundscapeIdx + 1) % SOUNDSCAPES.length;
+    applySoundscapeMode();
+  }
+
+  function applySoundscapeMode() {
+    const mode = SOUNDSCAPES[currentSoundscapeIdx];
+    const label = document.getElementById('soundscapeLabel');
+    const pill = document.getElementById('soundscapePill');
+    if (label) label.textContent = `Audio: ${mode.name}`;
+
+    if (mode.name === "Off") {
+      if (pill) pill.classList.remove('active');
+      stopSoundscapeAudio();
+      return;
+    }
+
+    if (pill) pill.classList.add('active');
+    startSoundscapeAudio(mode.freq1, mode.freq2);
+  }
+
+  function startSoundscapeAudio(f1, f2) {
+    try {
+      if (!soundscapeCtx) {
+        soundscapeCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (soundscapeCtx.state === 'suspended') {
+        soundscapeCtx.resume();
+      }
+      stopSoundscapeAudio();
+
+      soundscapeGain = soundscapeCtx.createGain();
+      soundscapeGain.gain.setValueAtTime(0.001, soundscapeCtx.currentTime);
+      soundscapeGain.gain.exponentialRampToValueAtTime(0.06, soundscapeCtx.currentTime + 1.2);
+
+      soundscapeOsc1 = soundscapeCtx.createOscillator();
+      soundscapeOsc1.type = 'sine';
+      soundscapeOsc1.frequency.setValueAtTime(f1, soundscapeCtx.currentTime);
+
+      soundscapeOsc2 = soundscapeCtx.createOscillator();
+      soundscapeOsc2.type = 'sine';
+      soundscapeOsc2.frequency.setValueAtTime(f2, soundscapeCtx.currentTime);
+
+      const merger = soundscapeCtx.createChannelMerger(2);
+      soundscapeOsc1.connect(merger, 0, 0);
+      soundscapeOsc2.connect(merger, 0, 1);
+      merger.connect(soundscapeGain);
+      soundscapeGain.connect(soundscapeCtx.destination);
+
+      soundscapeOsc1.start();
+      soundscapeOsc2.start();
+
+      animateSoundscapeVisualizer(true);
+    } catch(e) {
+      console.warn('AudioContext not allowed or supported:', e);
+    }
+  }
+
+  function stopSoundscapeAudio() {
+    if (soundscapeOsc1) { try { soundscapeOsc1.stop(); soundscapeOsc1.disconnect(); } catch(e){} soundscapeOsc1 = null; }
+    if (soundscapeOsc2) { try { soundscapeOsc2.stop(); soundscapeOsc2.disconnect(); } catch(e){} soundscapeOsc2 = null; }
+    animateSoundscapeVisualizer(false);
+  }
+
+  function animateSoundscapeVisualizer(running) {
+    const canvas = document.getElementById('soundscapeVisualizer');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    cancelAnimationFrame(soundscapeAnimId);
+    if (!running) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+    let phase = 0;
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const bars = 5;
+      const w = 4;
+      const gap = 3;
+      for (let i = 0; i < bars; i++) {
+        const h = Math.abs(Math.sin(phase + i * 0.8)) * 12 + 2;
+        ctx.fillStyle = '#a855f7';
+        ctx.fillRect(i * (w + gap), canvas.height - h, w, h);
+      }
+      phase += 0.12;
+      soundscapeAnimId = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  document.getElementById('soundscapePill')?.addEventListener('click', toggleSoundscape);
+
+  /* ================================================================
+     VIRAL FEATURE 4: AI DREAM ORACLE VOICE (Narration)
+  ================================================================ */
+  let isOracleSpeaking = false;
+
+  function toggleOracleVoice() {
+    if (!('speechSynthesis' in window)) {
+      showAlert('Web Speech API is not supported in this browser.', 'warning');
+      return;
+    }
+    if (isOracleSpeaking) {
+      window.speechSynthesis.cancel();
+      isOracleSpeaking = false;
+      updateOracleBtnState(false);
+      return;
+    }
+
+    const title = document.getElementById('resultsDreamTitle')?.textContent || '';
+    const inShort = document.getElementById('overviewInShortText')?.textContent || '';
+    const takeaway = document.getElementById('overviewSolutionText')?.textContent || '';
+    const speechText = `Dream analysis for ${title}. Summary: ${inShort}. Key Subconscious Awakening: ${takeaway}`;
+
+    const utterance = new SpeechSynthesisUtterance(speechText);
+    utterance.rate = 0.88;
+    utterance.pitch = 0.9;
+    
+    // Pick deep, calm voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const calmVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('George') || v.name.includes('Serena') || v.name.includes('Daniel')));
+    if (calmVoice) utterance.voice = calmVoice;
+
+    utterance.onstart = () => {
+      isOracleSpeaking = true;
+      updateOracleBtnState(true);
+    };
+    utterance.onend = utterance.onerror = () => {
+      isOracleSpeaking = false;
+      updateOracleBtnState(false);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function updateOracleBtnState(speaking) {
+    const btn = document.getElementById('oracleVoiceBtn');
+    const txt = document.getElementById('oracleVoiceText');
+    if (!btn || !txt) return;
+    if (speaking) {
+      btn.classList.add('speaking');
+      txt.textContent = 'Stop Oracle Voice';
+    } else {
+      btn.classList.remove('speaking');
+      txt.textContent = 'Listen to Oracle';
+    }
+  }
+
+  document.getElementById('oracleVoiceBtn')?.addEventListener('click', toggleOracleVoice);
+  document.getElementById('openAuraCardBtn')?.addEventListener('click', () => switchResultsTab('tabDreamAura'));
+
+  /* ================================================================
+     VIRAL FEATURE 5: GLOBAL DREAM SPHERE MODAL
+  ================================================================ */
+  function openGlobalSphereModal() {
+    const m = document.getElementById('globalSphereModal');
+    if (m) m.style.display = 'flex';
+  }
+
+  function closeGlobalSphereModal() {
+    const m = document.getElementById('globalSphereModal');
+    if (m) m.style.display = 'none';
+  }
+
+  function reactToDream(btn, emoji) {
+    const cnt = btn.querySelector('.rc-cnt');
+    if (cnt) {
+      cnt.textContent = parseInt(cnt.textContent || '0') + 1;
+      btn.style.transform = 'scale(1.2)';
+      btn.style.borderColor = '#10b981';
+      setTimeout(() => { btn.style.transform = 'scale(1)'; }, 200);
+    }
+  }
+
+  document.getElementById('openGlobalSphereBtn')?.addEventListener('click', openGlobalSphereModal);
+
+</script>
+
+  <!-- GLOBAL DREAM SPHERE MODAL (Collective Unconscious) -->
+  <div class="sphere-modal-backdrop" id="globalSphereModal" style="display:none;" onclick="if(event.target===this)closeGlobalSphereModal()">
+    <div class="sphere-modal-box">
+      <button class="sphere-modal-close" onclick="closeGlobalSphereModal()">✕</button>
+      <div class="sphere-modal-title">🌐 Collective Unconscious Sphere</div>
+      <div class="sphere-modal-sub">Real-time anonymous dreams & subconscious frequencies from 14,820 dreamers worldwide</div>
+      
+      <div class="sphere-ticker">
+        <span>🔥 <strong>TRENDING TONIGHT:</strong></span>
+        <span>🐘 Wild Animals & Jungle Chases (+42%) • 🕊️ High Elevation Flight • 🌊 Violet Ocean Depths</span>
+      </div>
+
+      <div class="sphere-feed-list" id="sphereFeedList">
+        <div class="sphere-feed-item">
+          <div class="sphere-item-meta"><span>Kyoto, Japan • 12 mins ago</span><span>Archetype: Abyssal Mystic</span></div>
+          <div class="sphere-item-text">"I was swimming in a glowing turquoise subterranean lake beneath a shrine. A giant koi with golden scales swam in circles around me, radiating peaceful warmth."</div>
+          <div class="sphere-item-reactions">
+            <button class="sphere-react-btn" onclick="reactToDream(this, '✨')"><span>✨ Mystical</span> <span class="rc-cnt">342</span></button>
+            <button class="sphere-react-btn" onclick="reactToDream(this, '🔮')"><span>🔮 Deep</span> <span class="rc-cnt">189</span></button>
+          </div>
+        </div>
+        <div class="sphere-feed-item">
+          <div class="sphere-item-meta"><span>Oslo, Norway • 28 mins ago</span><span>Archetype: Astral Voyager</span></div>
+          <div class="sphere-item-text">"I jumped off a snowy ridge and caught an emerald aurora updraft, sailing over glaciers without feeling the cold at all."</div>
+          <div class="sphere-item-reactions">
+            <button class="sphere-react-btn" onclick="reactToDream(this, '⚡')"><span>⚡ Empowering</span> <span class="rc-cnt">512</span></button>
+            <button class="sphere-react-btn" onclick="reactToDream(this, '🕊️')"><span>🕊️ Free</span> <span class="rc-cnt">294</span></button>
+          </div>
+        </div>
+        <div class="sphere-feed-item">
+          <div class="sphere-item-meta"><span>Mumbai, India • 45 mins ago</span><span>Archetype: Primal Sovereign</span></div>
+          <div class="sphere-item-text">"A giant wild elephant emerged from the mist in a bamboo grove. When I stopped running and raised my hands, it bowed its head to mine."</div>
+          <div class="sphere-item-reactions">
+            <button class="sphere-react-btn" onclick="reactToDream(this, '👑')"><span>👑 Sovereign</span> <span class="rc-cnt">628</span></button>
+            <button class="sphere-react-btn" onclick="reactToDream(this, '✨')"><span>✨ Sacred</span> <span class="rc-cnt">411</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
