@@ -136,6 +136,101 @@ def match_youtube_recommendations(dream_text: str, primary_theme: str = "", key_
     return [item[1] for item in scored[:6]]
 
 
+
+def generate_rich_revelation(dream_text: str, primary_theme: str = None, key_symbols: list = None, tone: str = None) -> str:
+    """
+    Generates a longer, deeply engaging, fascinating multi-paragraph psychological
+    narrative revelation for the dream instead of a static motivational quote.
+    """
+    text_lower = (dream_text or "").lower()
+    symbols_str = ", ".join(key_symbols) if key_symbols else "your core dream symbols"
+    theme_str = primary_theme or "Personal Sovereignty & Inner Alignment"
+
+    if any(k in text_lower for k in ["pongal", "diwali", "festival", "harvest", "feast", "celebrat", "sugarcane", "pot", "boiled", "sweet", "family"]):
+        return (
+            "Your dream reflects a soul-nourishing celebration of sacred abundance, gratitude, and familial harmony. "
+            "In subconscious symbolism, harvest festivals like Pongal embody the profound spiritual truth of 'overflowing prosperity' "
+            "(Pongalo Pongal!)—where nature, solar warmth, and ancestral traditions unite in joyful thanksgiving.\n\n"
+            "This vision is an auspicious affirmation from your deeper mind: your psyche is feeling grounded, deeply connected to your roots, "
+            "and receptive to new blessings. The traditional boiling over of milk and rice represents life's gifts overflowing beyond the narrow boundaries "
+            "of daily worry, signifying that your efforts are yielding sweetness and shared joy.\n\n"
+            "This dream carries no threat or fear—it is a sacred invitation to celebrate the abundance already present in your waking life. "
+            "Honor your family bonds, express heartfelt gratitude for the quiet blessings around you, and remember that true prosperity multiplies "
+            "infinitely when shared with warmth and generosity."
+        )
+    elif any(k in text_lower for k in ["elephant", "beast", "chase", "jungle", "predator", "animal", "pursued"]):
+        return (
+            "Your sleeping consciousness has staged a high-stakes confrontation of raw instinct and primal authority. "
+            "In depth psychology, wild beasts in dreams do not emerge as random adversaries—they are living embodiments "
+            "of the shadow self, carrying vital psychic energy that your conscious waking persona has exiled or feared to command.\n\n"
+            "The thunderous pursuit reveals an ongoing waking struggle: you have been fleeing a situation that demands your sovereign "
+            "authority, misinterpreting your own capacity for power as an external threat. The dense wilderness reflects unresolved ambiguity "
+            "in your current life choices, where fear has distorted an opportunity into an emergency.\n\n"
+            "The turning point—when the wild force halts before you in stillness—is your subconscious delivering an ultimatum. "
+            "The beast did not stop to destroy you; it stopped because you ran out of avoidance. In this sacred quiet, the perceived danger dissolves "
+            "into an ally of immense wisdom. Your subconscious is telling you that the moment you stop running from waking responsibility and hold your "
+            "ground with calm awareness, the chaos of your waking life will yield to your natural authority."
+        )
+    elif any(k in text_lower for k in ["door", "forest", "wood", "threshold", "portal", "gate", "path"]):
+        return (
+            "Your dream consciousness has orchestrated a sacred threshold initiation between your safe, familiar persona and an expansive "
+            "new chapter of personal evolution. The quiet forest represents the unmapped, quiet reservoir of your subconscious mind—a realm where old "
+            "waking identities fall away and latent potential stirs.\n\n"
+            "The appearance of a freestanding glowing door signifies a pivotal psychological transition that you have consciously sensed but "
+            "hesitated to name. Wood represents organic life, rooted endurance, and natural timing, while the golden illumination leaking beneath "
+            "the frame is the classic archetypal marker of integration and self-illumination. The hesitation you experienced at the threshold was "
+            "not a sign of weakness; it was the sacred friction of your ego surrendering its need to control the outcome.\n\n"
+            "By taking the decisive step through the threshold, your subconscious completed the psychic leap before your waking mind could talk you out of it. "
+            "The golden light that received you is proof that what lies on the other side of your current waking crossroads is not danger, but clarity and "
+            "creative sovereignty. The threshold is already behind you in your psyche; now your waking decisions must match your inner courage."
+        )
+    elif any(k in text_lower for k in ["cliff", "fall", "falling", "ocean", "water", "sea", "glide", "drop"]):
+        return (
+            "This dream captures the ultimate psychological paradox of surrender: discovering that what your conscious mind interprets as "
+            "catastrophic failure is actually the beginning of autonomous flight. The cliff edge represents the rigid boundaries of your waking "
+            "control—the precarious precipice where intellectual planning can no longer navigate the depth of your life.\n\n"
+            "The violet ocean below is the vast, ancient mirror of the collective unconscious, blending the fiery tension of red with the deep emotional wisdom "
+            "of blue. When you lost your footing, your waking ego registered panic, anticipating impact and devastation. Yet, the moment resistance ceased, "
+            "the aerodynamic laws of your inner world transformed gravity into buoyancy.\n\n"
+            "Gliding gracefully above the water represents the emergence of radical self-trust. Your psyche is delivering a profound revelation for waking life: "
+            "the exhaustion you currently feel comes from desperately trying not to fall. Your subconscious is revealing that you do not need to grip the cliff "
+            "edge so tightly—when you release overthinking and allow yourself to move with the currents of change, you will find you are fully capable of gliding."
+        )
+    elif any(k in text_lower for k in ["library", "book", "key", "owl", "scroll", "ancient", "room", "temple"]):
+        return (
+            "You have entered the archetypal sanctuary of the collective unconscious—a timeless realm housing the accumulated wisdom, ancestral memories, "
+            "and latent knowledge of your deeper self. Towering mahogany shelves symbolize deep-rooted emotional architecture and lifelong cognitive consolidation.\n\n"
+            "The arrival of the owl carries ancient mythic weight: across cultures, the owl is the solitary guardian of the night, gifted with the ability to see "
+            "through impenetrable darkness where others are blind. In your dream, this messenger does not test or judge you; it recognizes your readiness and entrusts "
+            "you with a glowing brass key. Brass is an alloy of copper and zinc—representing the harmonious blending of intuition and grounding discipline.\n\n"
+            "This dream reveals that the answers to your current waking dilemmas cannot be found in surface-level noise or external advice. The key you were handed "
+            "is already within your possession: it is your innate intuition and analytical discernment. Your subconscious is urging you to unlock the quiet, "
+            "sovereign knowledge you already have and trust your inner authority."
+        )
+    elif any(k in text_lower for k in ["fly", "flying", "sky", "cloud", "soar", "wing", "air", "star"]):
+        return (
+            "Flight dreams are the purest expression of psychological transcendence and liberation from waking gravity. By soaring above purple clouds, "
+            "your psyche has elevated itself above the daily turmoil and emotional entanglements that frequently consume your waking energy.\n\n"
+            "The landscape beneath you—jagged mountains and glowing cities—represents the physical obstacles, complex social obligations, and career structures "
+            "of your everyday world. Seen from above, these monumental challenges appear small, ordered, and easily navigable. This shift in perspective is not mere "
+            "escapism; it is an active recalibration of your cognitive sovereignty, allowing you to see the interconnected tapestry of your life without feeling trapped "
+            "by its immediate friction.\n\n"
+            "Your ability to steer freely through the starry night demonstrates that you possess high internal locus of control and strong emotional sovereignty. "
+            "The dream is calling on you to bring this panoramic vantage point down into your daytime reality: do not get bogged down in petty dramas or minor setbacks—zoom out, "
+            "see the broader horizon, and steer with the same effortless clarity."
+        )
+    else:
+        return (
+            f"Your sleeping mind has staged an evocative initiation exploring {theme_str}. In depth psychology, the nocturnal landscape acts as a sacred mirror "
+            f"where unconscious desires, unspoken fears, and latent strengths take tangible form through symbols like {symbols_str}.\n\n"
+            "The narrative progression of this vision reveals a critical psychological friction: your conscious self is navigating a period of transition, yet old habit patterns "
+            "are attempting to maintain control through hesitation or heightened tension. The subconscious mind does not produce these vivid images to alarm you, but to compel "
+            "conscious awareness. It is demanding that you examine where in your waking life you are holding back or conforming to external expectations.\n\n"
+            "By unraveling the core emotional movement of this dream, a clear directive emerges: step into active sovereignty. Your inner psyche has already crossed the threshold "
+            "of the unfamiliar and survived the encounter. Carry this quiet resilience into your waking hours—trust your instinct, hold your boundaries with calm conviction, and "
+            "allow your natural clarity to lead."
+        )
+
 def unified_dream_analysis(dream_text: str) -> dict:
     """
     Runs a unified, single-pass dream intelligence analysis returning the exact
@@ -149,7 +244,7 @@ def unified_dream_analysis(dream_text: str) -> dict:
         "CRITICAL RULES:\n"
         "1. Symbol Network: 'center_node' MUST be the primary focal symbol (e.g. 'Elephant', 'Ocean', 'Darkness'). 'connected_nodes' must contain 4 distinct specific symbols/elements from this dream.\n"
         "2. Psychology Lenses: Provide distinct 1-2 sentence analyses for Freudian (subconscious drives), Jungian (archetypes & shadow), Modern Cognitive (emotional regulation), and Mythological (universal & Indian folklore/myths).\n"
-        "3. Scenario Presets: 3 exciting 'What If?' climax alteration options tailored to this dream.\n\n"
+        "3. Scenario Presets: 3 exciting 'What If?' climax alteration options tailored to this dream.\n4. Subconscious Revelation: 'in_short.revelation' MUST be a longer, deeply engaging, fascinating multi-paragraph narrative decode (140-200 words) exploring: (a) what latent psychological drama your subconscious is staging, (b) the unspoken emotional tension between your conscious self and the dream encounter, and (c) the psychological sovereignty/power shift being demanded in your waking life. Do not give generic motivational slogans—give a rich, intriguing psychological reading.\n\n"
         "Return valid JSON matching this schema:\n"
         "{\n"
         "  \"dream_profile\": {\"overall_intensity\": 78, \"intensity_label\": \"High\", \"primary_theme\": \"Theme\", \"emotional_tone\": \"Tone\", \"recurring_patterns_count\": 1, \"key_symbols\": [\"Sym1\", \"Sym2\"]},\n"
@@ -419,6 +514,10 @@ def run_dream_pipeline(dream_text: str) -> dict:
     # 3. Pass dream_text for client-side image generation (no server blocking)
     # The client generates Pollinations URLs directly — faster by 5-15 seconds
     in_short_obj = raw.get("in_short") or {}
+    if not in_short_obj.get("revelation") or len(str(in_short_obj.get("revelation", ""))) < 80:
+        symbols_list = profile.get("key_symbols", []) if isinstance(profile, dict) else []
+        theme_val = profile.get("primary_theme", "") if isinstance(profile, dict) else ""
+        in_short_obj["revelation"] = generate_rich_revelation(dream_text, theme_val, symbols_list)
     clean_text = dream_text.replace('"', '').replace('\n', ' ').strip()
     in_short_obj["dream_text_for_image"] = clean_text[:180]
     in_short_obj["image_prompt"] = f"Cinematic fantasy concept art of {clean_text[:120]}, atmospheric volumetric lighting, ethereal glow, 8k masterpiece, no text"

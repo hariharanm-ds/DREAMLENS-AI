@@ -334,39 +334,74 @@
     ============================================================ -->
     <div class="view-panel" id="viewResults">
       
-      <!-- ANALYSIS TOP BAR -->
-      <div class="results-top-header">
-        <div class="rth-left">
-          <h2 class="rth-title" id="resultsDreamTitle">The Door in the Forest</h2>
-          <div class="rth-meta" id="resultsDreamDate">Analyzed on Sep 10, 2025 • 11:57 AM</div>
-        </div>
-        <div class="rth-right">
-          <button class="btn-oracle-voice" id="oracleVoiceBtn" title="Listen to AI Dream Oracle Voice">
-            <span class="oracle-icon">🎙️</span>
-            <span id="oracleVoiceText">Listen to Oracle</span>
-          </button>
-          <button class="btn-ghost-icon highlight-btn" id="openAuraCardBtn" title="View & Share Dream Aura Card">
-            <span>🎴 Aura Card</span>
-          </button>
-          <button class="btn-ghost-icon" id="saveReportBtn"  title="Save Report">
-            <span>⭐ Save Report</span>
-          </button>
-          <button class="btn-ghost-icon" id="downloadReportBtn" title="Export / Download">
-            <span>📥 Download Report</span>
-          </button>
-        </div>
-      </div>
+      <div class="chat-thread-wrapper">
 
-      <!-- RESTRUCTURED FEATURE TABS -->
-      <div class="results-tab-bar">
-        <button class="rtab active" data-tab="tabOverview">🔮 Dream Oracle</button>
-        <button class="rtab" data-tab="tabScenarios">⚡ Climax Rewriter</button>
-        <button class="rtab highlight-tab" data-tab="tabDreamAura">🎴 Dream Aura Studio</button>
-        <button class="rtab" data-tab="tabStoryMap">📜 Story Timeline</button>
-        <button class="rtab" data-tab="tabEmotions">🌊 Emotion Arc</button>
-        <button class="rtab" data-tab="tabSymbols">🗝️ Symbol Constellation</button>
-        <button class="rtab" data-tab="tabPsychology">🧠 Depth Psychology</button>
-      </div>
+        <!-- USER CHAT BUBBLE -->
+        <div class="chat-msg-user" id="chatUserMsgBubble">
+          <div class="chat-avatar-wrap">
+            <div class="user-avatar">🧙‍♂️</div>
+          </div>
+          <div class="user-msg-box">
+            <div class="chat-msg-header">
+              <span class="chat-user-label">You</span>
+              <span class="chat-timestamp" id="chatUserTimestamp">Analyzed Today • 11:57 AM</span>
+            </div>
+            <p class="chat-msg-text" id="chatUserNarrative">I was walking through a dark and quiet forest when a mysterious glowing wooden door appeared in front of me. I felt hesitant but stepped through into golden light.</p>
+          </div>
+        </div>
+
+        <!-- ORACLE AI RESPONSE BUBBLE -->
+        <div class="chat-msg-oracle" id="chatOracleMsgBubble">
+          <div class="chat-avatar-wrap">
+            <div class="oracle-avatar">🔮</div>
+            <div class="oracle-pulse-ring"></div>
+          </div>
+          <div class="oracle-msg-box">
+            <div class="oracle-msg-header-row">
+              <div class="oracle-identity">
+                <span class="oracle-name">DreamLens Oracle</span>
+                <span class="oracle-badge">✨ Subconscious Intelligence Decoded</span>
+              </div>
+              <div class="oracle-header-actions">
+                <button class="btn-oracle-voice" id="oracleVoiceBtn" title="Listen to AI Dream Oracle Voice">
+                  <span class="oracle-icon">🎙️</span>
+                  <span id="oracleVoiceText">Listen to Oracle</span>
+                </button>
+                <button class="btn-ghost-icon highlight-btn" id="openAuraCardBtn" title="View & Share Dream Aura Card">
+                  <span>🎴 Aura Card</span>
+                </button>
+                <button class="btn-ghost-icon" id="saveReportBtn" title="Save Report">
+                  <span>⭐ Save Report</span>
+                </button>
+                <button class="btn-ghost-icon" id="downloadReportBtn" title="Export / Download">
+                  <span>📥 Download Report</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ORACLE HEADLINE & ARCHETYPE -->
+            <div class="oracle-headline-bar">
+              <div>
+                <h2 class="rth-title" id="resultsDreamTitle">The Door in the Forest</h2>
+                <div class="rth-meta" id="resultsDreamDate">Analyzed on Sep 10, 2025 • 11:57 AM</div>
+              </div>
+              <div class="archetype-pulse-pill" onclick="switchResultsTab('tabDreamAura')">
+                <span class="pulse-spark">✨</span>
+                <span id="overviewArchetypeLabel">👑 The Primal Sovereign</span>
+                <span class="pill-arrow">→</span>
+              </div>
+            </div>
+
+            <!-- RESTRUCTURED FEATURE TABS -->
+            <div class="results-tab-bar chat-tab-bar">
+              <button class="rtab active" data-tab="tabOverview">🔮 Deep Revelation</button>
+              <button class="rtab" data-tab="tabScenarios">⚡ Climax Rewriter</button>
+              <button class="rtab highlight-tab" data-tab="tabDreamAura">🎴 Dream Aura Studio</button>
+              <button class="rtab" data-tab="tabStoryMap">📜 Story Timeline</button>
+              <button class="rtab" data-tab="tabEmotions">🌊 Emotion Arc</button>
+              <button class="rtab" data-tab="tabSymbols">🗝️ Symbol Constellation</button>
+              <button class="rtab" data-tab="tabPsychology">🧠 Depth Psychology</button>
+            </div>
 
       <!-- ==========================================
            TAB 1: OVERVIEW (Screen 4)
@@ -642,59 +677,97 @@
            TAB 3: EMOTIONS (Screen 6)
       ========================================== -->
       <div class="rtab-content" id="tabEmotions">
-        <div class="emotions-layout-grid">
-          
-          <!-- EMOTION ARC WAVE CHART -->
-          <div class="dash-card emotion-arc-card">
-            <div class="card-header-flex">
-              <h3 class="card-section-title">Emotion Arc</h3>
-              <span class="badge badge-pink">Dynamic Neural Wave</span>
-            </div>
-            <div class="arc-chart-container">
-              <canvas id="emotionWaveCanvas" width="480" height="220" class="emotion-wave-canvas"></canvas>
-              <div class="arc-labels-x">
-                <span>Beginning</span>
-                <span>Middle (Turning Point)</span>
-                <span>Climax & Resolution</span>
-              </div>
+
+        <!-- === DREAM FREQUENCY SCANNER === -->
+        <div class="freq-scanner-header">
+          <div class="freq-scanner-title-row">
+            <span class="freq-pulse-dot"></span>
+            <h3 class="freq-scanner-title">Dream Frequency Scanner</h3>
+            <span class="freq-live-badge">● SCANNING</span>
+          </div>
+          <p class="freq-scanner-sub" id="emotionScannerSubtitle">Mapping your subconscious emotional signal patterns...</p>
+        </div>
+
+        <!-- ANIMATED EQUALIZER BARS -->
+        <div class="dash-card eq-card">
+          <div class="eq-label-row">
+            <span class="eq-card-title">Emotional Frequency Spectrum</span>
+            <span class="eq-card-badge" id="eqDominantLabel">Dominant: Intensity</span>
+          </div>
+          <div class="eq-stage-wrap">
+            <div class="eq-bars-container" id="eqBarsContainer">
+              <div class="eq-bar-wrap"><div class="eq-bar-fill eq-bar-1" id="eqBar0" style="--eq-h:60%"></div><span class="eq-bar-label">Fear</span><span class="eq-bar-val">60%</span></div>
+              <div class="eq-bar-wrap"><div class="eq-bar-fill eq-bar-2" id="eqBar1" style="--eq-h:35%"></div><span class="eq-bar-label">Joy</span><span class="eq-bar-val">35%</span></div>
+              <div class="eq-bar-wrap"><div class="eq-bar-fill eq-bar-3" id="eqBar2" style="--eq-h:75%"></div><span class="eq-bar-label">Awe</span><span class="eq-bar-val">75%</span></div>
+              <div class="eq-bar-wrap"><div class="eq-bar-fill eq-bar-4" id="eqBar3" style="--eq-h:50%"></div><span class="eq-bar-label">Desire</span><span class="eq-bar-val">50%</span></div>
+              <div class="eq-bar-wrap"><div class="eq-bar-fill eq-bar-5" id="eqBar4" style="--eq-h:30%"></div><span class="eq-bar-label">Sadness</span><span class="eq-bar-val">30%</span></div>
+              <div class="eq-bar-wrap"><div class="eq-bar-fill eq-bar-6" id="eqBar5" style="--eq-h:85%"></div><span class="eq-bar-label">Anticipation</span><span class="eq-bar-val">85%</span></div>
+              <div class="eq-bar-wrap"><div class="eq-bar-fill eq-bar-7" id="eqBar6" style="--eq-h:20%"></div><span class="eq-bar-label">Peace</span><span class="eq-bar-val">20%</span></div>
             </div>
           </div>
 
-          <!-- EMOTIONAL BREAKDOWN DONUT -->
-          <div class="dash-card emotion-breakdown-card">
-            <h3 class="card-section-title">Emotional Breakdown</h3>
-            <div class="breakdown-chart-wrap">
-              <div class="donut-chart-svg-wrap">
-                <svg class="donut-svg" viewBox="0 0 140 140">
-                  <circle class="donut-ring-bg" cx="70" cy="70" r="50" />
-                  <circle class="donut-seg" id="donutSeg1" cx="70" cy="70" r="50" stroke="#ec4899" stroke-dasharray="314.15" stroke-dashoffset="140" />
-                  <circle class="donut-seg" id="donutSeg2" cx="70" cy="70" r="50" stroke="#06b6d4" stroke-dasharray="314.15" stroke-dashoffset="230" />
-                  <circle class="donut-seg" id="donutSeg3" cx="70" cy="70" r="50" stroke="#a855f7" stroke-dasharray="314.15" stroke-dashoffset="280" />
-                  <circle class="donut-seg" id="donutSeg4" cx="70" cy="70" r="50" stroke="#10b981" stroke-dasharray="314.15" stroke-dashoffset="300" />
-                </svg>
-                <div class="donut-center-label">
-                  <span class="donut-main-pct" id="donutMainPct">45%</span>
-                  <span class="donut-main-name" id="donutMainName">Intensity</span>
-                </div>
-              </div>
-              <div class="donut-legend" id="donutLegendContainer">
-                <div class="legend-row"><span class="ldot" style="background:#ec4899"></span><span>Intensity 45%</span></div>
-                <div class="legend-row"><span class="ldot" style="background:#06b6d4"></span><span>Curiosity 25%</span></div>
-                <div class="legend-row"><span class="ldot" style="background:#a855f7"></span><span>Courage 20%</span></div>
-                <div class="legend-row"><span class="ldot" style="background:#10b981"></span><span>Clarity 10%</span></div>
-              </div>
+          <!-- Emotion DNA Gradient Arc -->
+          <div class="emotion-dna-wrap">
+            <div class="emotion-dna-label-row"><span>Dream Start</span><span>Emotional Peak</span><span>Resolution</span></div>
+            <div class="emotion-dna-bar" id="emotionDnaBar">
+              <div class="emotion-dna-cursor" id="emotionDnaCursor"></div>
             </div>
-          </div>
-
-        </div><!-- /emotions-layout-grid -->
-
-        <!-- KEY EMOTIONAL INSIGHTS PILLS -->
-        <div class="dash-card emotion-insights-pills-card">
-          <h3 class="card-section-title">Key Emotional Insights</h3>
-          <div class="insights-pills-grid" id="emotionInsightsGrid">
-            <!-- Populated by JS -->
+            <div class="emotion-dna-arc-row" id="emotionDnaArcRow">
+              <span class="dna-arc-tag" style="color:#ec4899" id="dnaArcStart">Tense</span>
+              <span class="dna-arc-tag" style="color:#a855f7" id="dnaArcPeak">Intense</span>
+              <span class="dna-arc-tag" style="color:#10b981" id="dnaArcEnd">Enlightened</span>
+            </div>
           </div>
         </div>
+
+        <!-- EI SCORE + TOP EMOTION CARDS -->
+        <div class="ei-score-grid">
+          <div class="dash-card ei-score-card">
+            <div class="ei-score-title-row">
+              <span class="ei-score-icon">🧬</span>
+              <span class="ei-score-title">Emotional IQ</span>
+            </div>
+            <div class="ei-circle-wrap">
+              <svg class="ei-circle-svg" viewBox="0 0 120 120">
+                <circle class="ei-circle-bg" cx="60" cy="60" r="50"/>
+                <circle class="ei-circle-fill" id="eiCircleFill" cx="60" cy="60" r="50" stroke-dasharray="314.15" stroke-dashoffset="94"/>
+              </svg>
+              <div class="ei-circle-inner">
+                <span class="ei-score-num" id="eiScoreNum">70</span>
+                <span class="ei-score-denom">/100</span>
+              </div>
+            </div>
+            <div class="ei-tier-label" id="eiTierLabel">Emotionally Aware</div>
+            <div class="ei-tier-desc" id="eiTierDesc">Your dream reveals self-awareness and emotional fluency</div>
+          </div>
+          <div class="ei-top-emotions-col" id="eiTopEmotionsCol">
+            <div class="ei-emotion-card" id="eiEmotion0">
+              <div class="ei-emo-header"><span class="ei-emo-emoji">⚡</span><span class="ei-emo-name">Intensity</span><span class="ei-emo-pct">45%</span></div>
+              <div class="ei-emo-bar-wrap"><div class="ei-emo-bar" style="width:45%;background:linear-gradient(90deg,#ec4899,#f472b6)"></div></div>
+              <p class="ei-emo-insight">Raw emotional charge propelling your subconscious to act</p>
+            </div>
+            <div class="ei-emotion-card" id="eiEmotion1">
+              <div class="ei-emo-header"><span class="ei-emo-emoji">🔮</span><span class="ei-emo-name">Curiosity</span><span class="ei-emo-pct">25%</span></div>
+              <div class="ei-emo-bar-wrap"><div class="ei-emo-bar" style="width:25%;background:linear-gradient(90deg,#06b6d4,#22d3ee)"></div></div>
+              <p class="ei-emo-insight">An open portal — your mind is seeking hidden truths</p>
+            </div>
+            <div class="ei-emotion-card" id="eiEmotion2">
+              <div class="ei-emo-header"><span class="ei-emo-emoji">🦅</span><span class="ei-emo-name">Courage</span><span class="ei-emo-pct">20%</span></div>
+              <div class="ei-emo-bar-wrap"><div class="ei-emo-bar" style="width:20%;background:linear-gradient(90deg,#a855f7,#c084fc)"></div></div>
+              <p class="ei-emo-insight">The will to transcend — your psyche is ready for change</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden compat hooks for old functions -->
+        <div style="display:none">
+          <canvas id="emotionWaveCanvas"></canvas>
+          <div id="donutLegendContainer"></div>
+          <span id="donutMainPct"></span>
+          <span id="donutMainName"></span>
+          <div class="insights-pills-grid" id="emotionInsightsGrid"></div>
+        </div>
+
       </div><!-- /tabEmotions -->
 
 
@@ -707,52 +780,29 @@
         <div class="sym-decoder-header">
           <div class="sym-decoder-title-row">
             <span class="sym-pulse-dot"></span>
-            <h3 class="sym-decoder-title">🗝️ Subconscious Symbol Decoder</h3>
+            <h3 class="sym-decoder-title">Subconscious Symbol Decoder</h3>
             <span class="sym-decode-badge" id="symbolCenterBadge">Central Archetype</span>
           </div>
-          <p class="sym-decoder-sub">Each symbol is a message from your deeper mind. Tap any card to decode it.</p>
+          <p class="sym-decoder-sub">Every symbol is a secret message from your deeper mind. Tap to decode.</p>
         </div>
 
-        <!-- SYMBOL CARDS GRID (clickable, expandable) -->
+        <!-- INTERACTIVE SYMBOL CARDS -->
         <div class="sym-cards-grid" id="symbolCardsGrid">
-          <!-- Default placeholder cards (replaced by JS) -->
-          <div class="sym-card" onclick="toggleSymCard(this)">
-            <div class="sym-card-top">
-              <span class="sym-card-emoji">🐘</span>
-              <div class="sym-card-title-col">
-                <span class="sym-card-name">Elephant</span>
-                <span class="sym-card-archetype-badge badge-shadow">Shadow Archetype</span>
-              </div>
-              <div class="sym-resonance-wrap">
-                <div class="sym-resonance-bar-bg"><div class="sym-resonance-bar-fill" style="width:85%"></div></div>
-                <span class="sym-resonance-pct">85%</span>
-              </div>
-            </div>
-            <div class="sym-card-expand">
-              <p class="sym-card-meaning">The elephant in dreams represents power held with patience — the subconscious acknowledging that raw force must be paired with wisdom to become transformative.</p>
-              <div class="sym-global-ticker">🌍 Appears in <strong>31%</strong> of power-archetype dreams worldwide</div>
-            </div>
+          <!-- Populated dynamically by renderSymbolDecoder() -->
+        </div>
+
+        <!-- SYMBOL RESONANCE METER -->
+        <div class="dash-card sym-resonance-card">
+          <div class="sym-res-title-row">
+            <span class="sym-res-icon">📡</span>
+            <span class="sym-res-title">Symbol Resonance Map</span>
           </div>
-          <div class="sym-card" onclick="toggleSymCard(this)">
-            <div class="sym-card-top">
-              <span class="sym-card-emoji">🌿</span>
-              <div class="sym-card-title-col">
-                <span class="sym-card-name">Jungle</span>
-                <span class="sym-card-archetype-badge badge-anima">Anima</span>
-              </div>
-              <div class="sym-resonance-wrap">
-                <div class="sym-resonance-bar-bg"><div class="sym-resonance-bar-fill" style="width:70%"></div></div>
-                <span class="sym-resonance-pct">70%</span>
-              </div>
-            </div>
-            <div class="sym-card-expand">
-              <p class="sym-card-meaning">The jungle is the uncharted terrain of the unconscious — dense, alive, and full of potential. Your psyche is navigating unexplored emotional territory.</p>
-              <div class="sym-global-ticker">🌍 Appears in <strong>24%</strong> of transformation-archetype dreams worldwide</div>
-            </div>
+          <div class="sym-res-bars" id="symbolResBars">
+            <!-- Populated by JS -->
           </div>
         </div>
 
-        <!-- SYMBOL KEY REFLECTION -->
+        <!-- COLLECTIVE INSIGHT -->
         <div class="dash-card sym-reflection-card">
           <div class="sym-ref-header-row">
             <span class="sym-ref-icon">🔮</span>
@@ -768,7 +818,7 @@
           </div>
         </div>
 
-        <!-- Hidden compat hooks -->
+        <!-- Hidden compat -->
         <canvas id="symbolNetworkCanvas" style="display:none"></canvas>
         <div id="symbolMeaningsList" style="display:none"></div>
 
@@ -932,7 +982,10 @@
         </div>
       </div>
 
-    </div><!-- /viewResults -->
+            </div><!-- /oracle-msg-box -->
+          </div><!-- /chat-msg-oracle -->
+        </div><!-- /chat-thread-wrapper -->
+      </div><!-- /viewResults -->
 
 
     <!-- ============================================================
@@ -1003,6 +1056,27 @@
         <!-- Populated by JS -->
       </div>
     </div><!-- /viewSaved -->
+
+  
+    <!-- STICKY CHAT INPUT BAR -->
+    <div class="chat-sticky-bottom-bar" id="chatStickyBar">
+      <div class="chat-chips-scroll">
+        <button class="chat-prompt-chip" onclick="loadSampleDream('elephant')">🐘 Elephant Standoff</button>
+        <button class="chat-prompt-chip" onclick="loadSampleDream('forest')">🚪 Obsidian Door</button>
+        <button class="chat-prompt-chip" onclick="loadSampleDream('cliff')">🌊 Cliff Edge Freefall</button>
+        <button class="chat-prompt-chip" onclick="loadSampleDream('library')">🗝️ Ancient Library</button>
+        <button class="chat-prompt-chip" onclick="loadSampleDream('flying')">🕊️ Soaring in Sky</button>
+      </div>
+      <div class="chat-input-row">
+        <div class="chat-input-wrap">
+          <textarea class="chat-input-textarea" id="chatInputTextarea" placeholder="Describe your dream in detail (e.g. 'I was walking through a dark forest when a glowing door appeared...'). Press Enter to decode." rows="1"></textarea>
+        </div>
+        <button class="chat-send-btn" id="chatSendBtn" title="Decode Dream with AI Oracle">
+          <span>Decode Dream</span>
+          <span class="send-spark">🔮</span>
+        </button>
+      </div>
+    </div>
 
   </main><!-- /ws-main -->
 
@@ -1167,7 +1241,34 @@
     if (typeof renderCinemaGridList === 'function' && typeof VIDEOS !== 'undefined') {
       renderCinemaGridList(VIDEOS);
     }
+    
+  // Wire up Chat input bar
+  const chatInputEl = document.getElementById('chatInputTextarea');
+  const chatSendBtnEl = document.getElementById('chatSendBtn');
+  if (chatSendBtnEl && chatInputEl) {
+    chatSendBtnEl.addEventListener('click', () => {
+      const val = chatInputEl.value.trim();
+      if (!val) {
+        showAlert('Please describe your dream first.', 'warning');
+        return;
+      }
+      document.getElementById('fullJournalText').value = val;
+      chatInputEl.value = '';
+      runAnalyzeDream();
+    });
+    chatInputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        chatSendBtnEl.click();
+      }
+    });
+  }
+
     renderSampleDefaultAnalysis();
+    // Trigger equalizer animation for initial load
+    setTimeout(() => {
+      document.querySelectorAll('.eq-bar-fill').forEach(b => b.classList.add('eq-animate'));
+    }, 500);
     checkHealth();
   });
 
@@ -1509,7 +1610,8 @@
     const archLabel = document.getElementById('overviewArchetypeLabel');
     if (archLabel) {
       const lower = String(prompt || currentDreamText || '').toLowerCase();
-      if (/rain|storm|umbrella/.test(lower)) archLabel.textContent = '⚡ The Storm Conductor';
+      if (/pongal|diwali|festival|harvest|feast|celebrat|wedding|family/.test(lower)) archLabel.textContent = '🌾 The Abundant Harvester';
+      else if (/rain|storm|umbrella/.test(lower)) archLabel.textContent = '⚡ The Storm Conductor';
       else if (/elephant|lion|tiger|jungle/.test(lower)) archLabel.textContent = '👑 The Primal Sovereign';
       else if (/kirmada|monster|shadow|fear/.test(lower)) archLabel.textContent = '🛡️ The Shadow Integrator';
       else if (/fly|sky|wings|mountain/.test(lower)) archLabel.textContent = '🕊️ The Astral Voyager';
@@ -1555,7 +1657,24 @@
     document.getElementById('profileRecurring').textContent = profile.recurring_patterns_count || 2;
     document.getElementById('profileSymbols').textContent = Array.isArray(profile.key_symbols) ? profile.key_symbols.join(', ') : 'Core Symbol, Journey';
 
-    document.getElementById('overviewInShortText').textContent = inShort.summary || 'Your subconscious is actively processing primal instinct and awakening deeper self-trust.';
+    // Render user narrative bubble
+    const userNarrativeEl = document.getElementById('chatUserNarrative');
+    if (userNarrativeEl) {
+      userNarrativeEl.textContent = dreamText;
+    }
+    const userTimeEl = document.getElementById('chatUserTimestamp');
+    if (userTimeEl) {
+      userTimeEl.textContent = `Analyzed ${new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'})} • ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+    }
+
+    // Render deep interesting multi-paragraph subconscious revelation
+    const rawRev = inShort.revelation || (typeof generateRichRevelationClient === 'function' ? generateRichRevelationClient(dreamText, profile.primary_theme, profile.key_symbols) : inShort.summary);
+    const paragraphs = String(rawRev || '').split(/\n\s*\n/).filter(p => p.trim());
+    if (paragraphs.length > 1) {
+      document.getElementById('overviewInShortText').innerHTML = paragraphs.map(p => `<p class="oracle-reading-para">${escapeHtml(p.trim())}</p>`).join('');
+    } else {
+      document.getElementById('overviewInShortText').textContent = rawRev || 'Your subconscious is actively processing primal instinct and awakening deeper self-trust.';
+    }
     document.getElementById('overviewSolutionText').textContent = inShort.takeaway || psych.synthesis || 'Embrace the power revealed in this dream — your subconscious is signaling you are ready for a major breakthrough.';
     
     // Render Quests & Aura Card
@@ -1598,15 +1717,11 @@
     }
     document.getElementById('storyKeyInsightsText').textContent = data.story_key_insights || 'The dream reflects a journey from tension to empowerment, unlocking hidden inner strength.';
 
-    // --- TAB 3: EMOTIONS ---
-    renderEmotionWaveCanvas(emotionArc.curve);
-    renderEmotionBreakdown(emotionArc.breakdown);
-    renderEmotionInsights(emotionArc.insights);
+    // --- TAB 3: EMOTIONS (FREQUENCY SCANNER) ---
+    renderEmotionScanner(emotionArc);
 
-    // --- TAB 4: SYMBOLS (DYNAMIC NODE NETWORK) ---
-    renderSymbolNetworkCanvas(symbolNet);
-    renderSymbolMeanings(symbolNet.connected_nodes);
-    document.getElementById('symbolKeyReflectionText').textContent = symbolNet.key_reflection || 'Your symbols interact to reveal hidden subconscious truths and internal emotional alignment.';
+    // --- TAB 4: SYMBOLS (INTERACTIVE DECODER) ---
+    renderSymbolDecoder(symbolNet);
 
     // --- TAB 5: PSYCHOLOGY (RICH DISTINCT LENSES) ---
     document.getElementById('lensFreudianText').textContent = psych.freudian?.text || 'Subconscious exploration of suppressed desires and instinctual drives seeking expression.';
@@ -1964,17 +2079,97 @@
   /* ================================================================
      SCENARIO SIMULATOR (Dynamic Dream-Specific Presets & Execution)
   ================================================================ */
+  
+  function updateScenarioTone(dreamText, profile) {
+    const lower = String(dreamText || '').toLowerCase();
+    const isCelebration = /pongal|diwali|festival|harvest|feast|celebrat|wedding|party|happy|joy|sugarcane|pot|family/.test(lower);
+    const isFlight = /fly|sky|wings|cloud|soar|glid|bird|mountain/.test(lower);
+    const isThreat = /chase|beast|monster|elephant|lion|tiger|kill|run|fear|dark|shadow|threat|danger/.test(lower);
+
+    const shiftLabel = document.querySelector('.timeline-shift-box .ts-label') || document.querySelector('.timeline-shift-box .ts-label-title');
+    const shiftSub = document.querySelector('.timeline-shift-box .ts-subtext') || document.querySelector('.timeline-shift-box .ts-meta-desc');
+    const agencyPct = document.getElementById('scenarioAgencyPct') || document.querySelector('.timeline-shift-box .ts-pct');
+    const ruleQuote = document.getElementById('scenarioInnerRuleQuote') || document.getElementById('scenarioSovereigntyQuote');
+    const takeaway = document.getElementById('scenarioTakeawayText');
+    const outcomesList = document.getElementById('scenarioOutcomesList');
+
+    if (isCelebration) {
+      if (shiftLabel) shiftLabel.textContent = '✨ Sacred Abundance Multiplier';
+      if (agencyPct) agencyPct.textContent = '+95% Fulfillment';
+      if (shiftSub) shiftSub.textContent = 'Festive Gratitude: Family Gathering (75%) ➔ Universal Abundance & Harmony (98%)';
+      if (ruleQuote) ruleQuote.textContent = 'True abundance multiplies exponentially when celebrated and shared with a grateful heart.';
+      if (takeaway) takeaway.textContent = 'Sharing blessings and practicing daily gratitude anchors festive joy into enduring waking peace.';
+      if (outcomesList) {
+        outcomesList.innerHTML = `
+          <div class="outcome-item"><span>🌾</span><span>Deeper emotional connection with family and cultural roots</span></div>
+          <div class="outcome-item"><span>🍯</span><span>Overflowing sense of gratitude, abundance, and inner peace</span></div>
+          <div class="outcome-item"><span>☀️</span><span>Renewed solar vitality for positive creative beginnings</span></div>
+          <div class="outcome-item"><span>✨</span><span>Effortless multiplication of health, happiness, and shared joy</span></div>
+        `;
+      }
+    } else if (isFlight) {
+      if (shiftLabel) shiftLabel.textContent = '🕊️ Panoramic Consciousness Shift';
+      if (agencyPct) agencyPct.textContent = '+88% Perspective';
+      if (shiftSub) shiftSub.textContent = 'Grounded Outlook (30%) ➔ Panoramic Transcendence (95%)';
+      if (ruleQuote) ruleQuote.textContent = 'Elevating your vantage point dissolves waking friction and reveals the broader horizon.';
+      if (takeaway) takeaway.textContent = 'Zooming out from temporary conflicts allows effortless navigation through life transitions.';
+      if (outcomesList) {
+        outcomesList.innerHTML = `
+          <div class="outcome-item"><span>🕊️</span><span>Liberation from petty daily anxieties and emotional clutter</span></div>
+          <div class="outcome-item"><span>🏔️</span><span>Clarity of long-term vision and purpose</span></div>
+          <div class="outcome-item"><span>🌌</span><span>Effortless emotional buoyancy and mental freedom</span></div>
+          <div class="outcome-item"><span>✨</span><span>High confidence and sovereign decision-making</span></div>
+        `;
+      }
+    } else if (isThreat) {
+      if (shiftLabel) shiftLabel.textContent = '🛡️ Conscious Sovereignty Shift';
+      if (agencyPct) agencyPct.textContent = '+82% Agency';
+      if (shiftSub) shiftSub.textContent = 'Original Reaction: Hesitation & Defense (25%) ➔ Empowered Standoff: Sovereign Command (92%)';
+      if (ruleQuote) ruleQuote.textContent = 'Facing the unknown with conscious calm transmutes perceived threats into creative allies.';
+      if (takeaway) takeaway.textContent = 'Choosing calm presence over avoidance converts subconscious anxiety into sovereign authority.';
+      if (outcomesList) {
+        outcomesList.innerHTML = `
+          <div class="outcome-item"><span>🛡️</span><span>Heightened courage and assertive self-command</span></div>
+          <div class="outcome-item"><span>⚡</span><span>Clear personal boundaries in high-pressure waking situations</span></div>
+          <div class="outcome-item"><span>👑</span><span>Integration of deep instinctual power without fear</span></div>
+          <div class="outcome-item"><span>🌟</span><span>Dissolution of chronic worry into grounded resilience</span></div>
+        `;
+      }
+    }
+  }
+
   function populateScenarioPresets(presets, centralEntity) {
     const container = document.getElementById('scenarioPresetsContainer');
     if (!container) return;
 
     let items = presets;
     if (!items || !items.length) {
-      items = [
-        `What if I confronted the ${centralEntity} with fearless curiosity?`,
-        `What if I befriended or communicated directly with the ${centralEntity}?`,
-        `What if I transformed the setting into a sanctuary of golden light?`
-      ];
+      const lower = String(currentDreamText || centralEntity || '').toLowerCase();
+      if (/pongal|diwali|festival|harvest|feast|celebrat|wedding|family|pot|rice|sugarcane/.test(lower)) {
+        items = [
+          `What if the sweet Pongal overflowed into a miraculous feast shared with the entire community?`,
+          `What if the golden sunlight bestowed an ancient ancestral blessing of enduring health and prosperity?`,
+          `What if you led the family in a joyous dance of thanksgiving that echoed for generations?`
+        ];
+      } else if (/fly|sky|wings|cloud|soar|glid|bird|mountain/.test(lower)) {
+        items = [
+          `What if you soared higher into the starlight and unlocked a panoramic view of your future?`,
+          `What if you guided others below through the storm from your vantage point in the sky?`,
+          `What if the clouds formed an ethereal path leading to an ancient sanctuary?`
+        ];
+      } else if (/chase|monster|beast|elephant|lion|tiger|run|fear|dark|shadow|threat|danger/.test(lower)) {
+        items = [
+          `What if I stood my ground with calm awareness and communicated directly with the ${centralEntity}?`,
+          `What if I transformed the threat into a powerful protective ally?`,
+          `What if I flooded the dark realm with radiant golden light?`
+        ];
+      } else {
+        items = [
+          `What if I explored the deeper mystery of the ${centralEntity} with calm curiosity?`,
+          `What if I unlocked the hidden potential of this sacred vision?`,
+          `What if I transformed the setting into a sanctuary of golden light?`
+        ];
+      }
     }
 
     container.innerHTML = items.map((p, i) => `
@@ -2210,14 +2405,452 @@
   /* Sample Dream Loader for fast exploring */
   function loadSampleDream(type) {
     const SAMPLES = {
-      elephant: "I was running through an ancient misty jungle and a massive wild elephant was chasing me with thunderous footsteps before stopping at a sacred glowing clearing.",
-      forest: "I was walking through a dark and quiet forest when a mysterious glowing wooden door appeared in front of me. I felt hesitant but stepped through into golden light.",
-      cliff: "I was standing on the edge of a tall cliff overlooking a violet ocean. I lost my balance and began falling, but instead of hitting the water, I started gliding gracefully.",
-      library: "I was wandering through an endless ancient library with towering mahogany shelves. A wise owl flew down and handed me a glowing brass key.",
-      flying: "I was soaring above purple clouds under a starry night sky, navigating freely over mountains and illuminated cities below."
+      elephant: {
+        text: "I was running through an ancient misty jungle and a massive wild elephant was chasing me with thunderous footsteps before stopping at a sacred glowing clearing.",
+        profile: { overall_intensity: 78, intensity_label: "High", primary_theme: "Confronting Primal Instinct", emotional_tone: "Tense to Enlightened", recurring_patterns_count: 2, key_symbols: ["Elephant", "Jungle", "Clearing"] },
+        in_short: {
+          summary: "Your dream reflects avoidance of deep inner power; the elephant's halt signals your readiness to confront and integrate it.",
+          revelation: "Your sleeping consciousness has staged a high-stakes confrontation of raw instinct and primal authority. In depth psychology, wild beasts in dreams do not emerge as random adversaries—they are living embodiments of the shadow self, carrying vital psychic energy that your conscious waking persona has exiled or feared to command.\n\nThe thunderous pursuit reveals an ongoing waking struggle: you have been fleeing a situation that demands your sovereign authority, misinterpreting your own capacity for power as an external threat. The dense wilderness reflects unresolved ambiguity in your current life choices, where fear has distorted an opportunity into an emergency.\n\nThe turning point—when the wild force halts before you in stillness—is your subconscious delivering an ultimatum. The beast did not stop to destroy you; it stopped because you ran out of avoidance. In this sacred quiet, the perceived danger dissolves into an ally of immense wisdom. Your subconscious is telling you that the moment you stop running from waking responsibility and hold your ground with calm awareness, the chaos of your waking life will yield to your natural authority.",
+          takeaway: "Pause when pursued by inner fears—channel the calm authority discovered in your dream to transform hesitation into sovereign decisive action."
+        },
+        story_timeline: [
+          { stage_num: 1, title: "1. The Misty Trail", desc: "You venture into dense uncharted jungle terrain with rising tension.", scene: "jungle" },
+          { stage_num: 2, title: "2. Thunderous Pursuit", desc: "The ground shakes as the wild elephant surges forward behind you.", scene: "chase" },
+          { stage_num: 3, title: "3. Sacred Halt", desc: "At the edge of a luminous clearing, the great beast suddenly stops and locks eyes.", scene: "standoff" },
+          { stage_num: 4, title: "4. Sovereign Awakening", desc: "A quiet stillness washes over you as fear dissolves into deep self-command.", scene: "peace" }
+        ],
+        story_key_insights: "Facing the beast transforms primal anxiety into grounded leadership and inner sovereignty.",
+        emotion_arc: {
+          curve: [{ stage: "Beginning", val: -0.2 }, { stage: "Middle", val: -0.8 }, { stage: "End", val: 0.9 }],
+          breakdown: [{ name: "Intensity", pct: 45, color: "#ec4899" }, { name: "Courage", pct: 30, color: "#a855f7" }, { name: "Awe", pct: 25, color: "#06b6d4" }],
+          insights: [{ label: "Adrenaline Surge", text: "The chase mobilizes unspent vital energy.", badge: "badge-pink" }, { label: "Sovereign Shift", text: "Stillness reveals self-mastery.", badge: "badge-green" }]
+        },
+        symbol_network: {
+          center_node: { label: "Elephant" },
+          connected_nodes: [
+            { label: "Jungle", meaning: "Unconscious terrain of primal emotions" },
+            { label: "Clearing", meaning: "Clarity and emergence of the conscious self" },
+            { label: "Footsteps", meaning: "Rhythmic wake-up call to pay attention" },
+            { label: "Mist", meaning: "Uncertainty ready to be dispersed" }
+          ],
+          key_reflection: "The elephant and jungle together urge you to cease avoiding your own power and step into calm leadership."
+        },
+        psychology: {
+          freudian: { text: "The charging beast embodies repressed instinctual drives and unresolved childhood fears of authority." },
+          jungian: { text: "The elephant is the archetypal Shadow—wild, untamed vitality awaiting integration into the conscious Self." },
+          modern: { text: "Reflects acute stress and high cognitive arousal undergoing neural emotional regulation during REM sleep." },
+          mythological: { text: "Echoes Airavata and Ganesha in Indian mythology—the divine remover of obstacles through wisdom and calm power." },
+          synthesis: "Your dream demands that you stop fleeing external pressure and channel your inner sovereign force."
+        }
+      },
+      forest: {
+        text: "I was walking through a dark and quiet forest when a mysterious glowing wooden door appeared in front of me. I felt hesitant but stepped through into golden light.",
+        profile: { overall_intensity: 62, intensity_label: "Moderate", primary_theme: "Growth & Transition", emotional_tone: "Neutral to Enlightened", recurring_patterns_count: 3, key_symbols: ["Door", "Forest", "Light"] },
+        in_short: {
+          summary: "Your dream reflects a sacred threshold initiation between familiar habits and expansive personal evolution.",
+          revelation: "Your dream consciousness has orchestrated a sacred threshold initiation between your safe, familiar persona and an expansive new chapter of personal evolution. The quiet forest represents the unmapped reservoir of your subconscious mind—a realm where old waking identities fall away and latent potential stirs.\n\nThe appearance of a freestanding glowing door signifies a pivotal psychological transition that you have consciously sensed but hesitated to name. Wood represents organic life, rooted endurance, and natural timing, while the golden illumination leaking beneath the frame is the classic archetypal marker of integration and self-illumination. The hesitation you experienced at the threshold was not a sign of weakness; it was the sacred friction of your ego surrendering its need to control the outcome.\n\nBy taking the decisive step through the threshold, your subconscious completed the psychic leap before your waking mind could talk you out of it. The golden light that received you is proof that what lies on the other side of your current waking crossroads is not danger, but clarity and creative sovereignty. The threshold is already behind you in your psyche; now your waking decisions must match your inner courage.",
+          takeaway: "Embrace the unknown step ahead—channel your inner clarity to transform hesitation into sovereign decisive action."
+        },
+        story_timeline: [
+          { stage_num: 1, title: "1. Entering the Forest", desc: "You find yourself in a dark and quiet forest.", scene: 0 },
+          { stage_num: 2, title: "2. The Mysterious Door", desc: "A glowing door appears in front of you.", scene: 1 },
+          { stage_num: 3, title: "3. Crossing the Door", desc: "You feel hesitant but step through.", scene: 2 },
+          { stage_num: 4, title: "4. Golden Awakening", desc: "You awaken into bright, peaceful illumination.", scene: 3 }
+        ],
+        story_key_insights: "The dream suggests a journey from fear to growth, with the door symbolizing a major life change.",
+        emotion_arc: {
+          curve: [{ stage: "Beginning", val: 0.2 }, { stage: "Middle", val: -0.4 }, { stage: "End", val: 0.8 }],
+          breakdown: [{ name: "Neutral", pct: 62, color: "#06b6d4" }, { name: "Anxiety", pct: 18, color: "#ec4899" }, { name: "Hope", pct: 12, color: "#a855f7" }, { name: "Calm", pct: 8, color: "#10b981" }],
+          insights: [{ label: "Neutrality", text: "You maintain balance throughout the dream.", badge: "badge-cyan" }, { label: "Hope", text: "Grows toward the threshold crossing.", badge: "badge-purple" }]
+        },
+        symbol_network: {
+          center_node: { label: "Door" },
+          connected_nodes: [
+            { label: "Forest", meaning: "Uncertainty and the unmapped inner self" },
+            { label: "Light", meaning: "Hope, clarity, and higher guidance" },
+            { label: "Journey", meaning: "Personal growth and life progression" },
+            { label: "Fear", meaning: "Hesitation before crossing into the new" }
+          ],
+          key_reflection: "The door and forest together suggest a major transition from confusion to empowered clarity."
+        },
+        psychology: {
+          freudian: { text: "The door represents suppressed desires seeking emergence into conscious waking life." },
+          jungian: { text: "The forest and door symbolize the individuation journey and transition to a higher phase of the Self." },
+          modern: { text: "Reflects inner cognitive conflict between safety mechanisms and exploratory drives." },
+          mythological: { text: "Echoes the threshold crossing in universal hero myths of stepping into the unknown." },
+          synthesis: "Your dream reflects an inner readiness for personal transformation and autonomous growth."
+        }
+      },
+      cliff: {
+        text: "I was standing on the edge of a tall cliff overlooking a violet ocean. I lost my balance and began falling, but instead of hitting the water, I started gliding gracefully.",
+        profile: { overall_intensity: 84, intensity_label: "High", primary_theme: "Surrender & Transcendence", emotional_tone: "Alarm to Serenity", recurring_patterns_count: 1, key_symbols: ["Cliff", "Ocean", "Gliding"] },
+        in_short: {
+          summary: "Your dream captures the paradox of surrender: what felt like catastrophic falling was the beginning of autonomous flight.",
+          revelation: "This dream captures the ultimate psychological paradox of surrender: discovering that what your conscious mind interprets as catastrophic failure is actually the beginning of autonomous flight. The cliff edge represents the rigid boundaries of your waking control—the precarious precipice where intellectual planning can no longer navigate the depth of your life.\n\nThe violet ocean below is the vast, ancient mirror of the collective unconscious, blending the fiery tension of red with the deep emotional wisdom of blue. When you lost your footing, your waking ego registered panic, anticipating impact and devastation. Yet, the moment resistance ceased, the aerodynamic laws of your inner world transformed gravity into buoyancy.\n\nGliding gracefully above the water represents the emergence of radical self-trust. Your psyche is delivering a profound revelation for waking life: the exhaustion you currently feel comes from desperately trying not to fall. Your subconscious is revealing that you do not need to grip the cliff edge so tightly—when you release overthinking and allow yourself to move with the currents of change, you will find you are fully capable of gliding.",
+          takeaway: "Release the desperate grip on situations you cannot control—trust your natural ability to navigate change with calm buoyancy."
+        },
+        story_timeline: [
+          { stage_num: 1, title: "1. The Precipice", desc: "Standing upon the towering cliff overlooking the violet expanse.", scene: "cliff" },
+          { stage_num: 2, title: "2. The Slip", desc: "Losing control and tilting outward into the empty abyss.", scene: "fall" },
+          { stage_num: 3, title: "3. Mid-Air Shift", desc: "Surrendering resistance as the air catches your wings.", scene: "glide" },
+          { stage_num: 4, title: "4. Serene Ocean Glide", desc: "Effortlessly skimming the waters in effortless weightless command.", scene: "ocean" }
+        ],
+        story_key_insights: "Surrender transforms terror into effortless buoyancy.",
+        emotion_arc: {
+          curve: [{ stage: "Beginning", val: 0.3 }, { stage: "Middle", val: -0.9 }, { stage: "End", val: 0.95 }],
+          breakdown: [{ name: "Awe", pct: 50, color: "#8b5cf6" }, { name: "Fear", pct: 30, color: "#ef4444" }, { name: "Peace", pct: 20, color: "#10b981" }],
+          insights: [{ label: "Panic Pivot", text: "Terror converts into weightless freedom.", badge: "badge-purple" }, { label: "Radical Trust", text: "The unconscious catches you safely.", badge: "badge-cyan" }]
+        },
+        symbol_network: {
+          center_node: { label: "Cliff" },
+          connected_nodes: [
+            { label: "Ocean", meaning: "Infinite depth of emotions and subconscious truth" },
+            { label: "Falling", meaning: "Ego surrender and loss of conscious control" },
+            { label: "Gliding", meaning: "Autonomy, self-trust, and spiritual flight" },
+            { label: "Violet Light", meaning: "Spiritual transmutation and peaceful insight" }
+          ],
+          key_reflection: "Letting go of rigid control unlocks your natural capacity for graceful adaptation."
+        },
+        psychology: {
+          freudian: { text: "Falling echoes core vulnerabilities of childhood dependence and release of defense mechanisms." },
+          jungian: { text: "The descent into the ocean represents baptism into the deep Self, moving from ego to wholeness." },
+          modern: { text: "Vestibular REM balancing coupled with radical cognitive reframing of perceived threats." },
+          mythological: { text: "Echoes the flight of Icarus inverted: not hubris leading to ruin, but surrender yielding wings." },
+          synthesis: "Your dream reveals that stepping into the unknown will support you rather than destroy you."
+        }
+      },
+      library: {
+        text: "I was wandering through an endless ancient library with towering mahogany shelves. A wise owl flew down and handed me a glowing brass key.",
+        profile: { overall_intensity: 58, intensity_label: "Moderate", primary_theme: "Inner Wisdom & Revelation", emotional_tone: "Mystical & Reassuring", recurring_patterns_count: 2, key_symbols: ["Library", "Key", "Owl"] },
+        in_short: {
+          summary: "You have accessed the archetypal repository of your deeper self; the key confirms that the answers you seek are already within.",
+          revelation: "You have entered the archetypal sanctuary of the collective unconscious—a timeless realm housing the accumulated wisdom, ancestral memories, and latent knowledge of your deeper self. Towering mahogany shelves symbolize deep-rooted emotional architecture and lifelong cognitive consolidation.\n\nThe arrival of the owl carries ancient mythic weight: across cultures, the owl is the solitary guardian of the night, gifted with the ability to see through impenetrable darkness where others are blind. In your dream, this messenger does not test or judge you; it recognizes your readiness and entrusts you with a glowing brass key. Brass is an alloy of copper and zinc—representing the harmonious blending of intuition and grounding discipline.\n\nThis dream reveals that the answers to your current waking dilemmas cannot be found in surface-level noise or external advice. The key you were handed is already within your possession: it is your innate intuition and analytical discernment. Your subconscious is urging you to unlock the quiet, sovereign knowledge you already have and trust your inner authority.",
+          takeaway: "Trust your own intuitive intelligence—the solution to your current waking challenge is already within your grasp."
+        },
+        story_timeline: [
+          { stage_num: 1, title: "1. The Silent Aisles", desc: "Walking through towering, labyrinthine corridors of ancient books.", scene: "library" },
+          { stage_num: 2, title: "2. The Descent", desc: "A silent owl glides down through the vaulted shafts of amber light.", scene: "owl" },
+          { stage_num: 3, title: "3. The Handover", desc: "The creature deposits a warm, glowing brass key directly into your hands.", scene: "key" },
+          { stage_num: 4, title: "4. The Awakening Insight", desc: "A profound sensation of clarity and quiet authority settles within.", scene: "clarity" }
+        ],
+        story_key_insights: "Accessing inner wisdom unlocks solutions that external advice could never provide.",
+        emotion_arc: {
+          curve: [{ stage: "Beginning", val: 0.4 }, { stage: "Middle", val: 0.6 }, { stage: "End", val: 0.9 }],
+          breakdown: [{ name: "Curiosity", pct: 55, color: "#06b6d4" }, { name: "Awe", pct: 30, color: "#8b5cf6" }, { name: "Peace", pct: 15, color: "#10b981" }],
+          insights: [{ label: "Deep Seeking", text: "Your mind is actively consolidating wisdom.", badge: "badge-cyan" }, { label: "Intuitive Certainty", text: "The key represents internal certainty.", badge: "badge-purple" }]
+        },
+        symbol_network: {
+          center_node: { label: "Library" },
+          connected_nodes: [
+            { label: "Key", meaning: "Access to hidden knowledge and personal agency" },
+            { label: "Owl", meaning: "Archetypal nocturnal wisdom and sharp discernment" },
+            { label: "Books", meaning: "Consolidated memory and ancestral heritage" },
+            { label: "Mahogany", meaning: "Grounded strength, tradition, and enduring structure" }
+          ],
+          key_reflection: "The owl and brass key signal that you possess the exact tools required to resolve your current dilemma."
+        },
+        psychology: {
+          freudian: { text: "The library symbolizes intellectualization as an ego defense, now opening toward genuine self-insight." },
+          jungian: { text: "The Owl is the Wise Old Man / Anima messenger bringing the talisman of self-knowledge." },
+          modern: { text: "High-level semantic memory consolidation occurring during deep non-REM and REM sleep phases." },
+          mythological: { text: "Echoes the owl of Athena and Thoth the scribe—guardians of sacred truth." },
+          synthesis: "Your subconscious reminds you that your inner discernment is your greatest asset."
+        }
+      },
+      flying: {
+        text: "I was soaring above purple clouds under a starry night sky, navigating freely over mountains and illuminated cities below.",
+        profile: { overall_intensity: 72, intensity_label: "High", primary_theme: "Transcendence & Panoramic Vision", emotional_tone: "Exhilarating & Clear", recurring_patterns_count: 2, key_symbols: ["Flight", "Clouds", "Stars"] },
+        in_short: {
+          summary: "Your dream expresses pure psychological transcendence, urging you to bring this panoramic perspective into waking reality.",
+          revelation: "Flight dreams are the purest expression of psychological transcendence and liberation from waking gravity. By soaring above purple clouds, your psyche has elevated itself above the daily turmoil and emotional entanglements that frequently consume your waking energy.\n\nThe landscape beneath you—jagged mountains and glowing cities—represents the physical obstacles, complex social obligations, and career structures of your everyday world. Seen from above, these monumental challenges appear small, ordered, and easily navigable. This shift in perspective is not mere escapism; it is an active recalibration of your cognitive sovereignty, allowing you to see the interconnected tapestry of your life without feeling trapped by its immediate friction.\n\nYour ability to steer freely through the starry night demonstrates that you possess high internal locus of control and strong emotional sovereignty. The dream is calling on you to bring this panoramic vantage point down into your daytime reality: do not get bogged down in petty dramas or minor setbacks—zoom out, see the broader horizon, and steer with the same effortless clarity.",
+          takeaway: "Zoom out from immediate friction—navigate your waking responsibilities from this elevated panoramic vantage point."
+        },
+        story_timeline: [
+          { stage_num: 1, title: "1. Liftoff", desc: "A gentle leap launches you into the cool nocturnal airstream.", scene: "liftoff" },
+          { stage_num: 2, title: "2. Above the Clouds", desc: "Breaking through violet cloud banks into a crystalline starry expanse.", scene: "clouds" },
+          { stage_num: 3, title: "3. Panoramic Glide", desc: "Surveying illuminated cities and jagged peaks spread out below.", scene: "vista" },
+          { stage_num: 4, title: "4. Effortless Mastery", desc: "Banking smoothly with quiet confidence and absolute directional control.", scene: "freedom" }
+        ],
+        story_key_insights: "Elevation grants panoramic perspective that dissolves waking confusion.",
+        emotion_arc: {
+          curve: [{ stage: "Beginning", val: 0.5 }, { stage: "Middle", val: 0.8 }, { stage: "End", val: 1.0 }],
+          breakdown: [{ name: "Joy", pct: 50, color: "#eab308" }, { name: "Courage", pct: 30, color: "#a855f7" }, { name: "Clarity", pct: 20, color: "#10b981" }],
+          insights: [{ label: "Transcendence", text: "Elevation dissolves petty waking anxiety.", badge: "badge-amber" }, { label: "Autonomous Flight", text: "High internal agency in action.", badge: "badge-green" }]
+        },
+        symbol_network: {
+          center_node: { label: "Flight" },
+          connected_nodes: [
+            { label: "Clouds", meaning: "Transmuted emotions and ethereal freedom" },
+            { label: "Mountains", meaning: "Waking challenges seen from a manageable distance" },
+            { label: "Stars", meaning: "Guiding principles and eternal clarity" },
+            { label: "Night Sky", meaning: "Vast unbounded potential of consciousness" }
+          ],
+          key_reflection: "Soaring above the earth reminds you that perspective determines power."
+        },
+        psychology: {
+          freudian: { text: "Flight represents release from physical constraint and wish fulfillment of effortless triumph." },
+          jungian: { text: "Ascent toward the stars represents the transcendent function reconciling opposing polarities." },
+          modern: { text: "Motor cortex decoupling in REM creating sensory illusions of weightless agency." },
+          mythological: { text: "Echoes the winged soul in Platonic philosophy reaching for the realm of ideal forms." },
+          synthesis: "Your dream confirms your capacity for high-level panoramic thinking and sovereign choice."
+        }
+      }
     };
-    document.getElementById('fullJournalText').value = SAMPLES[type] || SAMPLES.elephant;
-    runAnalyzeDream();
+
+    const chosen = SAMPLES[type] || SAMPLES.forest;
+    document.getElementById('fullJournalText').value = chosen.text;
+    const inputEl = document.getElementById('chatInputTextarea');
+    if (inputEl) inputEl.value = chosen.text;
+
+    currentDreamText = chosen.text;
+    currentAnalysisData = chosen;
+    renderAnalysisResults(chosen, chosen.text);
+    showView('Results');
+    switchResultsTab('tabOverview');
+    
+    // Smooth scroll to top of chat
+    const chatBubble = document.getElementById('chatOracleMsgBubble') || document.getElementById('chatUserMsgBubble');
+    if (chatBubble) chatBubble.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+
+  /* ================================================================
+     NEW: EMOTION FREQUENCY SCANNER RENDERER
+  ================================================================ */
+  function renderEmotionScanner(emotionArc) {
+    if (!emotionArc) return;
+    const breakdown = emotionArc.breakdown || [];
+    const curve = emotionArc.curve || [];
+    const insights = emotionArc.insights || [];
+
+    // Emotion mapping for equalizer
+    const EMOTION_MAP = {
+      'Fear': { emoji:'😨', color:'#ef4444' },
+      'Joy': { emoji:'✨', color:'#eab308' },
+      'Awe': { emoji:'🌌', color:'#8b5cf6' },
+      'Desire': { emoji:'🔥', color:'#f97316' },
+      'Sadness': { emoji:'🌧️', color:'#3b82f6' },
+      'Anticipation': { emoji:'⚡', color:'#ec4899' },
+      'Peace': { emoji:'🕊️', color:'#10b981' },
+      'Intensity': { emoji:'💥', color:'#ec4899' },
+      'Curiosity': { emoji:'🔮', color:'#06b6d4' },
+      'Courage': { emoji:'🦅', color:'#a855f7' },
+      'Neutral': { emoji:'⚖️', color:'#06b6d4' },
+      'Anxiety': { emoji:'😰', color:'#ef4444' },
+      'Hope': { emoji:'🌅', color:'#a855f7' },
+      'Calm': { emoji:'🍃', color:'#10b981' },
+      'Clarity': { emoji:'💎', color:'#10b981' },
+    };
+
+    // Rebuild equalizer bars from breakdown data
+    const container = document.getElementById('eqBarsContainer');
+    if (container && breakdown.length) {
+      const barColors = ['#ec4899','#eab308','#8b5cf6','#f97316','#3b82f6','#06b6d4','#10b981'];
+      container.innerHTML = breakdown.map((b, i) => {
+        const info = EMOTION_MAP[b.name] || { emoji:'🔹', color: barColors[i % barColors.length] };
+        return `<div class="eq-bar-wrap">
+          <div class="eq-bar-fill eq-bar-${i+1}" style="--eq-h:${b.pct}%;--eq-color:${b.color || info.color}"></div>
+          <span class="eq-bar-label">${b.name}</span>
+          <span class="eq-bar-val">${b.pct}%</span>
+        </div>`;
+      }).join('');
+      // Set dominant
+      const dominant = breakdown.reduce((a, b) => a.pct > b.pct ? a : b);
+      document.getElementById('eqDominantLabel').textContent = 'Dominant: ' + dominant.name;
+
+      // Trigger animation
+      setTimeout(() => {
+        container.querySelectorAll('.eq-bar-fill').forEach(bar => bar.classList.add('eq-animate'));
+      }, 200);
+    }
+
+    // DNA arc from curve data
+    if (curve.length >= 2) {
+      const labels = curve.map(c => {
+        if (c.val > 0.5) return 'Euphoric';
+        if (c.val > 0.2) return 'Uplifted';
+        if (c.val > 0) return 'Hopeful';
+        if (c.val > -0.2) return 'Tense';
+        if (c.val > -0.5) return 'Anxious';
+        return 'Turbulent';
+      });
+      const dnaStart = document.getElementById('dnaArcStart');
+      const dnaEnd = document.getElementById('dnaArcEnd');
+      const dnaPeak = document.getElementById('dnaArcPeak');
+      if (dnaStart) dnaStart.textContent = labels[0] || 'Tense';
+      if (dnaPeak) dnaPeak.textContent = labels[Math.floor(labels.length / 2)] || 'Intense';
+      if (dnaEnd) dnaEnd.textContent = labels[labels.length - 1] || 'Resolved';
+    }
+
+    // EI Score (compute from breakdown diversity and curve amplitude)
+    let eiScore = 70;
+    if (breakdown.length >= 3) {
+      const diversity = Math.min(breakdown.length * 12, 50);
+      const amplitude = curve.length ? Math.abs(curve[curve.length-1].val - curve[0].val) * 50 : 20;
+      eiScore = Math.min(99, Math.round(diversity + amplitude));
+    }
+    const eiNum = document.getElementById('eiScoreNum');
+    const eiFill = document.getElementById('eiCircleFill');
+    if (eiNum) eiNum.textContent = eiScore;
+    if (eiFill) {
+      const circumference = 314.15;
+      eiFill.setAttribute('stroke-dashoffset', circumference - (circumference * eiScore / 100));
+    }
+    const tierEl = document.getElementById('eiTierLabel');
+    const tierDesc = document.getElementById('eiTierDesc');
+    if (tierEl) {
+      if (eiScore >= 85) { tierEl.textContent = 'Emotionally Sovereign'; tierDesc.textContent = 'Peak emotional mastery — your subconscious is in full command'; }
+      else if (eiScore >= 70) { tierEl.textContent = 'Emotionally Aware'; tierDesc.textContent = 'Strong self-awareness with room for deeper integration'; }
+      else if (eiScore >= 50) { tierEl.textContent = 'Emotionally Awakening'; tierDesc.textContent = 'Growing consciousness — your psyche is learning to process'; }
+      else { tierEl.textContent = 'Emotionally Dormant'; tierDesc.textContent = 'Unexpressed emotions seeking a channel — pay attention'; }
+    }
+
+    // Top emotion cards
+    const topCol = document.getElementById('eiTopEmotionsCol');
+    if (topCol && breakdown.length) {
+      const top3 = breakdown.slice(0, 3);
+      const insightTexts = [
+        'Raw emotional charge propelling your subconscious forward',
+        'A hidden signal — your psyche is reaching for something deeper',
+        'The undertow emotion — quietly shaping your dream narrative'
+      ];
+      topCol.innerHTML = top3.map((b, i) => {
+        const info = EMOTION_MAP[b.name] || { emoji:'🔹', color: b.color || '#ec4899' };
+        const insight = (insights[i] && insights[i].text) || insightTexts[i];
+        return `<div class="ei-emotion-card" id="eiEmotion${i}">
+          <div class="ei-emo-header">
+            <span class="ei-emo-emoji">${info.emoji}</span>
+            <span class="ei-emo-name">${b.name}</span>
+            <span class="ei-emo-pct">${b.pct}%</span>
+          </div>
+          <div class="ei-emo-bar-wrap"><div class="ei-emo-bar" style="width:${b.pct}%;background:linear-gradient(90deg,${b.color || info.color},${b.color || info.color}88)"></div></div>
+          <p class="ei-emo-insight">${insight}</p>
+        </div>`;
+      }).join('');
+    }
+
+    // Subtitle
+    const sub = document.getElementById('emotionScannerSubtitle');
+    if (sub && breakdown.length) {
+      const dominant = breakdown.reduce((a, b) => a.pct > b.pct ? a : b);
+      sub.textContent = `Primary signal: ${dominant.name} (${dominant.pct}%) — ${breakdown.length} emotional frequencies detected`;
+    }
+
+    // Also call old functions for backward compat (they'll silently fail on hidden elements)
+    try { renderEmotionWaveCanvas(emotionArc.curve); } catch(e) {}
+    try { renderEmotionBreakdown(emotionArc.breakdown); } catch(e) {}
+    try { renderEmotionInsights(emotionArc.insights); } catch(e) {}
+  }
+
+  /* ================================================================
+     NEW: SYMBOL DECODER RENDERER
+  ================================================================ */
+  const SYMBOL_EMOJI_MAP = {
+    'Door':'🚪','Forest':'🌲','Light':'💡','Journey':'🛤️','Fear':'⚡','Elephant':'🐘',
+    'Ocean':'🌊','Water':'💧','Rain':'🌧️','Fire':'🔥','Mountain':'🏔️','Bird':'🐦',
+    'Snake':'🐍','Moon':'🌙','Sun':'☀️','Star':'⭐','Bridge':'🌉','Key':'🗝️',
+    'Mirror':'🪞','Shadow':'👤','Tree':'🌳','Cave':'🕳️','Flight':'✈️','Falling':'🪂',
+    'Child':'👶','House':'🏠','Horse':'🐴','Wolf':'🐺','Lion':'🦁','Crown':'👑',
+    'River':'🏞️','Garden':'🌺','Clock':'⏰','Sword':'⚔️','Shield':'🛡️','Maze':'🌀',
+    'Jungle':'🌿','Road':'🛣️','Window':'🪟','Stairs':'🪜','Tower':'🗼','Temple':'🛕',
+    'Storm':'⛈️','Lightning':'⚡','Snow':'❄️','Desert':'🏜️','Island':'🏝️','Ship':'🚢',
+  };
+  const ARCHETYPE_TYPES = ['Shadow','Anima','Self','Persona','Trickster','Hero','Sage'];
+  const ARCHETYPE_COLORS = {
+    'Shadow':'#ef4444','Anima':'#ec4899','Self':'#eab308','Persona':'#3b82f6',
+    'Trickster':'#f97316','Hero':'#10b981','Sage':'#8b5cf6'
+  };
+  const GLOBAL_PERCENTS = [31, 24, 18, 42, 15, 27, 33, 20, 36, 29, 22, 38, 19, 25, 41];
+
+  function renderSymbolDecoder(symbolNet) {
+    if (!symbolNet) return;
+    const center = symbolNet.center_node || {};
+    const nodes = symbolNet.connected_nodes || [];
+    const reflection = symbolNet.key_reflection || '';
+
+    // Update center badge
+    const badge = document.getElementById('symbolCenterBadge');
+    if (badge) badge.textContent = center.label ? ('Central: ' + center.label) : 'Central Archetype';
+
+    // Build interactive symbol cards
+    const grid = document.getElementById('symbolCardsGrid');
+    if (grid) {
+      const allSymbols = [center, ...nodes].filter(n => n.label);
+      grid.innerHTML = allSymbols.map((node, i) => {
+        const emoji = SYMBOL_EMOJI_MAP[node.label] || '🔹';
+        const archetype = ARCHETYPE_TYPES[i % ARCHETYPE_TYPES.length];
+        const archColor = ARCHETYPE_COLORS[archetype] || '#8b5cf6';
+        const resonance = i === 0 ? 100 : Math.max(30, 100 - (i * 15));
+        const globalPct = GLOBAL_PERCENTS[i % GLOBAL_PERCENTS.length];
+        const meaning = node.meaning || 'A powerful symbol from your subconscious landscape';
+
+        return `<div class="sym-card" onclick="toggleSymCard(this)" data-symbol="${node.label}">
+          <div class="sym-card-top">
+            <span class="sym-card-emoji">${emoji}</span>
+            <div class="sym-card-title-col">
+              <span class="sym-card-name">${node.label}</span>
+              <span class="sym-card-archetype-badge" style="background:${archColor}22;color:${archColor};border:1px solid ${archColor}55">${archetype}</span>
+            </div>
+            <div class="sym-resonance-mini">
+              <svg class="sym-res-ring" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2.5"/>
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="${archColor}" stroke-width="2.5"
+                  stroke-dasharray="${resonance} ${100-resonance}" stroke-dashoffset="25" stroke-linecap="round"/>
+              </svg>
+              <span class="sym-res-mini-pct">${resonance}%</span>
+            </div>
+          </div>
+          <div class="sym-card-expand">
+            <p class="sym-card-meaning">${meaning}</p>
+            <div class="sym-card-meta-row">
+              <span class="sym-global-ticker">🌍 Found in <strong>${globalPct}%</strong> of similar dreams worldwide</span>
+              <span class="sym-archetype-link">${archetype} Archetype →</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Auto-expand first card
+      setTimeout(() => {
+        const first = grid.querySelector('.sym-card');
+        if (first) first.classList.add('sym-card-open');
+      }, 400);
+    }
+
+    // Build resonance meter bars
+    const resBars = document.getElementById('symbolResBars');
+    if (resBars) {
+      const allSymbols = [center, ...nodes].filter(n => n.label);
+      resBars.innerHTML = allSymbols.map((node, i) => {
+        const resonance = i === 0 ? 100 : Math.max(30, 100 - (i * 15));
+        const emoji = SYMBOL_EMOJI_MAP[node.label] || '🔹';
+        const archetype = ARCHETYPE_TYPES[i % ARCHETYPE_TYPES.length];
+        const archColor = ARCHETYPE_COLORS[archetype] || '#8b5cf6';
+        return `<div class="sym-res-row">
+          <span class="sym-res-emoji">${emoji}</span>
+          <span class="sym-res-name">${node.label}</span>
+          <div class="sym-res-bar-track"><div class="sym-res-bar-fill" style="width:${resonance}%;background:linear-gradient(90deg,${archColor},${archColor}88)"></div></div>
+          <span class="sym-res-pct">${resonance}%</span>
+        </div>`;
+      }).join('');
+    }
+
+    // Reflection
+    const refText = document.getElementById('symbolKeyReflectionText');
+    if (refText && reflection) refText.textContent = reflection;
+
+    // Tags
+    const tagsRow = document.getElementById('symbolRefTagsRow');
+    if (tagsRow) {
+      const allLabels = [center, ...nodes].filter(n => n.label).map(n => n.label);
+      const archetypes = allLabels.map((_, i) => ARCHETYPE_TYPES[i % ARCHETYPE_TYPES.length]);
+      const uniqueArch = [...new Set(archetypes)].slice(0, 4);
+      tagsRow.innerHTML = uniqueArch.map(a => `<span class="sym-ref-tag" style="border-color:${ARCHETYPE_COLORS[a] || '#8b5cf6'}44;color:${ARCHETYPE_COLORS[a] || '#8b5cf6'}">${a} Archetype</span>`).join('');
+    }
+  }
+
+  function toggleSymCard(el) {
+    el.classList.toggle('sym-card-open');
   }
 
   function renderSampleDefaultAnalysis() {
@@ -2232,7 +2865,9 @@
         key_symbols: ["Door", "Forest", "Light"]
       },
       in_short: {
-        summary: "Your dream reflects a period of transition. The door represents new opportunities, while the forest suggests uncertainty and exploration.",
+        summary: "Your dream reflects an active period of transformation and personal discovery.",
+        revelation: "Your dream consciousness has orchestrated a sacred threshold initiation between your safe, familiar persona and an expansive new chapter of personal evolution. The quiet forest represents the unmapped reservoir of your subconscious mind—a realm where old waking identities fall away and latent potential stirs.\n\nThe appearance of a freestanding glowing door signifies a pivotal psychological transition that you have consciously sensed but hesitated to name. Wood represents organic life, rooted endurance, and natural timing, while the golden illumination leaking beneath the frame is the classic archetypal marker of integration and self-illumination. The hesitation you experienced at the threshold was not a sign of weakness; it was the sacred friction of your ego surrendering its need to control the outcome.\n\nBy taking the decisive step through the threshold, your subconscious completed the psychic leap before your waking mind could talk you out of it. The golden light that received you is proof that what lies on the other side of your current waking crossroads is not danger, but clarity and creative sovereignty. The threshold is already behind you in your psyche; now your waking decisions must match your inner courage.",
+        takeaway: "Embrace the unknown step ahead—channel your inner clarity to transform hesitation into sovereign decisive action.",
         visual_theme: "forest_door"
       },
       story_timeline: [
@@ -2277,7 +2912,9 @@
       youtube_recommendations: []
     };
     currentAnalysisData = sample;
-    renderAnalysisResults(sample, "The door in the forest");
+    renderAnalysisResults(sample, "I was walking through a dark and quiet forest when a mysterious glowing wooden door appeared in front of me. I felt hesitant but stepped through into golden light.");
+    showView('Results');
+    switchResultsTab('tabOverview');
   }
 
   function showAlert(msg, type = 'info') {
