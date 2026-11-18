@@ -59,7 +59,14 @@
 
     <div class="sidebar-section-title">Explore Sample Dreams</div>
     <div class="recent-dreams-list" id="sidebarRecentList">
-      <div class="recent-dream-card active" onclick="loadSampleDream('elephant')">
+      <div class="recent-dream-card active" onclick="loadSampleDream('pongal')">
+        <div class="rd-icon-box">🌾</div>
+        <div class="rd-info">
+          <div class="rd-title">Celebrating Pongal</div>
+          <span class="rd-tag-pill tag-amber">Harvest & Abundance</span>
+        </div>
+      </div>
+      <div class="recent-dream-card" onclick="loadSampleDream('elephant')">
         <div class="rd-icon-box">🐘</div>
         <div class="rd-info">
           <div class="rd-title">Elephant chase</div>
@@ -336,8 +343,62 @@
       
       <div class="chat-thread-wrapper">
 
+        <!-- WELCOME CHAT HERO (Clean initial view) -->
+        <div class="chat-welcome-card" id="chatWelcomeView">
+          <div class="welcome-oracle-header">
+            <div class="welcome-avatar-glow">
+              <span class="welcome-avatar-icon">🔮</span>
+            </div>
+            <div>
+              <h2 class="welcome-title">DreamLens Subconscious Oracle</h2>
+              <span class="welcome-status-pill">● AI Intelligence Ready</span>
+            </div>
+          </div>
+          <p class="welcome-text">
+            Greetings, traveler of the unconscious. Share what unfolded in your sleep—the narrative, the encounters, the emotions, or unresolved mysteries. Whether it was a joyful celebration like <strong>Pongal</strong>, a soaring flight, or a confrontation with the unknown, I will decode its deeper psychological architecture.
+          </p>
+          <div class="welcome-chips-heading">Explore a Dream Realm:</div>
+          <div class="welcome-chips-grid">
+            <button class="welcome-chip" onclick="loadSampleDream('pongal')">
+              <span class="chip-icon">🌾</span>
+              <div>
+                <span class="chip-name">Celebrating Pongal</span>
+                <span class="chip-desc">Sacred harvest, family gratitude & overflowing prosperity</span>
+              </div>
+            </button>
+            <button class="welcome-chip" onclick="loadSampleDream('elephant')">
+              <span class="chip-icon">🐘</span>
+              <div>
+                <span class="chip-name">Elephant Standoff</span>
+                <span class="chip-desc">Primal instinct, shadow integration & calm authority</span>
+              </div>
+            </button>
+            <button class="welcome-chip" onclick="loadSampleDream('forest')">
+              <span class="chip-icon">🚪</span>
+              <div>
+                <span class="chip-name">Obsidian Door in Forest</span>
+                <span class="chip-desc">Threshold initiation into personal transformation</span>
+              </div>
+            </button>
+            <button class="welcome-chip" onclick="loadSampleDream('flying')">
+              <span class="chip-icon">🕊️</span>
+              <div>
+                <span class="chip-name">Soaring Above Clouds</span>
+                <span class="chip-desc">Panoramic clarity, transcendence & weightless agency</span>
+              </div>
+            </button>
+            <button class="welcome-chip" onclick="loadSampleDream('cliff')">
+              <span class="chip-icon">🌊</span>
+              <div>
+                <span class="chip-name">Cliff Edge Freefall</span>
+                <span class="chip-desc">Radical self-trust & surrendering rigid waking control</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <!-- USER CHAT BUBBLE -->
-        <div class="chat-msg-user" id="chatUserMsgBubble">
+        <div class="chat-msg-user" id="chatUserMsgBubble" style="display:none;">
           <div class="chat-avatar-wrap">
             <div class="user-avatar">🧙‍♂️</div>
           </div>
@@ -351,7 +412,7 @@
         </div>
 
         <!-- ORACLE AI RESPONSE BUBBLE -->
-        <div class="chat-msg-oracle" id="chatOracleMsgBubble">
+        <div class="chat-msg-oracle" id="chatOracleMsgBubble" style="display:none;">
           <div class="chat-avatar-wrap">
             <div class="oracle-avatar">🔮</div>
             <div class="oracle-pulse-ring"></div>
@@ -1061,6 +1122,7 @@
     <!-- STICKY CHAT INPUT BAR -->
     <div class="chat-sticky-bottom-bar" id="chatStickyBar">
       <div class="chat-chips-scroll">
+        <button class="chat-prompt-chip" onclick="loadSampleDream('pongal')">🌾 Celebrating Pongal</button>
         <button class="chat-prompt-chip" onclick="loadSampleDream('elephant')">🐘 Elephant Standoff</button>
         <button class="chat-prompt-chip" onclick="loadSampleDream('forest')">🚪 Obsidian Door</button>
         <button class="chat-prompt-chip" onclick="loadSampleDream('cliff')">🌊 Cliff Edge Freefall</button>
@@ -1503,7 +1565,13 @@
 
       currentAnalysisData = data;
       try {
-        renderAnalysisResults(data, dream);
+        const welcomeCard = document.getElementById('chatWelcomeView');
+      if (welcomeCard) welcomeCard.style.display = 'none';
+      const uBubble = document.getElementById('chatUserMsgBubble');
+      if (uBubble) uBubble.style.display = 'flex';
+      const oBubble = document.getElementById('chatOracleMsgBubble');
+      if (oBubble) oBubble.style.display = 'flex';
+      renderAnalysisResults(data, dream);
       } catch (renderErr) {
         console.error('Error in renderAnalysisResults:', renderErr);
       }
@@ -2405,6 +2473,44 @@
   /* Sample Dream Loader for fast exploring */
   function loadSampleDream(type) {
     const SAMPLES = {
+      pongal: {
+        text: "I was celebrating pongal with my family, the sweet milk and rice was boiling over the pot, and everyone was smiling and shouting Pongalo Pongal in joyful celebration.",
+        profile: { overall_intensity: 60, intensity_label: "Moderate", primary_theme: "Gratitude & Sacred Abundance", emotional_tone: "Joyful & Festive", recurring_patterns_count: 1, key_symbols: ["Pongal", "Family", "Sweet Milk", "Pot"] },
+        in_short: {
+          summary: "Your dream reflects a soul-nourishing celebration of sacred abundance, gratitude, and familial harmony.",
+          revelation: "Your dream reflects a soul-nourishing celebration of sacred abundance, gratitude, and familial harmony. In subconscious symbolism, harvest festivals like Pongal embody the profound spiritual truth of 'overflowing prosperity' (Pongalo Pongal!)—where nature, solar warmth, and ancestral traditions unite in joyful thanksgiving.\n\nThis vision is an auspicious affirmation from your deeper mind: your psyche is feeling grounded, deeply connected to your roots, and receptive to new blessings. The traditional boiling over of milk and rice represents life's gifts overflowing beyond the narrow boundaries of daily worry, signifying that your efforts are yielding sweetness and shared joy.\n\nThis dream carries no threat or fear—it is a sacred invitation to celebrate the abundance already present in your waking life. Honor your family bonds, express heartfelt gratitude for the quiet blessings around you, and remember that true prosperity multiplies infinitely when shared with warmth and generosity.",
+          takeaway: "Cultivate daily gratitude and share your abundance with loved ones to strengthen emotional bonds."
+        },
+        story_timeline: [
+          { stage_num: 1, title: "1. Gathering of Loved Ones", desc: "The home fills with the fragrant aroma of cardamom, jaggery, and fresh harvest.", scene: "family" },
+          { stage_num: 2, title: "2. The Sacred Boiling Pot", desc: "The milk gently rises in the clay pot under the warm morning sunlight.", scene: "pot" },
+          { stage_num: 3, title: "3. Pongalo Pongal!", desc: "The sweet milk overflows to joyous cheers, marking boundless prosperity.", scene: "overflow" },
+          { stage_num: 4, title: "4. Shared Abundance", desc: "A profound sense of contentment and familial harmony settles in your heart.", scene: "harmony" }
+        ],
+        story_key_insights: "Overflowing sweetness in dreams symbolizes gratitude, fruitful labor, and emotional fulfillment.",
+        emotion_arc: {
+          curve: [{ stage: "Beginning", val: 0.7 }, { stage: "Middle", val: 0.9 }, { stage: "End", val: 1.0 }],
+          breakdown: [{ name: "Joy", pct: 60, color: "#eab308" }, { name: "Peace", pct: 25, color: "#10b981" }, { name: "Awe", pct: 15, color: "#8b5cf6" }],
+          insights: [{ label: "Sacred Gratitude", text: "Deep appreciation for family and cultural heritage.", badge: "badge-amber" }, { label: "Overflowing Joy", text: "Contentment surpassing daily stress.", badge: "badge-green" }]
+        },
+        symbol_network: {
+          center_node: { label: "Pongal" },
+          connected_nodes: [
+            { label: "Family", meaning: "Emotional sanctuary, ancestral grounding, and unity" },
+            { label: "Sweet Milk", meaning: "Nourishment, purity, and life's sweetest rewards" },
+            { label: "Clay Pot", meaning: "Earthy vessel holding creativity and patience" },
+            { label: "Sunlight", meaning: "Vital solar energy, awakening, and divine blessings" }
+          ],
+          key_reflection: "The overflowing pot confirms that you are ready to receive and share lasting abundance."
+        },
+        psychology: {
+          freudian: { text: "Celebration dreams reflect deep emotional fulfillment and release of social friction." },
+          jungian: { text: "The harvest festival embodies the Great Mother archetype of boundless nourishment and communion." },
+          modern: { text: "Neural consolidation of positive social memories reinforcing secure attachment." },
+          mythological: { text: "Echoes the Sun God Surya being offered the first harvest in reverent thanksgiving." },
+          synthesis: "Your dream affirms inner abundance, cultural grounding, and joyful familial love."
+        }
+      },
       elephant: {
         text: "I was running through an ancient misty jungle and a massive wild elephant was chasing me with thunderous footsteps before stopping at a sacred glowing clearing.",
         profile: { overall_intensity: 78, intensity_label: "High", primary_theme: "Confronting Primal Instinct", emotional_tone: "Tense to Enlightened", recurring_patterns_count: 2, key_symbols: ["Elephant", "Jungle", "Clearing"] },
@@ -2604,6 +2710,9 @@
 
     currentDreamText = chosen.text;
     currentAnalysisData = chosen;
+    document.getElementById('chatWelcomeView').style.display = 'none';
+    document.getElementById('chatUserMsgBubble').style.display = 'flex';
+    document.getElementById('chatOracleMsgBubble').style.display = 'flex';
     renderAnalysisResults(chosen, chosen.text);
     showView('Results');
     switchResultsTab('tabOverview');
@@ -2912,9 +3021,14 @@
       youtube_recommendations: []
     };
     currentAnalysisData = sample;
-    renderAnalysisResults(sample, "I was walking through a dark and quiet forest when a mysterious glowing wooden door appeared in front of me. I felt hesitant but stepped through into golden light.");
+    // Keep sample ready in memory without cluttering screen
     showView('Results');
-    switchResultsTab('tabOverview');
+    const welcomeCard = document.getElementById('chatWelcomeView');
+    if (welcomeCard) welcomeCard.style.display = 'block';
+    const uBubble = document.getElementById('chatUserMsgBubble');
+    if (uBubble) uBubble.style.display = 'none';
+    const oBubble = document.getElementById('chatOracleMsgBubble');
+    if (oBubble) oBubble.style.display = 'none';
   }
 
   function showAlert(msg, type = 'info') {
