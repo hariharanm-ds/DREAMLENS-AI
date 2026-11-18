@@ -295,17 +295,25 @@ body::before {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 0;
+  box-sizing: border-box;
   background: radial-gradient(circle at 50% 0%, rgba(76, 29, 149, 0.15), transparent 60%),
               radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.08), transparent 50%),
               var(--bg-base);
-  padding: 24px 36px 48px;
+  padding: 20px 24px 48px;
 }
 
 .ws-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .topbar-left {
@@ -3862,101 +3870,100 @@ body::before {
 ================================================================ */
 
 .chat-thread-wrapper {
-  max-width: 1080px;
+  max-width: 1040px;
+  width: 100%;
   margin: 0 auto;
-  padding: 16px 20px 140px 20px;
+  padding: 14px 16px 140px 16px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 /* User Message Bubble */
 .chat-msg-user {
   display: flex;
-  gap: 14px;
-  align-self: flex-end;
-  max-width: 840px;
-  margin-bottom: 4px;
+  justify-content: flex-end;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 6px;
 }
-.chat-msg-user .chat-avatar-wrap .user-avatar {
-  width: 38px;
-  height: 38px;
+.chat-msg-user .user-msg-box {
+  max-width: 820px;
+  width: auto;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.95));
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  border-radius: 18px 18px 4px 18px;
+  padding: 14px 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.chat-msg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.user-identity-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.user-avatar-badge {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
   border-radius: 50%;
   background: linear-gradient(135deg, #06b6d4, #3b82f6);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
-  box-shadow: 0 0 14px rgba(6, 182, 212, 0.35);
+  font-size: 0.95rem;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.35);
   flex-shrink: 0;
 }
-.user-msg-box {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  border-radius: 18px 4px 18px 18px;
-  padding: 14px 18px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
 .chat-user-label {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: #38bdf8;
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
 .chat-timestamp {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: #64748b;
-  margin-left: 8px;
+  white-space: nowrap;
 }
 .chat-msg-text {
   font-size: 0.92rem;
   color: #f1f5f9;
   line-height: 1.6;
-  margin: 6px 0 0 0;
+  margin: 4px 0 0 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Oracle Response Message */
 .chat-msg-oracle {
   display: flex;
-  gap: 16px;
   width: 100%;
-}
-.chat-msg-oracle .chat-avatar-wrap {
-  position: relative;
-  flex-shrink: 0;
-}
-.chat-msg-oracle .oracle-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #7c3aed, #ec4899);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
-  position: relative;
-  z-index: 2;
-}
-.oracle-pulse-ring {
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  border-radius: 50%;
-  border: 2px solid rgba(236, 72, 153, 0.4);
-  animation: freqPulse 2s ease-in-out infinite;
+  box-sizing: border-box;
 }
 .oracle-msg-box {
-  flex: 1;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(124, 58, 237, 0.3);
-  border-radius: 4px 20px 20px 20px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: 18px;
   padding: 22px 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(16px);
+  overflow: hidden;
 }
 .oracle-msg-header-row {
   display: flex;
@@ -3965,13 +3972,35 @@ body::before {
   flex-wrap: wrap;
   gap: 12px;
   padding-bottom: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 .oracle-identity {
   display: flex;
   align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.oracle-avatar-badge {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.45);
+  flex-shrink: 0;
+}
+.oracle-identity-text {
+  display: flex;
+  align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 .oracle-name {
   font-size: 1rem;
@@ -3990,11 +4019,20 @@ body::before {
   color: #c084fc;
   border: 1px solid rgba(124, 58, 237, 0.3);
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 .oracle-header-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+}
+.oracle-header-actions .btn-oracle-voice,
+.oracle-header-actions .btn-ghost-icon {
+  font-size: 0.78rem;
+  padding: 6px 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* Oracle Headline Bar */
@@ -4003,27 +4041,87 @@ body::before {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 12px;
   margin-bottom: 18px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.oracle-headline-bar .rth-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+  word-break: break-word;
+}
+.oracle-headline-bar .archetype-pulse-pill {
+  flex-shrink: 0;
+  max-width: 100%;
 }
 
-/* Oracle Reading Paragraphs */
-.oracle-reading-para {
-  font-size: 0.92rem;
-  color: #e2e8f0;
-  line-height: 1.7;
-  margin: 0 0 14px 0;
-  font-weight: 400;
-}
-.oracle-reading-para:last-child {
-  margin-bottom: 0;
-}
-
-/* Chat Tab Bar inside Oracle Response */
+/* Tab Bar inside Oracle Response - Horizontal scroll with clean scrollbar */
 .chat-tab-bar {
-  margin: 16px 0 20px 0;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.4) transparent;
+  padding: 4px 2px 10px 2px;
+  margin: 12px 0 20px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  width: 100%;
+  box-sizing: border-box;
+}
+.chat-tab-bar::-webkit-scrollbar {
+  height: 5px;
+}
+.chat-tab-bar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-tab-bar::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.4);
+  border-radius: 4px;
+}
+.chat-tab-bar .rtab {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Content within Tabs */
+.rtab-content {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.dash-card.in-short-card.clean-decode-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.in-short-left.full-width {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.in-short-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.in-short-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+.in-short-footer button {
+  flex-shrink: 0;
 }
 
 /* Sticky Bottom Chat Input Bar */
@@ -4234,13 +4332,5 @@ body::before {
 
 /* User Message bubble alignment */
 .chat-msg-user {
-  display: flex !important;
-  flex-direction: row-reverse !important;
-  gap: 12px !important;
-  align-self: flex-end !important;
-  max-width: 820px !important;
-  margin-bottom: 12px !important;
-}
-.chat-msg-user .user-msg-box {
-  border-radius: 18px 18px 4px 18px !important;
+  margin-bottom: 10px !important;
 }

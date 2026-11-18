@@ -399,12 +399,12 @@
 
         <!-- USER CHAT BUBBLE -->
         <div class="chat-msg-user" id="chatUserMsgBubble" style="display:none;">
-          <div class="chat-avatar-wrap">
-            <div class="user-avatar">🧙‍♂️</div>
-          </div>
           <div class="user-msg-box">
             <div class="chat-msg-header">
-              <span class="chat-user-label">You</span>
+              <div class="user-identity-chip">
+                <span class="user-avatar-badge">🧙‍♂️</span>
+                <span class="chat-user-label">You</span>
+              </div>
               <span class="chat-timestamp" id="chatUserTimestamp">Analyzed Today • 11:57 AM</span>
             </div>
             <p class="chat-msg-text" id="chatUserNarrative">I was walking through a dark and quiet forest when a mysterious glowing wooden door appeared in front of me. I felt hesitant but stepped through into golden light.</p>
@@ -413,15 +413,14 @@
 
         <!-- ORACLE AI RESPONSE BUBBLE -->
         <div class="chat-msg-oracle" id="chatOracleMsgBubble" style="display:none;">
-          <div class="chat-avatar-wrap">
-            <div class="oracle-avatar">🔮</div>
-            <div class="oracle-pulse-ring"></div>
-          </div>
           <div class="oracle-msg-box">
             <div class="oracle-msg-header-row">
               <div class="oracle-identity">
-                <span class="oracle-name">DreamLens Oracle</span>
-                <span class="oracle-badge">✨ Subconscious Intelligence Decoded</span>
+                <div class="oracle-avatar-badge">🔮</div>
+                <div class="oracle-identity-text">
+                  <span class="oracle-name">DreamLens Oracle</span>
+                  <span class="oracle-badge">✨ Subconscious Intelligence Decoded</span>
+                </div>
               </div>
               <div class="oracle-header-actions">
                 <button class="btn-oracle-voice" id="oracleVoiceBtn" title="Listen to AI Dream Oracle Voice">
@@ -1675,18 +1674,19 @@
     }
 
     // Dynamic archetype tag label update
-    const archLabel = document.getElementById('overviewArchetypeLabel');
-    if (archLabel) {
+    const archLabels = document.querySelectorAll('[id="overviewArchetypeLabel"]');
+    if (archLabels.length) {
       const lower = String(prompt || currentDreamText || '').toLowerCase();
-      if (/pongal|diwali|festival|harvest|feast|celebrat|wedding|family/.test(lower)) archLabel.textContent = '🌾 The Abundant Harvester';
-      else if (/rain|storm|umbrella/.test(lower)) archLabel.textContent = '⚡ The Storm Conductor';
-      else if (/elephant|lion|tiger|jungle/.test(lower)) archLabel.textContent = '👑 The Primal Sovereign';
-      else if (/kirmada|monster|shadow|fear/.test(lower)) archLabel.textContent = '🛡️ The Shadow Integrator';
-      else if (/fly|sky|wings|mountain/.test(lower)) archLabel.textContent = '🕊️ The Astral Voyager';
-      else if (/ocean|water|sea|dive/.test(lower)) archLabel.textContent = '🌊 The Abyssal Alchemist';
-      else if (/library|book|temple/.test(lower)) archLabel.textContent = '🗝️ The Archival Sage';
-      else if (/forest|door|portal/.test(lower)) archLabel.textContent = '🚪 The Threshold Pioneer';
-      else archLabel.textContent = '👑 The Primal Sovereign';
+      let archText = '👑 The Primal Sovereign';
+      if (/pongal|diwali|festival|harvest|feast|celebrat|wedding|family/.test(lower)) archText = '🌾 The Abundant Harvester';
+      else if (/rain|storm|umbrella/.test(lower)) archText = '⚡ The Storm Conductor';
+      else if (/elephant|lion|tiger|jungle/.test(lower)) archText = '👑 The Primal Sovereign';
+      else if (/kirmada|monster|shadow|fear/.test(lower)) archText = '🛡️ The Shadow Integrator';
+      else if (/fly|sky|wings|mountain/.test(lower)) archText = '🕊️ The Astral Voyager';
+      else if (/ocean|water|sea|dive/.test(lower)) archText = '🌊 The Abyssal Alchemist';
+      else if (/library|book|temple/.test(lower)) archText = '🗝️ The Archival Sage';
+      else if (/forest|door|portal/.test(lower)) archText = '🚪 The Threshold Pioneer';
+      archLabels.forEach(el => { el.textContent = archText; });
     }
   }
 
