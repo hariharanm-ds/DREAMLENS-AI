@@ -1,9 +1,26 @@
+import os
+import sys
+
+# Auto-load .env file if present
+_env_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(_env_path):
+    try:
+        with open(_env_path, 'r', encoding='utf-8') as _ef:
+            for _line in _ef:
+                _line = _line.strip()
+                if _line and not _line.startswith('#') and '=' in _line:
+                    _k, _v = _line.split('=', 1)
+                    _k = _k.strip()
+                    _v = _v.strip()
+                    if _k and _k not in os.environ:
+                        os.environ[_k] = _v
+    except Exception:
+        pass
+
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
-import os
 import random
 from functools import lru_cache
-import sys
 import tempfile
 from datetime import datetime
 
@@ -137,12 +154,14 @@ def synthesize_fallback(dream: str) -> str:
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", google_client_id=GOOGLE_CLIENT_ID)
 
+
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "79536262134-93at5lv3g5hhjc6h36pkpdfv6ve13o0s.apps.googleusercontent.com")
 
 @app.route("/chat")
 def chat():
-    return render_template("chat.html")
+    return render_template("chat.html", google_client_id=GOOGLE_CLIENT_ID)
 
 @app.route("/annotate")
 def annotate_ui():

@@ -11,6 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/style.css?v=12" />
+    <!-- Google Identity Services (GIS) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body class="workspace-body">
 
@@ -121,7 +123,7 @@
       <div class="topbar-left">
         <button class="mobile-toggle-btn" id="mobileMenuBtn" aria-label="Toggle Menu">☰</button>
         <div class="greeting-block">
-          <h1 class="greeting-title" id="greetingText">Good Morning, Hariharan</h1>
+          <h1 class="greeting-title" id="greetingText">Good Morning, Dreamer</h1>
           <p class="greeting-sub">Let's explore the meaning behind your dreams.</p>
         </div>
       </div>
@@ -151,9 +153,34 @@
           <span class="search-icon">🔍</span>
           <input type="text" class="topbar-search" id="topSearchInput" placeholder="Search your dreams..." />
         </div>
-        <div class="user-avatar-pill">
-          <span class="avatar-emoji">🧙‍♂️</span>
-          <span class="avatar-name">Hariharan</span>
+
+        <!-- GOOGLE AUTH & USER PROFILE WRAPPER -->
+        <div class="user-auth-wrap" id="userAuthWrap">
+          <!-- Rendered Google Sign-in Button (when logged out) -->
+          <div id="googleSignInBtn" class="g-signin-btn-slot"></div>
+
+          <!-- Authenticated User Profile Pill (when logged in) -->
+          <div class="user-avatar-pill user-logged-in" id="userProfilePill" style="display:none;" onclick="toggleUserDropdown(event)" title="Account Menu">
+            <img id="userAvatarImg" class="user-profile-img" src="" alt="Avatar" style="display:none;" />
+            <span class="avatar-emoji" id="userAvatarEmoji">🧙‍♂️</span>
+            <span class="avatar-name" id="userNameLabel">Dreamer</span>
+            <span class="user-dropdown-arrow">▾</span>
+
+            <!-- Dropdown Menu -->
+            <div class="user-dropdown-menu" id="userDropdownMenu" style="display:none;">
+              <div class="dropdown-header">
+                <div class="dropdown-user-name" id="dropdownUserName">Dreamer</div>
+                <div class="dropdown-user-email" id="dropdownUserEmail">Signed in with Google</div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <button type="button" class="dropdown-btn" onclick="showSavedFromMenu(event)">
+                <span>⭐ Saved Reports</span>
+              </button>
+              <button type="button" class="dropdown-btn logout-action" onclick="signOutGoogle(event)">
+                <span>🚪 Sign Out</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -1025,7 +1052,7 @@
               </div>
 
               <div class="aura-footer-tag" id="auraFooterTag">
-                Dreamer: Hariharan • DreamLens AI
+                Dreamer: <span id="auraDreamerName">Dreamer</span> • DreamLens AI
               </div>
             </div>
           </div>
@@ -1331,13 +1358,165 @@
       document.querySelectorAll('.eq-bar-fill').forEach(b => b.classList.add('eq-animate'));
     }, 500);
     checkHealth();
+    initGoogleAuth();
   });
+
+  function getSavedUser() {
+    try {
+      const u = localStorage.getItem('dreamlens_user');
+      return u ? JSON.parse(u) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveUser(userData) {
+    try {
+      localStorage.setItem('dreamlens_user', JSON.stringify(userData));
+    } catch (e) {}
+  }
 
   function setGreeting() {
     const h = new Date().getHours();
     const prefix = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
-    document.getElementById('greetingText').textContent = `${prefix}, Hariharan`;
+    const user = getSavedUser();
+    const name = user ? (user.given_name || (user.name ? user.name.split(' ')[0] : 'Dreamer')) : 'Dreamer';
+    const el = document.getElementById('greetingText');
+    if (el) el.textContent = `${prefix}, ${name}`;
+    const auraName = document.getElementById('auraDreamerName');
+    if (auraName) auraName.textContent = user ? (user.name || user.given_name) : 'Dreamer';
   }
+
+  function decodeJwtResponse(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function initGoogleAuth() {
+    const user = getSavedUser();
+    if (user) {
+      renderLoggedInUser(user);
+    } else {
+      renderLoggedOutState();
+    }
+  }
+
+  function renderLoggedOutState() {
+    const userPill = document.getElementById('userProfilePill');
+    const gBtn = document.getElementById('googleSignInBtn');
+    if (userPill) userPill.style.display = 'none';
+    if (gBtn) gBtn.style.display = 'block';
+    setGreeting();
+
+    const clientId = '{{ google_client_id }}' || '79536262134-93at5lv3g5hhjc6h36pkpdfv6ve13o0s.apps.googleusercontent.com';
+
+    const tryRender = () => {
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        try {
+          google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleGoogleLoginSuccess,
+            auto_select: false
+          });
+          const btnSlot = document.getElementById('googleSignInBtn');
+          if (btnSlot) {
+            btnSlot.innerHTML = '';
+            google.accounts.id.renderButton(
+              btnSlot,
+              { theme: 'filled_black', size: 'medium', shape: 'pill', text: 'signin_with' }
+            );
+          }
+        } catch(err) {
+          console.log('Google Sign-in init:', err);
+        }
+      } else {
+        setTimeout(tryRender, 350);
+      }
+    };
+    tryRender();
+  }
+
+  function handleGoogleLoginSuccess(response) {
+    const payload = decodeJwtResponse(response.credential);
+    if (!payload) return;
+    const user = {
+      name: payload.name || 'Dreamer',
+      given_name: payload.given_name || (payload.name ? payload.name.split(' ')[0] : 'Dreamer'),
+      email: payload.email || '',
+      picture: payload.picture || ''
+    };
+    saveUser(user);
+    renderLoggedInUser(user);
+    showAlert(`✨ Welcome, ${user.given_name}! You are signed in with Google.`, 'success');
+  }
+
+  function renderLoggedInUser(user) {
+    const userPill = document.getElementById('userProfilePill');
+    const gBtn = document.getElementById('googleSignInBtn');
+    if (gBtn) gBtn.style.display = 'none';
+    if (userPill) userPill.style.display = 'flex';
+
+    const nameLabel = document.getElementById('userNameLabel');
+    if (nameLabel) nameLabel.textContent = user.given_name || user.name || 'Dreamer';
+
+    const avatarImg = document.getElementById('userAvatarImg');
+    const avatarEmoji = document.getElementById('userAvatarEmoji');
+    if (user.picture && avatarImg) {
+      avatarImg.src = user.picture;
+      avatarImg.style.display = 'inline-block';
+      if (avatarEmoji) avatarEmoji.style.display = 'none';
+    } else if (avatarEmoji) {
+      avatarEmoji.style.display = 'inline-block';
+      if (avatarImg) avatarImg.style.display = 'none';
+    }
+
+    const dropName = document.getElementById('dropdownUserName');
+    const dropEmail = document.getElementById('dropdownUserEmail');
+    if (dropName) dropName.textContent = user.name || 'Dreamer';
+    if (dropEmail) dropEmail.textContent = user.email || 'Signed in with Google';
+
+    setGreeting();
+  }
+
+  function signOutGoogle(e) {
+    if (e) e.stopPropagation();
+    localStorage.removeItem('dreamlens_user');
+    const menu = document.getElementById('userDropdownMenu');
+    if (menu) menu.style.display = 'none';
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+      try { google.accounts.id.disableAutoSelect(); } catch(err) {}
+    }
+    renderLoggedOutState();
+    showAlert('👋 You have signed out.', 'info');
+  }
+
+  function toggleUserDropdown(e) {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById('userDropdownMenu');
+    if (menu) {
+      menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    }
+  }
+
+  function showSavedFromMenu(e) {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById('userDropdownMenu');
+    if (menu) menu.style.display = 'none';
+    showView('Saved');
+  }
+
+  document.addEventListener('click', () => {
+    const menu = document.getElementById('userDropdownMenu');
+    if (menu) menu.style.display = 'none';
+  });
 
   async function checkHealth() {
     try {
@@ -3235,7 +3414,9 @@
     document.getElementById('auraQuote').textContent = `"${quote}"`;
 
     const titleWords = dreamText.split(' ').slice(0, 4).join(' ');
-    document.getElementById('auraFooterTag').textContent = `Dreamer: Hariharan • "${titleWords}..." • DreamLens AI`;
+    const user = getSavedUser();
+    const dreamerName = user ? (user.name || user.given_name) : 'Dreamer';
+    document.getElementById('auraFooterTag').textContent = `Dreamer: ${dreamerName} • "${titleWords}..." • DreamLens AI`;
   }
 
   function exportAuraCardToImage() {
@@ -3329,7 +3510,9 @@
     // Footer
     ctx.fillStyle = '#64748b';
     ctx.font = '28px sans-serif';
-    ctx.fillText('Share your dream at dreamlens-ai.vercel.app', 540, 1720);
+    const user = getSavedUser();
+    const dreamerName = user ? (user.name || user.given_name) : 'Dreamer';
+    ctx.fillText(`Dreamer: ${dreamerName} • dreamlens-ai-gamma.vercel.app`, 540, 1720);
 
     const link = document.createElement('a');
     link.download = `DreamLens_AuraCard_${Date.now()}.png`;

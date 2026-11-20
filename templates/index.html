@@ -4,164 +4,741 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DREAMLENS AI — Decode Your Dreams. Discover Hidden Meanings.</title>
+  <title>DREAMLENS AI — Step Into Your Subconscious Realm</title>
   <meta name="description"
-    content="Unlock the secrets of your subconscious with DREAMLENS AI. Deep psychological dream analysis, symbol interpretation, and personalized insights. Start decoding your dreams today." />
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=4" />
+    content="Next-generation AI-powered dream intelligence. Experience autonomous multi-agent analysis, symbol decoding, emotion arcs, and real-time subconscious empowerment." />
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=14" />
+  
+  <!-- Google Identity Services (GIS) for Google Sign-In -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
-<body>
-  <!-- Animated Background -->
-  <div class="animated-bg">
-    <div class="particle particle-1"></div>
-    <div class="particle particle-2"></div>
-    <div class="particle particle-3"></div>
-    <div class="particle particle-4"></div>
-    <div class="particle particle-5"></div>
+<body class="landing-body">
+
+  <!-- ============================================================
+       CINEMATIC BACKGROUND: VIDEO & INTERACTIVE AURORA CANVAS
+  ============================================================ -->
+  <div class="cinematic-bg-container" aria-hidden="true">
+    <!-- Ambient looping cosmic dream video -->
+    <video class="hero-bg-video" autoplay muted loop playsinline poster="{{ url_for('static', filename='hero_dreamscape.jpg') }}" id="heroBgVideo">
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-flying-through-a-star-field-in-space-11885-large.mp4" type="video/mp4" />
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4" type="video/mp4" />
+    </video>
+    
+    <!-- Dynamic 60fps Dream Aurora & Constellation Canvas -->
+    <canvas id="dreamAuroraCanvas" class="dream-aurora-canvas"></canvas>
+    
+    <!-- Cinematic Vignette & Deep Fog Overlay -->
+    <div class="cinematic-vignette"></div>
+    <div class="cinematic-scanlines"></div>
   </div>
 
-  <!-- Navigation -->
-  <nav class="navbar" role="navigation" aria-label="Main navigation">
+  <!-- ============================================================
+       NAVIGATION BAR
+  ============================================================ -->
+  <nav class="navbar landing-nav" role="navigation" aria-label="Main navigation">
     <div class="nav-container">
-      <div class="logo">
-        <span class="logo-icon">✦</span>
-        <span class="logo-text">DREAMLENS AI</span>
-      </div>
+      <a href="/" class="logo" style="text-decoration:none;">
+        <div class="brand-logo-glow" style="width:34px;height:34px;font-size:1.1rem;display:flex;align-items:center;justify-content:center;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#ec4899);box-shadow:0 0 16px rgba(124,58,237,0.5);">
+          <span>🔮</span>
+        </div>
+        <div class="brand-text">
+          <span class="logo-text">DREAMLENS</span>
+          <span class="brand-badge" style="font-size:0.65rem;background:rgba(124,58,237,0.25);color:#38bdf8;padding:2px 6px;border-radius:4px;border:1px solid rgba(6,182,212,0.3);font-weight:700;">AI</span>
+        </div>
+      </a>
+
       <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+
       <ul class="nav-menu" role="menu">
         <li><a href="/" class="active">Home</a></li>
         <li><a href="/chat">Workspace</a></li>
+        <li><a href="/chat#cinema" onclick="navigateToWorkspaceTab('Cinema')">Dream Cinema</a></li>
         <li><a href="/history">History</a></li>
         <li><a href="/about">About</a></li>
       </ul>
+
+      <!-- Navbar Right Actions -->
+      <div class="nav-right-actions">
+        <!-- Ambient Soundscape Controller -->
+        <button class="landing-soundscape-btn" id="landingSoundscapeBtn" title="Toggle 432Hz Binaural Ambient Soundscape">
+          <span class="sound-icon">🎧</span>
+          <span id="soundLabel">Soundscape: Off</span>
+        </button>
+
+        <!-- Topbar Google Auth Pill (replaces static links) -->
+        <div class="landing-auth-slot" id="navAuthSlot">
+          <div id="navGoogleBtn" class="nav-g-btn"></div>
+          <div class="nav-user-pill" id="navUserPill" style="display:none;" onclick="window.location.href='/chat'">
+            <img id="navAvatarImg" class="nav-avatar-img" src="" alt="User" style="display:none;" />
+            <span id="navAvatarEmoji" class="nav-avatar-emoji">🧙‍♂️</span>
+            <span id="navUserName" class="nav-user-name">Dreamer</span>
+            <span class="nav-enter-arrow">→</span>
+          </div>
+        </div>
+      </div>
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section class="hero" id="hero">
-    <div class="overlay"></div>
+  <!-- ============================================================
+       HERO SECTION: CINEMATIC INTRO + GOOGLE SIGN-IN GATEWAY
+  ============================================================ -->
+  <section class="hero landing-hero" id="hero">
     <div class="hero-inner">
 
-      <!-- Left: Text Content -->
+      <!-- Left Column: Cinematic Typography & Google Gateway -->
       <div class="hero-left">
-        <div class="content">
-          <div class="hero-badge">AI-Powered Dream Intelligence</div>
-          <h1>Your Dreams<br /><span>Have Meaning</span></h1>
-          <p class="subtitle">
-            AI-powered dream analysis with emotional insights, symbol interpretation
-            and personalized psychological guidance.
+        <div class="hero-content-wrap">
+          
+          <!-- Pulsing Radar Innovation Badge -->
+          <div class="hero-radar-badge">
+            <span class="radar-dot"></span>
+            <span class="radar-text">Next-Gen Subconscious Intelligence • Powered by Groq</span>
+          </div>
+
+          <!-- Futuristic Kinetic Headline -->
+          <h1 class="hero-main-title">
+            Step Into Your <br />
+            <span class="kinetic-gradient-text" id="kineticHeadline">Dream Realm</span>
+          </h1>
+
+          <p class="hero-narrative-sub">
+            An autonomous multi-agent intelligence that decodes the hidden architecture of your sleep—mapping emotional frequencies, archetypal power, and waking life empowerment in real-time.
           </p>
 
-          <div class="cta-buttons">
-            <button id="startBtn" class="btn btn-primary">
-              <span class="btn-icon">→</span> Start Analyzing
-            </button>
-            <button class="btn btn-secondary" onclick="scrollToFeatures()">
-              <span class="btn-icon">↓</span> Explore Features
-            </button>
+          <!-- ====================================================
+               GOOGLE SIGN-IN GATEWAY CARD (The Core Hero Feature)
+          ==================================================== -->
+          <div class="subconscious-gateway-card" id="gatewayCard">
+            <div class="gateway-card-header">
+              <div class="gateway-identity">
+                <span class="gw-orb">⚡</span>
+                <div>
+                  <h3 class="gw-title">Subconscious Access Gateway</h3>
+                  <p class="gw-sub">Sign in with Google to personalize reports & save your dream chronicles</p>
+                </div>
+              </div>
+              <span class="gw-status-chip">● Neural Ready</span>
+            </div>
+
+            <!-- Logged Out View: Google One-Click Button + Guest Option -->
+            <div class="gateway-auth-actions" id="gwLoggedOutActions">
+              <div class="gw-gbtn-wrap">
+                <div id="landingGoogleSignInBtn" class="landing-google-slot"></div>
+              </div>
+              
+              <div class="gw-or-divider">
+                <span>or</span>
+              </div>
+
+              <a href="/chat" class="btn-guest-enter" id="guestEnterBtn">
+                <span>Explore as Guest Explorer</span>
+                <span class="btn-arrow">→</span>
+              </a>
+            </div>
+
+            <!-- Logged In View: Personalized Welcome + Instant Enter -->
+            <div class="gateway-logged-in-view" id="gwLoggedInView" style="display:none;">
+              <div class="gw-user-profile-row">
+                <img id="gwUserAvatar" class="gw-avatar-photo" src="" alt="Profile" style="display:none;" />
+                <div id="gwAvatarPlaceholder" class="gw-avatar-placeholder">🧙‍♂️</div>
+                <div class="gw-user-details">
+                  <div class="gw-welcome-lead">✨ Authenticated Dreamer</div>
+                  <div class="gw-user-fullname" id="gwFullName">Dreamer</div>
+                  <div class="gw-user-email" id="gwEmail">signed-in@google</div>
+                </div>
+              </div>
+
+              <div class="gw-action-row">
+                <a href="/chat" class="btn-enter-workspace" id="enterWorkspaceBtn">
+                  <span>Enter Dream Workspace</span>
+                  <span class="btn-arrow">🚀</span>
+                </a>
+                <button type="button" class="btn-gw-logout" onclick="signOutFromLanding(event)">
+                  <span>Sign out</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="gw-secure-note">
+              <span>🔒 100% Encrypted & Private • No data sold or shared</span>
+            </div>
+          </div><!-- /subconscious-gateway-card -->
+
+          <!-- Live Metrics Strip -->
+          <div class="stats landing-stats-strip">
+            <div class="stat">
+              <span class="stat-number">3 AI Agents</span>
+              <span class="stat-label">Emotional, Symbol & Jungian</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">432 Hz</span>
+              <span class="stat-label">Harmonic Theta Wave</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">14.8k+</span>
+              <span class="stat-label">Collective Dreamers</span>
+            </div>
           </div>
 
-          <div class="stats">
-            <div class="stat">
-              <span class="stat-number">10K+</span>
-              <span class="stat-label">Dreams Analyzed</span>
-            </div>
-            <div class="stat">
-              <span class="stat-number">95%</span>
-              <span class="stat-label">User Satisfaction</span>
-            </div>
-            <div class="stat">
-              <span class="stat-number">24/7</span>
-              <span class="stat-label">AI-Powered</span>
-            </div>
-          </div>
         </div>
-      </div>
+      </div><!-- /hero-left -->
 
-      <!-- Right: Hero Image -->
+      <!-- Right Column: Interactive 3D Holographic Card & Simulation Deck -->
       <div class="hero-right">
-        <div class="hero-image-wrap">
-          <img src="{{ url_for('static', filename='hero_dreamscape.jpg') }}"
-            alt="Fantasy dreamscape — a magical glowing portal at the top of a celestial staircase" />
-          <div class="hero-float-badge">
-            <span class="badge-icon">🌙</span>
-            <div class="badge-text">
-              <strong>Dream Analysis Active</strong>
-              <span>3 AI Agents Running</span>
+        <div class="hologram-stage" id="hologramStage">
+          
+          <div class="hologram-card" id="hologramCard">
+            <!-- Background Image with Ambient Glow -->
+            <div class="hologram-image-wrap">
+              <img src="{{ url_for('static', filename='hero_dreamscape.jpg') }}"
+                alt="Glowing cosmic dream portal" class="hologram-bg-img" />
+              <div class="hologram-overlay-gradient"></div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Scroll indicator -->
+            <!-- Top Telemetry Pill: Live Oscillating Frequency -->
+            <div class="holo-telemetry-top">
+              <div class="holo-signal-pill">
+                <span class="signal-dot"></span>
+                <span>Theta Frequency: 432 Hz</span>
+              </div>
+              <canvas id="holoFrequencyCanvas" width="70" height="20" class="holo-freq-canvas"></canvas>
+            </div>
+
+            <!-- Live Cycling Archetype Hologram Badge -->
+            <div class="holo-archetype-floating-pill" id="holoArchetypePill">
+              <span class="spark-icon">✨</span>
+              <span id="holoArchetypeText">🌾 The Abundant Harvester</span>
+            </div>
+
+            <!-- Bottom Subconscious Matrix HUD -->
+            <div class="holo-hud-bottom">
+              <div class="hud-item">
+                <span class="hud-label">Subconscious Resonance</span>
+                <div class="hud-bar-wrap">
+                  <div class="hud-bar-fill" style="width: 88%;"></div>
+                </div>
+                <span class="hud-val">88% Lucid Alignment</span>
+              </div>
+
+              <div class="hud-meta-row">
+                <span class="hud-agent-tag">● Emotional Agent Active</span>
+                <span class="hud-agent-tag">● Jungian Shadow Mapped</span>
+              </div>
+            </div>
+
+            <!-- Floating 3D Depth Elements -->
+            <div class="holo-floating-orb orb-1">🔮</div>
+            <div class="holo-floating-orb orb-2">✨</div>
+          </div><!-- /hologram-card -->
+
+        </div><!-- /hologram-stage -->
+      </div><!-- /hero-right -->
+
+    </div><!-- /hero-inner -->
+
+    <!-- Scroll Indicator -->
     <div class="scroll-indicator" onclick="scrollToFeatures()" aria-label="Scroll to features">
-      <span>Explore</span>
+      <span>Explore Intelligence Features</span>
       <div class="scroll-arrow">↓</div>
     </div>
   </section>
 
-  <!-- Features Section -->
-  <section id="features" class="features">
+  <!-- ============================================================
+       CAPABILITIES & ARCHITECTURE SECTION
+  ============================================================ -->
+  <section id="features" class="features landing-features-sec">
     <div class="features-inner">
       <div class="section-heading">
-        <div class="section-label">CAPABILITIES</div>
-        <h2>Why Choose DREAMLENS AI?</h2>
-        <p>Powered by advanced large language models with multi-agent psychological analysis pipelines.</p>
+        <div class="section-label">NEURAL CAPABILITIES</div>
+        <h2>Why DreamLens AI Stands Alone</h2>
+        <p>A multi-agent psychological architecture designed to convert subconscious chaos into creative waking mastery.</p>
       </div>
 
       <div class="features-grid">
-        <div class="feature-card">
-          <span class="feature-icon">🧠</span>
-          <h3>Deep Psychological Analysis</h3>
-          <p>Multi-lens interpretation combining Jungian, emotional, and narrative psychology frameworks.</p>
+        <div class="feature-card glass-feature-card">
+          <div class="feat-icon-glow">🧠</div>
+          <h3>Depth Psychology Decode</h3>
+          <p>Synthesizes Jungian shadow integration, Freudian wish fulfillment, and neuroscience consolidation frameworks.</p>
         </div>
-        <div class="feature-card">
-          <span class="feature-icon">⚡</span>
-          <h3>Instant AI Results</h3>
-          <p>Powered by Groq's ultra-fast LLM inference — get deep insights in seconds, not minutes.</p>
+        <div class="feature-card glass-feature-card">
+          <div class="feat-icon-glow">⚡</div>
+          <h3>Climax Rewriter & Simulator</h3>
+          <p>Alter pivotal dream moments and test "what if" alternative decisions to transmute subconscious anxiety into sovereign power.</p>
         </div>
-        <div class="feature-card">
-          <span class="feature-icon">🔮</span>
-          <h3>Symbol Interpretation</h3>
-          <p>Contextual symbol decoding from a curated database of archetypal dream imagery.</p>
+        <div class="feature-card glass-feature-card">
+          <div class="feat-icon-glow">🎴</div>
+          <h3>Dream Aura Card Studio</h3>
+          <p>Generates high-definition, viral 9:16 story cards mapping your dream archetype, lucidity score, and awakening takeaway.</p>
         </div>
-        <div class="feature-card">
-          <span class="feature-icon">📊</span>
-          <h3>Emotion Arc Mapping</h3>
-          <p>Track emotional transitions across your dream narrative with visual timeline breakdowns.</p>
+        <div class="feature-card glass-feature-card">
+          <div class="feat-icon-glow">🗝️</div>
+          <h3>Symbol Constellation Matrix</h3>
+          <p>Decodes central and satellite symbols from ancestral mythologies and cultural archetypes (harvests, beasts, doorways, flight).</p>
         </div>
-        <div class="feature-card">
-          <span class="feature-icon">🎬</span>
-          <h3>Dream Cinema</h3>
-          <p>Curated fantasy & lucid dreaming YouTube videos tailored to your dream themes.</p>
+        <div class="feature-card glass-feature-card">
+          <div class="feat-icon-glow">🌊</div>
+          <h3>Emotion Arc Tracking</h3>
+          <p>Visualizes the subtle trajectory of your subconscious frequencies across every stage of the narrative.</p>
         </div>
-        <div class="feature-card">
-          <span class="feature-icon">🔒</span>
-          <h3>Private & Secure</h3>
-          <p>Your dream data stays local. No tracking, no profiling, complete confidentiality.</p>
+        <div class="feature-card glass-feature-card">
+          <div class="feat-icon-glow">🎬</div>
+          <h3>Dream Cinema Hub</h3>
+          <p>Recommends high-resonance fantasy films, philosophical discussions, and lucid dreaming masterclasses tailored to your dream.</p>
         </div>
+      </div>
+
+      <!-- Quick Launch CTA Banner -->
+      <div class="landing-launch-banner">
+        <div class="launch-banner-content">
+          <h3>Ready to decipher what your unconscious mind is communicating?</h3>
+          <p>Begin your analysis in seconds with our single-pass neural pipeline.</p>
+        </div>
+        <a href="/chat" class="btn-launch-pill">
+          <span>Open Workspace</span>
+          <span>→</span>
+        </a>
       </div>
     </div>
   </section>
 
+  <!-- ============================================================
+       INTERACTIVE SCRIPTS: AUTH, VIDEO, CANVAS & SOUNDSCAPE
+  ============================================================ -->
   <script>
-    document.getElementById("startBtn").addEventListener("click", () => window.location.href = "/chat");
+    const GOOGLE_CLIENT_ID = "{{ google_client_id }}" || "79536262134-93at5lv3g5hhjc6h36pkpdfv6ve13o0s.apps.googleusercontent.com";
 
-    function scrollToFeatures() {
-      document.getElementById("features").scrollIntoView({ behavior: "smooth" });
+    /* ==============================================================
+       1. AUTHENTICATION & SESSION HANDLING
+    ============================================================== */
+    function getSavedUser() {
+      try {
+        const u = localStorage.getItem('dreamlens_user');
+        return u ? JSON.parse(u) : null;
+      } catch(e) {
+        return null;
+      }
     }
 
-    // Smooth anchor scrolling
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        const t = document.querySelector(a.getAttribute('href'));
-        if (t) t.scrollIntoView({ behavior: 'smooth' });
-        document.body.classList.remove('nav-open');
-        const btn = document.getElementById('navToggle');
-        if (btn) btn.setAttribute('aria-expanded', 'false');
+    function saveUser(userData) {
+      try {
+        localStorage.setItem('dreamlens_user', JSON.stringify(userData));
+      } catch(e) {}
+    }
+
+    function decodeJwtResponse(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch(e) {
+        return null;
+      }
+    }
+
+    function initLandingAuth() {
+      const user = getSavedUser();
+      if (user) {
+        renderLandingLoggedIn(user);
+      } else {
+        renderLandingLoggedOut();
+      }
+    }
+
+    function renderLandingLoggedIn(user) {
+      // Gateway card in Hero
+      const loggedOutBox = document.getElementById('gwLoggedOutActions');
+      const loggedInBox = document.getElementById('gwLoggedInView');
+      if (loggedOutBox) loggedOutBox.style.display = 'none';
+      if (loggedInBox) loggedInBox.style.display = 'block';
+
+      const fullNameEl = document.getElementById('gwFullName');
+      const emailEl = document.getElementById('gwEmail');
+      const avatarEl = document.getElementById('gwUserAvatar');
+      const placeholderEl = document.getElementById('gwAvatarPlaceholder');
+
+      if (fullNameEl) fullNameEl.textContent = user.name || user.given_name || 'Dreamer';
+      if (emailEl) emailEl.textContent = user.email || 'Authenticated with Google';
+
+      if (user.picture && avatarEl) {
+        avatarEl.src = user.picture;
+        avatarEl.style.display = 'inline-block';
+        if (placeholderEl) placeholderEl.style.display = 'none';
+      } else if (placeholderEl) {
+        placeholderEl.style.display = 'flex';
+        if (avatarEl) avatarEl.style.display = 'none';
+      }
+
+      // Topbar Nav Pill
+      const navGSlot = document.getElementById('navGoogleBtn');
+      const navPill = document.getElementById('navUserPill');
+      if (navGSlot) navGSlot.style.display = 'none';
+      if (navPill) {
+        navPill.style.display = 'flex';
+        const navName = document.getElementById('navUserName');
+        const navImg = document.getElementById('navAvatarImg');
+        const navEmoji = document.getElementById('navAvatarEmoji');
+        if (navName) navName.textContent = user.given_name || (user.name ? user.name.split(' ')[0] : 'Dreamer');
+        if (user.picture && navImg) {
+          navImg.src = user.picture;
+          navImg.style.display = 'inline-block';
+          if (navEmoji) navEmoji.style.display = 'none';
+        }
+      }
+    }
+
+    function renderLandingLoggedOut() {
+      const loggedOutBox = document.getElementById('gwLoggedOutActions');
+      const loggedInBox = document.getElementById('gwLoggedInView');
+      if (loggedOutBox) loggedOutBox.style.display = 'flex';
+      if (loggedInBox) loggedInBox.style.display = 'none';
+
+      const navGSlot = document.getElementById('navGoogleBtn');
+      const navPill = document.getElementById('navUserPill');
+      if (navPill) navPill.style.display = 'none';
+      if (navGSlot) navGSlot.style.display = 'block';
+
+      // Initialize Google Identity Services
+      const tryInitGSI = () => {
+        if (window.google && window.google.accounts && window.google.accounts.id) {
+          try {
+            google.accounts.id.initialize({
+              client_id: GOOGLE_CLIENT_ID,
+              callback: handleLandingGoogleSuccess,
+              auto_select: false
+            });
+
+            // Render Hero Gateway Button
+            const heroSlot = document.getElementById('landingGoogleSignInBtn');
+            if (heroSlot) {
+              heroSlot.innerHTML = '';
+              google.accounts.id.renderButton(heroSlot, {
+                theme: 'filled_black',
+                size: 'large',
+                shape: 'pill',
+                text: 'continue_with',
+                width: 280
+              });
+            }
+
+            // Render Nav Topbar Button
+            if (navGSlot) {
+              navGSlot.innerHTML = '';
+              google.accounts.id.renderButton(navGSlot, {
+                theme: 'outline',
+                size: 'medium',
+                shape: 'pill',
+                text: 'signin'
+              });
+            }
+          } catch(err) {
+            console.log('Landing GSI init note:', err);
+          }
+        } else {
+          setTimeout(tryInitGSI, 300);
+        }
+      };
+      tryInitGSI();
+    }
+
+    function handleLandingGoogleSuccess(response) {
+      const payload = decodeJwtResponse(response.credential);
+      if (!payload) return;
+
+      const user = {
+        name: payload.name || 'Dreamer',
+        given_name: payload.given_name || (payload.name ? payload.name.split(' ')[0] : 'Dreamer'),
+        email: payload.email || '',
+        picture: payload.picture || ''
+      };
+
+      saveUser(user);
+      renderLandingLoggedIn(user);
+
+      // Celebrate & automatically transition into the workspace
+      const card = document.getElementById('gatewayCard');
+      if (card) {
+        card.classList.add('authorized-glow');
+      }
+
+      setTimeout(() => {
+        window.location.href = '/chat';
+      }, 700);
+    }
+
+    function signOutFromLanding(e) {
+      if (e) e.stopPropagation();
+      localStorage.removeItem('dreamlens_user');
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        try { google.accounts.id.disableAutoSelect(); } catch(err) {}
+      }
+      renderLandingLoggedOut();
+    }
+
+    /* ==============================================================
+       2. INTERACTIVE AURORA & CONSTELLATION CANVAS ENGINE
+    ============================================================== */
+    (function initDreamCanvas() {
+      const canvas = document.getElementById('dreamAuroraCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let mouseX = -1000, mouseY = -1000;
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
       });
+
+      // Generate Cosmic Star Particles
+      const particleCount = Math.min(85, Math.floor(window.innerWidth / 18));
+      const particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          radius: Math.random() * 2 + 0.8,
+          alpha: Math.random() * 0.7 + 0.3,
+          color: Math.random() > 0.4 ? 'rgba(168, 85, 247,' : (Math.random() > 0.5 ? 'rgba(6, 182, 212,' : 'rgba(236, 72, 153,')
+        });
+      }
+
+      let time = 0;
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        time += 0.006;
+
+        // Draw Ambient Ethereal Nebula Waves
+        const grad1 = ctx.createRadialGradient(
+          width * 0.25 + Math.sin(time) * 60,
+          height * 0.35 + Math.cos(time) * 40,
+          40,
+          width * 0.25,
+          height * 0.35,
+          width * 0.55
+        );
+        grad1.addColorStop(0, 'rgba(124, 58, 237, 0.16)');
+        grad1.addColorStop(0.5, 'rgba(236, 72, 153, 0.08)');
+        grad1.addColorStop(1, 'rgba(10, 12, 28, 0)');
+        ctx.fillStyle = grad1;
+        ctx.fillRect(0, 0, width, height);
+
+        const grad2 = ctx.createRadialGradient(
+          width * 0.75 + Math.cos(time * 0.8) * 80,
+          height * 0.65 + Math.sin(time * 0.8) * 50,
+          60,
+          width * 0.75,
+          height * 0.65,
+          width * 0.55
+        );
+        grad2.addColorStop(0, 'rgba(6, 182, 212, 0.12)');
+        grad2.addColorStop(0.5, 'rgba(124, 58, 237, 0.06)');
+        grad2.addColorStop(1, 'rgba(10, 12, 28, 0)');
+        ctx.fillStyle = grad2;
+        ctx.fillRect(0, 0, width, height);
+
+        // Update & Render Particles with Constellation Links
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+
+          // Mouse gravity
+          const dx = mouseX - p.x;
+          const dy = mouseY - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 140) {
+            p.x += (dx / dist) * 0.8;
+            p.y += (dy / dist) * 0.8;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `${p.color} ${p.alpha})`;
+          ctx.fill();
+
+          // Connect nearby constellation points
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const djx = p.x - p2.x;
+            const djy = p.y - p2.y;
+            const dLink = Math.sqrt(djx * djx + djy * djy);
+            if (dLink < 90) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = `rgba(168, 85, 247, ${(1 - dLink / 90) * 0.18})`;
+              ctx.lineWidth = 0.8;
+              ctx.stroke();
+            }
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+
+    /* ==============================================================
+       3. 3D HOLOGRAPHIC TILT EFFECT
+    ============================================================== */
+    (function init3DCardTilt() {
+      const stage = document.getElementById('hologramStage');
+      const card = document.getElementById('hologramCard');
+      if (!stage || !card) return;
+
+      stage.addEventListener('mousemove', (e) => {
+        const rect = stage.getBoundingClientRect();
+        const x = e.clientX - rect.left - (rect.width / 2);
+        const y = e.clientY - rect.top - (rect.height / 2);
+        const rotateX = -(y / (rect.height / 2)) * 12;
+        const rotateY = (x / (rect.width / 2)) * 12;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+      });
+
+      stage.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+      });
+
+      // Oscillating Waveform Canvas on Hologram HUD
+      const fCanvas = document.getElementById('holoFrequencyCanvas');
+      if (fCanvas) {
+        const fCtx = fCanvas.getContext('2d');
+        let fStep = 0;
+        function drawWave() {
+          fCtx.clearRect(0, 0, 70, 20);
+          fCtx.beginPath();
+          fCtx.strokeStyle = '#22d3ee';
+          fCtx.lineWidth = 1.5;
+          for (let x = 0; x < 70; x++) {
+            const y = 10 + Math.sin((x + fStep) * 0.25) * 6;
+            if (x === 0) fCtx.moveTo(x, y);
+            else fCtx.lineTo(x, y);
+          }
+          fCtx.stroke();
+          fStep += 0.8;
+          requestAnimationFrame(drawWave);
+        }
+        drawWave();
+      }
+
+      // Rotate Archetype Pill on the Hologram
+      const archetypes = [
+        '🌾 The Abundant Harvester',
+        '👑 The Primal Sovereign',
+        '🚪 The Threshold Pioneer',
+        '🕊️ The Astral Voyager',
+        '🗝️ The Archival Sage'
+      ];
+      let archIdx = 0;
+      const archEl = document.getElementById('holoArchetypeText');
+      if (archEl) {
+        setInterval(() => {
+          archIdx = (archIdx + 1) % archetypes.length;
+          archEl.style.opacity = '0';
+          setTimeout(() => {
+            archEl.textContent = archetypes[archIdx];
+            archEl.style.opacity = '1';
+          }, 300);
+        }, 4000);
+      }
+    })();
+
+    /* ==============================================================
+       4. BINAURAL 432Hz DREAM SOUNDSCAPE (Zero External Audio File)
+    ============================================================== */
+    let audioCtx = null;
+    let osc1 = null, osc2 = null, gainNode = null;
+    let isSoundOn = false;
+
+    function toggleLandingSoundscape() {
+      const btn = document.getElementById('landingSoundscapeBtn');
+      const label = document.getElementById('soundLabel');
+      if (!isSoundOn) {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!audioCtx) audioCtx = new AudioContext();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+
+          gainNode = audioCtx.createGain();
+          gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 2);
+          gainNode.connect(audioCtx.destination);
+
+          // 432 Hz Base Sine Tone
+          osc1 = audioCtx.createOscillator();
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(432, audioCtx.currentTime);
+          osc1.connect(gainNode);
+          osc1.start();
+
+          // 438 Hz Binaural Theta Offset (creates gentle 6Hz theta pulsation)
+          osc2 = audioCtx.createOscillator();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(438, audioCtx.currentTime);
+          osc2.connect(gainNode);
+          osc2.start();
+
+          isSoundOn = true;
+          if (btn) btn.classList.add('active');
+          if (label) label.textContent = '432Hz: Active';
+        } catch(e) {
+          console.log('WebAudio note:', e);
+        }
+      } else {
+        if (gainNode && audioCtx) {
+          gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1);
+          setTimeout(() => {
+            try { osc1.stop(); osc2.stop(); } catch(e) {}
+            isSoundOn = false;
+            if (btn) btn.classList.remove('active');
+            if (label) label.textContent = 'Soundscape: Off';
+          }, 1000);
+        }
+      }
+    }
+
+    const soundBtn = document.getElementById('landingSoundscapeBtn');
+    if (soundBtn) soundBtn.addEventListener('click', toggleLandingSoundscape);
+
+    /* ==============================================================
+       5. GENERAL NAVIGATION HELPERS
+    ============================================================== */
+    function scrollToFeatures() {
+      const f = document.getElementById("features");
+      if (f) f.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function navigateToWorkspaceTab(tab) {
+      sessionStorage.setItem('dreamlens_target_tab', tab);
+    }
+
+    // Initialize Auth state on load
+    document.addEventListener('DOMContentLoaded', () => {
+      initLandingAuth();
     });
 
     // Mobile nav toggle
@@ -171,16 +748,6 @@
       navToggle.addEventListener('click', () => {
         const isOpen = document.body.classList.toggle('nav-open');
         navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      });
-      document.addEventListener('click', e => {
-        const navMenu = document.querySelector('.nav-menu');
-        const toggle = document.getElementById('navToggle');
-        if (!navMenu || !toggle) return;
-        if (window.innerWidth > 768) return;
-        if (!navMenu.contains(e.target) && !toggle.contains(e.target)) {
-          document.body.classList.remove('nav-open');
-          toggle.setAttribute('aria-expanded', 'false');
-        }
       });
     })();
   </script>
